@@ -1,4 +1,4 @@
-package kr.megaptera.smash;
+package kr.megaptera.smash.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
