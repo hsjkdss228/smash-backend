@@ -1,7 +1,5 @@
 package kr.megaptera.smash.dtos;
 
-import kr.megaptera.smash.models.Role;
-
 import java.util.List;
 
 public class PostThumbnailsDto {
@@ -11,12 +9,20 @@ public class PostThumbnailsDto {
 
   private final List<RoleDto> positions;
 
+  private final List<MemberDto> members;
+
+  private final List<PlaceDto> places;
+
   public PostThumbnailsDto(List<PostThumbnailDto> posts,
                            List<TeamDto> teams,
-                           List<RoleDto> roles) {
+                           List<RoleDto> positions,
+                           List<MemberDto> members,
+                           List<PlaceDto> places) {
     this.posts = posts;
     this.teams = teams;
-    this.positions = roles;
+    this.positions = positions;
+    this.members = members;
+    this.places = places;
   }
 
   public List<PostThumbnailDto> getPosts() {
@@ -29,5 +35,13 @@ public class PostThumbnailsDto {
 
   public List<RoleDto> getPositions() {
     return positions;
+  }
+
+  public List<MemberDto> getMembers() {
+    return members;
+  }
+
+  public List<PlaceDto> getPlaces() {
+    return places;
   }
 }

@@ -3,25 +3,18 @@ package kr.megaptera.smash.models;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.util.List;
 
 @Entity
 @Table(name = "PERSON")
 public class User {
   @Id
   @GeneratedValue
-  private Long personId;
+  private Long id;
 
   private String name;
 
-  @OneToMany(mappedBy = "author")
-  private List<Post> createdPosts;
-
-  @OneToOne(mappedBy = "person")
-  private Member member;
+  private Double mannerScore;
 
   public User() {
 
@@ -31,7 +24,17 @@ public class User {
     this.name = name;
   }
 
-  public String author() {
+  public User(Long id, String name, Double mannerScore) {
+    this.id = id;
+    this.name = name;
+    this.mannerScore = mannerScore;
+  }
+
+  public String name() {
     return name;
+  }
+
+  public Double mannerScore() {
+    return mannerScore;
   }
 }
