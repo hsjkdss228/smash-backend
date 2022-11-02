@@ -1,11 +1,10 @@
 package kr.megaptera.smash.models;
 
+import kr.megaptera.smash.dtos.MemberDto;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 @Entity
 public class Member {
@@ -13,26 +12,50 @@ public class Member {
   @GeneratedValue
   private Long id;
 
-  @ManyToOne
-  @JoinColumn(name = "TEAM_ID")
-  private Team teamIn;
+  private Long teamId;
 
-  @OneToOne
-  @JoinColumn(name = "PERSON_ID")
-  private User person;
+  private Long roleId;
 
-  @ManyToOne
-  @JoinColumn(name = "POSITION_ID")
-  private Role roleIn;
+  private Long userId;
 
   public Member() {
 
   }
 
-  public Member(Long id, Team teamIn, User person, Role roleIn) {
+  public Member(Long id,
+                Long teamId,
+                Long roleId,
+                Long userId) {
     this.id = id;
-    this.teamIn = teamIn;
-    this.person = person;
-    this.roleIn = roleIn;
+    this.teamId = teamId;
+    this.roleId = roleId;
+    this.userId = userId;
+  }
+
+  public Long id() {
+    return id;
+  }
+
+  public Long teamId() {
+    return teamId;
+  }
+
+  public Long roleId() {
+    return roleId;
+  }
+
+  public Long userId() {
+    return userId;
+  }
+
+  public MemberDto toDto(String name,
+                         Double mannerScore) {
+    return new MemberDto(
+        id,
+        name,
+        teamId,
+        roleId,
+        mannerScore
+    );
   }
 }

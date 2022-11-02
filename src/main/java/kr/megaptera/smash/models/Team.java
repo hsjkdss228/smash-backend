@@ -5,10 +5,6 @@ import kr.megaptera.smash.dtos.TeamDto;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.util.List;
 
 @Entity
 public class Team {
@@ -16,46 +12,103 @@ public class Team {
   @GeneratedValue
   private Long id;
 
-  @ManyToOne
-  @JoinColumn(name = "POST_ID")
-  private Post postIn;
+  private Long postId;
 
   private String name;
 
+  private String exercise;
+
+  private String exerciseDate;
+
+  private String exerciseType;
+
+  private String exerciseLevel;
+
+  private String exerciseGender;
+
   private Integer targetMembersCount;
 
-  @OneToMany(mappedBy = "teamIn")
-  private List<Member> membersUnder;
-
-  @OneToMany(mappedBy = "teamIn")
-  private List<Role> rolesUnder;
+  private Integer cost;
 
   public Team() {
 
   }
 
-  public Team(Long id, Post postIn, List<Member> membersUnder, Integer targetMembersCount) {
+  public Team(Long id,
+              Long postId,
+              String name,
+              String exercise,
+              String exerciseDate,
+              String exerciseType,
+              String exerciseLevel,
+              String exerciseGender,
+              Integer targetMembersCount,
+              Integer cost) {
     this.id = id;
-    this.postIn = postIn;
-    this.membersUnder = membersUnder;
+    this.postId = postId;
+    this.name = name;
+    this.exercise = exercise;
+    this.exerciseDate = exerciseDate;
+    this.exerciseType = exerciseType;
+    this.exerciseLevel = exerciseLevel;
+    this.exerciseGender = exerciseGender;
     this.targetMembersCount = targetMembersCount;
-  }
-
-  public Team(Long id) {
-    this.id = id;
-  }
-
-  public TeamDto toTeamDto() {
-    return new TeamDto(
-        id,
-        postIn.id(),
-        name,
-        membersUnder.size(),
-        targetMembersCount
-    );
+    this.cost = cost;
   }
 
   public Long id() {
     return id;
+  }
+
+  public Long postId() {
+    return postId;
+  }
+
+  public String name() {
+    return name;
+  }
+
+  public String exercise() {
+    return exercise;
+  }
+
+  public String exerciseDate() {
+    return exerciseDate;
+  }
+
+  public String exerciseType() {
+    return exerciseType;
+  }
+
+  public String exerciseLevel() {
+    return exerciseLevel;
+  }
+
+  public String exerciseGender() {
+    return exerciseGender;
+  }
+
+  public Integer targetMembersCount() {
+    return targetMembersCount;
+  }
+
+  public Integer cost() {
+    return cost;
+  }
+
+  public TeamDto toDto(Integer membersCount) {
+    return new TeamDto(
+        id,
+        postId,
+        name,
+        exercise,
+        exerciseDate,
+        exerciseType,
+        exerciseLevel,
+        exerciseGender,
+        membersCount,
+        targetMembersCount,
+        cost
+    );
   }
 }
