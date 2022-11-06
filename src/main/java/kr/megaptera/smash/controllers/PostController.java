@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,9 +28,10 @@ public class PostController {
 
   @GetMapping("/posts/{postId}")
   public PostDto post(
-      @PathVariable Long postId
+      @PathVariable Long postId,
+      @RequestAttribute("userId") Long accessedUserId
   ) {
-    return postService.post(postId);
+    return postService.post(postId, accessedUserId);
   }
 
   @ExceptionHandler(PostNotFound.class)
