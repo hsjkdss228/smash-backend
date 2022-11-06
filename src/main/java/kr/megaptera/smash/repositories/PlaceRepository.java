@@ -4,5 +4,5 @@ import kr.megaptera.smash.models.Place;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
-  Place findByPostId(Long postId);
+  Place findByGameId(Long id);
 }

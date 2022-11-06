@@ -1,13 +1,10 @@
 package kr.megaptera.smash.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import kr.megaptera.smash.dtos.ImageDto;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Entity
 public class Image {

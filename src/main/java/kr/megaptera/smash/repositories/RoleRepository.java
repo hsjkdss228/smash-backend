@@ -3,6 +3,8 @@ package kr.megaptera.smash.repositories;
 import kr.megaptera.smash.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RoleRepository extends JpaRepository<Role, Long> {
+import java.util.List;
 
+public interface RoleRepository extends JpaRepository<Role, Long> {
+  List<Role> findAllByGameId(Long id);
 }

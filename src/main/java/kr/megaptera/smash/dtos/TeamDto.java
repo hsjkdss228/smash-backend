@@ -1,82 +1,45 @@
 package kr.megaptera.smash.dtos;
 
+import java.util.List;
+
 public class TeamDto {
   private final Long id;
 
-  private final Long postId;
+  private final Long gameId;
 
   private final String name;
-
-  private final String exercise;
-
-  private final String exerciseDate;
-
-  private final String exerciseType;
-
-  private final String exerciseLevel;
-
-  private final String exerciseGender;
 
   private final Integer membersCount;
 
   private final Integer targetMembersCount;
 
-  private final Integer cost;
+  private final List<RoleDto> roles;
 
   public TeamDto(Long id,
-                 Long postId,
+                 Long gameId,
                  String name,
-                 String exercise,
-                 String exerciseDate,
-                 String exerciseType,
-                 String exerciseLevel,
-                 String exerciseGender,
                  Integer membersCount,
                  Integer targetMembersCount,
-                 Integer cost) {
+                 List<RoleDto> roles
+  ) {
     this.id = id;
-    this.postId = postId;
+    this.gameId = gameId;
     this.name = name;
-    this.exercise = exercise;
-    this.exerciseDate = exerciseDate;
-    this.exerciseType = exerciseType;
-    this.exerciseLevel = exerciseLevel;
-    this.exerciseGender = exerciseGender;
     this.membersCount = membersCount;
     this.targetMembersCount = targetMembersCount;
-    this.cost = cost;
+    this.roles = roles;
   }
 
   public Long getId() {
     return id;
   }
 
-  public Long getPostId() {
-    return postId;
+  public Long getGameId() {
+    return gameId;
   }
 
   public String getName() {
     return name;
-  }
-
-  public String getExercise() {
-    return exercise;
-  }
-
-  public String getExerciseDate() {
-    return exerciseDate;
-  }
-
-  public String getExerciseType() {
-    return exerciseType;
-  }
-
-  public String getExerciseLevel() {
-    return exerciseLevel;
-  }
-
-  public String getExerciseGender() {
-    return exerciseGender;
   }
 
   public Integer getMembersCount() {
@@ -87,7 +50,7 @@ public class TeamDto {
     return targetMembersCount;
   }
 
-  public Integer getCost() {
-    return cost;
+  public List<RoleDto> getRoles() {
+    return roles;
   }
 }

@@ -3,24 +3,24 @@ package kr.megaptera.smash.dtos;
 public class MemberDto {
   private final Long id;
 
-  private final String name;
-
   private final Long teamId;
 
-  private final Long positionId;
+  private final Long roleId;
+
+  private final String name;
 
   private final Double mannerScore;
 
 
   public MemberDto(Long id,
-                   String name,
                    Long teamId,
                    Long roleId,
+                   String name,
                    Double mannerScore) {
     this.id = id;
-    this.name = name;
     this.teamId = teamId;
-    this.positionId = roleId;
+    this.roleId = roleId;
+    this.name = name;
     this.mannerScore = mannerScore;
   }
 
@@ -28,16 +28,16 @@ public class MemberDto {
     return id;
   }
 
-  public String getName() {
-    return name;
-  }
-
   public Long getTeamId() {
     return teamId;
   }
 
-  public Long getPositionId() {
-    return positionId;
+  public Long getRoleId() {
+    return roleId;
+  }
+
+  public String getName() {
+    return name;
   }
 
   public Double getMannerScore() {

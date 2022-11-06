@@ -12,6 +12,8 @@ public class Member {
   @GeneratedValue
   private Long id;
 
+  private Long gameId;
+
   private Long teamId;
 
   private Long roleId;
@@ -23,10 +25,12 @@ public class Member {
   }
 
   public Member(Long id,
+                Long gameId,
                 Long teamId,
                 Long roleId,
                 Long userId) {
     this.id = id;
+    this.gameId = gameId;
     this.teamId = teamId;
     this.roleId = roleId;
     this.userId = userId;
@@ -34,6 +38,10 @@ public class Member {
 
   public Long id() {
     return id;
+  }
+
+  public Long gameId() {
+    return gameId;
   }
 
   public Long teamId() {
@@ -48,13 +56,13 @@ public class Member {
     return userId;
   }
 
-  public MemberDto toDto(String name,
+  public MemberDto toMemberDto(String name,
                          Double mannerScore) {
     return new MemberDto(
         id,
-        name,
         teamId,
         roleId,
+        name,
         mannerScore
     );
   }

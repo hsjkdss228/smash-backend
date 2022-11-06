@@ -1,7 +1,8 @@
 package kr.megaptera.smash.models;
 
+import kr.megaptera.smash.dtos.GameDto;
 import kr.megaptera.smash.dtos.ImageDto;
-import kr.megaptera.smash.dtos.PostThumbnailDto;
+import kr.megaptera.smash.dtos.PostDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,7 +18,7 @@ public class Post {
   @GeneratedValue
   private Long id;
 
-  private Long userId;
+  private Long authorId;
 
   @CreationTimestamp
   private LocalDateTime createdAt;
@@ -41,7 +42,7 @@ public class Post {
               Integer hits,
               String detail) {
     this.id = id;
-    this.userId = userId;
+    this.authorId = userId;
     this.type = type;
     this.hits = hits;
     this.detail = detail;
@@ -52,7 +53,7 @@ public class Post {
   }
 
   public Long userId() {
-    return userId;
+    return authorId;
   }
 
   public LocalDateTime createdAt() {
@@ -76,16 +77,19 @@ public class Post {
 //    return createdAt.format();
   }
 
-  public PostThumbnailDto toThumbnailDto(String author,
-                                         List<ImageDto> imageDtos) {
-    return new PostThumbnailDto(
+  public PostDto toPostDto(String author,
+                           List<ImageDto> images,
+                           GameDto game
+  ) {
+    return new PostDto(
         id,
         type,
         author,
         convertDateTime(),
         hits,
-        imageDtos,
-        detail
+        detail,
+        images,
+        game
     );
   }
 }
