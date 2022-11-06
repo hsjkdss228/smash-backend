@@ -55,7 +55,10 @@ public class Game {
     return id;
   }
 
-  public GameDto toDto(String place, List<TeamDto> teams) {
+  public GameDto toDto(
+      String place,
+      List<TeamDto> teams
+  ) {
     return new GameDto(
         id,
         postId,
@@ -67,6 +70,28 @@ public class Game {
         cost,
         place,
         teams
+    );
+  }
+
+  public GameDto toDto(
+      String place,
+      List<TeamDto> teams,
+      String userStatus,
+      Long roleIdOfAccessedUser
+  ) {
+    return new GameDto(
+        id,
+        postId,
+        exercise,
+        exerciseDate,
+        exerciseType,
+        exerciseLevel,
+        exerciseGender,
+        cost,
+        place,
+        teams,
+        userStatus,
+        roleIdOfAccessedUser
     );
   }
 }

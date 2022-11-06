@@ -52,7 +52,7 @@ public class Post {
     return id;
   }
 
-  public Long userId() {
+  public Long authorId() {
     return authorId;
   }
 

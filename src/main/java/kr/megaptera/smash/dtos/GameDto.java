@@ -23,6 +23,10 @@ public class GameDto {
 
   private final List<TeamDto> teams;
 
+  private final String userStatus;
+
+  private final Long roleIdOfAccessedUser;
+
   public GameDto(Long id,
                  Long postId,
                  String exercise,
@@ -44,6 +48,35 @@ public class GameDto {
     this.cost = cost;
     this.place = place;
     this.teams = teams;
+    this.userStatus = null;
+    this.roleIdOfAccessedUser = null;
+  }
+
+  public GameDto(Long id,
+                 Long postId,
+                 String exercise,
+                 String exerciseDate,
+                 String exerciseType,
+                 String exerciseLevel,
+                 String exerciseGender,
+                 Integer cost,
+                 String place,
+                 List<TeamDto> teams,
+                 String userStatus,
+                 Long roleIdOfAccessedUser
+  ) {
+    this.id = id;
+    this.postId = postId;
+    this.exercise = exercise;
+    this.exerciseDate = exerciseDate;
+    this.exerciseType = exerciseType;
+    this.exerciseLevel = exerciseLevel;
+    this.exerciseGender = exerciseGender;
+    this.cost = cost;
+    this.place = place;
+    this.teams = teams;
+    this.userStatus = userStatus;
+    this.roleIdOfAccessedUser = roleIdOfAccessedUser;
   }
 
   public Long getId() {
@@ -84,5 +117,13 @@ public class GameDto {
 
   public List<TeamDto> getTeams() {
     return teams;
+  }
+
+  public String getUserStatus() {
+    return userStatus;
+  }
+
+  public Long getRoleIdOfAccessedUser() {
+    return roleIdOfAccessedUser;
   }
 }
