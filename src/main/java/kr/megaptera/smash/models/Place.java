@@ -12,7 +12,7 @@ public class Place {
   @GeneratedValue
   private Long id;
 
-  private Long postId;
+  private Long gameId;
 
   private String name;
 
@@ -21,10 +21,10 @@ public class Place {
   }
 
   public Place(Long id,
-               Long postId,
+               Long gameId,
                String name) {
     this.id = id;
-    this.postId = postId;
+    this.gameId = gameId;
     this.name = name;
   }
 
@@ -32,8 +32,8 @@ public class Place {
     return id;
   }
 
-  public Long postId() {
-    return postId;
+  public Long gameId() {
+    return gameId;
   }
 
   public String name() {
@@ -43,7 +43,7 @@ public class Place {
   public PlaceDto toDto() {
     return new PlaceDto(
         id,
-        postId,
+        gameId,
         name
     );
   }

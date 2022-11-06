@@ -1,5 +1,7 @@
 package kr.megaptera.smash.dtos;
 
+import java.util.List;
+
 public class RoleDto {
   private final Long id;
 
@@ -11,16 +13,21 @@ public class RoleDto {
 
   private final Integer targetParticipantsCount;
 
+  private final List<MemberDto> members;
+
   public RoleDto(Long id,
                  Long teamId,
                  String name,
                  Integer currentParticipants,
-                 Integer targetParticipantsCount) {
+                 Integer targetParticipantsCount,
+                 List<MemberDto> members
+  ) {
     this.id = id;
     this.teamId = teamId;
     this.name = name;
     this.currentParticipants = currentParticipants;
     this.targetParticipantsCount = targetParticipantsCount;
+    this.members = members;
   }
 
   public Long getId() {
@@ -41,5 +48,9 @@ public class RoleDto {
 
   public Integer getTargetParticipantsCount() {
     return targetParticipantsCount;
+  }
+
+  public List<MemberDto> getMembers() {
+    return members;
   }
 }

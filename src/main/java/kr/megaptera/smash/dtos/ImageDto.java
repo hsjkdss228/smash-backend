@@ -28,7 +28,7 @@ public class ImageDto {
     return url;
   }
 
-  public Boolean getThumbnailImage() {
+  public Boolean getIsThumbnailImage() {
     return isThumbnailImage;
   }
 }
