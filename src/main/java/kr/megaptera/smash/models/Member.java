@@ -1,8 +1,5 @@
 package kr.megaptera.smash.models;
 
-import kr.megaptera.smash.dtos.MemberDto;
-import kr.megaptera.smash.dtos.MemberRegisterResultDto;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,72 +12,29 @@ public class Member {
 
   private Long gameId;
 
-  private Long teamId;
+  private String name;
 
-  private Long roleId;
-
-  private Long userId;
-
-  public Member() {
+  private Member() {
 
   }
 
-  public Member(Long gameId,
-                Long teamId,
-                Long roleId,
-                Long userId) {
-    this.gameId = gameId;
-    this.teamId = teamId;
-    this.roleId = roleId;
-    this.userId = userId;
-  }
-
-  public Member(Long id,
-                Long gameId,
-                Long teamId,
-                Long roleId,
-                Long userId) {
+  public Member(Long id, Long gameId, String name) {
     this.id = id;
     this.gameId = gameId;
-    this.teamId = teamId;
-    this.roleId = roleId;
-    this.userId = userId;
+    this.name = name;
   }
 
-  public Long id() {
-    return id;
+  // TODO: 알아볼 수 없는 값들을 값 객체로 정의
+
+  public static Member fake(Long id, Long gameId) {
+    return new Member(
+      id,
+      gameId,
+      "참가자 이름"
+    );
   }
 
   public Long gameId() {
     return gameId;
-  }
-
-  public Long teamId() {
-    return teamId;
-  }
-
-  public Long roleId() {
-    return roleId;
-  }
-
-  public Long userId() {
-    return userId;
-  }
-
-  public MemberDto toMemberDto(String name,
-                         Double mannerScore) {
-    return new MemberDto(
-        id,
-        teamId,
-        roleId,
-        name,
-        mannerScore
-    );
-  }
-
-  public MemberRegisterResultDto toRegisterResultDto() {
-    return new MemberRegisterResultDto(
-        id
-    );
   }
 }

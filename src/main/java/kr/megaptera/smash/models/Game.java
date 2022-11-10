@@ -1,12 +1,10 @@
 package kr.megaptera.smash.models;
 
-import kr.megaptera.smash.dtos.GameDto;
-import kr.megaptera.smash.dtos.TeamDto;
+import kr.megaptera.smash.dtos.GameInPostListDto;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.List;
 
 @Entity
 public class Game {
@@ -16,82 +14,77 @@ public class Game {
 
   private Long postId;
 
-  private String exercise;
+  private String type;
 
-  private String exerciseDate;
+  private String date;
 
-  private String exerciseType;
+  private String place;
 
-  private String exerciseLevel;
+  private Integer targetMemberCount;
 
-  private String exerciseGender;
-
-  private Integer cost;
-
-  public Game() {
+  private Game() {
 
   }
 
   public Game(Long id,
               Long postId,
-              String exercise,
-              String exerciseDate,
-              String exerciseType,
-              String exerciseLevel,
-              String exerciseGender,
-              Integer cost
+              String type,
+              String date,
+              String place,
+              Integer targetMemberCount
   ) {
     this.id = id;
     this.postId = postId;
-    this.exercise = exercise;
-    this.exerciseDate = exerciseDate;
-    this.exerciseType = exerciseType;
-    this.exerciseLevel = exerciseLevel;
-    this.exerciseGender = exerciseGender;
-    this.cost = cost;
+    this.type = type;
+    this.date = date;
+    this.place = place;
+    this.targetMemberCount = targetMemberCount;
   }
 
   public Long id() {
     return id;
   }
 
-  public GameDto toDto(
-      String place,
-      List<TeamDto> teams
-  ) {
-    return new GameDto(
+  public Long postId() {
+    return postId;
+  }
+
+  public String type() {
+    return type;
+  }
+
+  public String date() {
+    return date;
+  }
+
+  public String place() {
+    return place;
+  }
+
+  public Integer targetMemberCount() {
+    return targetMemberCount;
+  }
+
+  // TODO: 알아볼 수 없는 값들을 값 객체로 정의
+
+  public static Game fake(Long id, Long postId) {
+    return new Game(
         id,
         postId,
-        exercise,
-        exerciseDate,
-        exerciseType,
-        exerciseLevel,
-        exerciseGender,
-        cost,
-        place,
-        teams
+        "운동 종류",
+        "운동 날짜",
+        "운동 장소",
+        5
     );
   }
 
-  public GameDto toDto(
-      String place,
-      List<TeamDto> teams,
-      String userStatus,
-      Long roleIdOfAccessedUser
-  ) {
-    return new GameDto(
-        id,
-        postId,
-        exercise,
-        exerciseDate,
-        exerciseType,
-        exerciseLevel,
-        exerciseGender,
-        cost,
+  public GameInPostListDto toGameInPostListDto(Integer currentMemberCount) {
+    return new GameInPostListDto(
+        type,
+        date,
         place,
-        teams,
-        userStatus,
-        roleIdOfAccessedUser
+        currentMemberCount,
+        targetMemberCount
     );
   }
 }

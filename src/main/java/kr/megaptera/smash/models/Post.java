@@ -1,8 +1,7 @@
 package kr.megaptera.smash.models;
 
-import kr.megaptera.smash.dtos.GameDto;
-import kr.megaptera.smash.dtos.ImageDto;
-import kr.megaptera.smash.dtos.PostDto;
+import kr.megaptera.smash.dtos.GameInPostListDto;
+import kr.megaptera.smash.dtos.PostListDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -10,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 public class Post {
@@ -18,13 +16,7 @@ public class Post {
   @GeneratedValue
   private Long id;
 
-  private Long authorId;
-
-  private String type;
-
-  private Integer hits;
-
-  private String detail;
+  private Long hits;
 
   @CreationTimestamp
   private LocalDateTime createdAt;
@@ -32,64 +24,52 @@ public class Post {
   @UpdateTimestamp
   private LocalDateTime updatedAt;
 
-  public Post() {
+  private Post() {
 
   }
 
   public Post(Long id,
-              Long userId,
-              String type,
-              Integer hits,
-              String detail) {
+              Long hits
+  ) {
     this.id = id;
-    this.authorId = userId;
-    this.type = type;
     this.hits = hits;
-    this.detail = detail;
+  }
+
+  public Post(Long id,
+              Long hits,
+              LocalDateTime createdAt,
+              LocalDateTime updatedAt
+  ) {
+    this.id = id;
+    this.hits = hits;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 
   public Long id() {
     return id;
   }
 
-  public Long authorId() {
-    return authorId;
-  }
-
-  public LocalDateTime createdAt() {
-    return createdAt;
-  }
-
-  public String type() {
-    return type;
-  }
-
-  public Integer hits() {
+  public Long hits() {
     return hits;
   }
 
-  public String detail() {
-    return detail;
-  }
+  // TODO: 알아볼 수 없는 값들을 값 객체로 정의
 
-  public String convertDateTime() {
-    return "";
-//    return createdAt.format();
-  }
-
-  public PostDto toPostDto(String author,
-                           List<ImageDto> images,
-                           GameDto game
-  ) {
-    return new PostDto(
+  public static Post fake(Long id) {
+    return new Post(
         id,
-        type,
-        author,
-        convertDateTime(),
+        100L,
+        LocalDateTime.now(),
+        LocalDateTime.now()
+    );
+  }
+
+  public PostListDto toPostListDto(GameInPostListDto gameInPostListDto) {
+    return new PostListDto(
+        id,
         hits,
-        detail,
-        images,
-        game
+        gameInPostListDto
     );
   }
 }

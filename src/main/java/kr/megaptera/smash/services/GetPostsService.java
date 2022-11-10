@@ -1,0 +1,74 @@
+package kr.megaptera.smash.services;
+
+import kr.megaptera.smash.dtos.GameInPostListDto;
+import kr.megaptera.smash.dtos.PostListDto;
+import kr.megaptera.smash.dtos.PostsDto;
+import kr.megaptera.smash.exceptions.PostNotFound;
+import kr.megaptera.smash.models.Game;
+import kr.megaptera.smash.models.Member;
+import kr.megaptera.smash.models.Post;
+import kr.megaptera.smash.repositories.GameRepository;
+import kr.megaptera.smash.repositories.MemberRepository;
+import kr.megaptera.smash.repositories.PostRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@Transactional
+public class GetPostsService {
+    private final PostRepository postRepository;
+    private final GameRepository gameRepository;
+    private final MemberRepository memberRepository;
+
+    public GetPostsService(PostRepository postRepository,
+                           GameRepository gameRepository,
+                           MemberRepository memberRepository) {
+        this.postRepository = postRepository;
+        this.gameRepository = gameRepository;
+        this.memberRepository = memberRepository;
+    }
+
+    public PostsDto findAll() {
+        List<Post> posts = postRepository.findAll();
+
+        List<Game> games = posts.stream()
+            .map(post -> gameRepository.findByPostId(post.id())
+                .orElseThrow(PostNotFound::new))
+            .toList();
+
+        List<Member> members = new ArrayList<>();
+        games.forEach(game -> {
+            List<Member> membersOfGame = memberRepository.findByGameId(game.id());
+            members.addAll(membersOfGame);
+        });
+
+        return createPostDtos(posts, games, members);
+    }
+
+    private PostsDto createPostDtos(List<Post> posts,
+                                    List<Game> games,
+                                    List<Member> members) {
+        List<PostListDto> postListDtos = posts.stream()
+            .map(post -> {
+                Game gameOfPost = games.stream()
+                    .filter(game -> game.postId().equals(post.id()))
+                    .findFirst().get();
+
+                Integer currentMemberCount = members.stream()
+                    .filter(member -> member.gameId().equals(gameOfPost.id()))
+                    .toList()
+                    .size();
+
+                GameInPostListDto gameInPostListDto
+                    = gameOfPost.toGameInPostListDto(currentMemberCount);
+
+                return post.toPostListDto(gameInPostListDto);
+            })
+            .toList();
+
+        return new PostsDto(postListDtos);
+    }
+}
