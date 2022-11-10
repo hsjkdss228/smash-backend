@@ -15,28 +15,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PostController {
-  private final PostService postService;
+    private final PostService postService;
 
-  public PostController(PostService postService) {
-    this.postService = postService;
-  }
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
-  @GetMapping("/posts/list")
-  public PostsDto posts() {
-    return postService.posts();
-  }
+    @GetMapping("/posts/list")
+    public PostsDto posts() {
+        return postService.posts();
+    }
 
-  @GetMapping("/posts/{postId}")
-  public PostDto post(
-      @PathVariable Long postId,
-      @RequestAttribute("userId") Long accessedUserId
-  ) {
-    return postService.post(postId, accessedUserId);
-  }
+    @GetMapping("/posts/{postId}")
+    public PostDto post(
+        @PathVariable Long postId,
+        @RequestAttribute("userId") Long accessedUserId
+    ) {
+        return postService.post(postId, accessedUserId);
+    }
 
-  @ExceptionHandler(PostNotFound.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public PostNotFoundErrorDto postNotFound(PostNotFound exception) {
-    return new PostNotFoundErrorDto(exception.getMessage());
-  }
+    @ExceptionHandler(PostNotFound.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public PostNotFoundErrorDto postNotFound(PostNotFound exception) {
+        return new PostNotFoundErrorDto(exception.getMessage());
+    }
 }

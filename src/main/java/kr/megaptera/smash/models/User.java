@@ -16,6 +16,8 @@ public class User {
 
   private Double mannerScore;
 
+  // TODO: 성별이 추가되어야 함
+
   public User() {
 
   }
