@@ -1,6 +1,7 @@
 package kr.megaptera.smash.models;
 
 import kr.megaptera.smash.dtos.MemberDto;
+import kr.megaptera.smash.dtos.MemberRegisterResultDto;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,6 +23,16 @@ public class Member {
 
   public Member() {
 
+  }
+
+  public Member(Long gameId,
+                Long teamId,
+                Long roleId,
+                Long userId) {
+    this.gameId = gameId;
+    this.teamId = teamId;
+    this.roleId = roleId;
+    this.userId = userId;
   }
 
   public Member(Long id,
@@ -64,6 +75,12 @@ public class Member {
         roleId,
         name,
         mannerScore
+    );
+  }
+
+  public MemberRegisterResultDto toRegisterResultDto() {
+    return new MemberRegisterResultDto(
+        id
     );
   }
 }

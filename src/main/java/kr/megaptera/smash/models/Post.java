@@ -20,17 +20,17 @@ public class Post {
 
   private Long authorId;
 
-  @CreationTimestamp
-  private LocalDateTime createdAt;
-
-  @UpdateTimestamp
-  private LocalDateTime updatedAt;
-
   private String type;
 
   private Integer hits;
 
   private String detail;
+
+  @CreationTimestamp
+  private LocalDateTime createdAt;
+
+  @UpdateTimestamp
+  private LocalDateTime updatedAt;
 
   public Post() {
 
