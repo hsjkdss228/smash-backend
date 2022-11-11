@@ -46,11 +46,11 @@ class GetPostsServiceTest {
         Game gameOfPost1 = Game.fake(1L, 1L);
         Game gameOfPost2 = Game.fake(2L, 2L);
         List<Member> membersOfGame1 = List.of(
-            Member.fake(1L, 1L),
-            Member.fake(2L, 1L)
+            Member.fake(1L, 1L, 1L),
+            Member.fake(2L, 2L, 1L)
         );
         List<Member> membersOfGame2 = List.of(
-            Member.fake(3L, 2L)
+            Member.fake(3L, 3L, 2L)
         );
 
         given(postRepository.findAll()).willReturn(posts);
@@ -59,7 +59,8 @@ class GetPostsServiceTest {
         given(memberRepository.findByGameId(1L)).willReturn(membersOfGame1);
         given(memberRepository.findByGameId(2L)).willReturn(membersOfGame2);
 
-        PostsDto postsDto = getPostsService.findAll();
+        Long accessedUserId = 1L;
+        PostsDto postsDto = getPostsService.findAll(accessedUserId);
 
         assertThat(postsDto).isNotNull();
 
@@ -67,8 +68,10 @@ class GetPostsServiceTest {
         assertThat(postListDtos.get(0).getId()).isEqualTo(1L);
         assertThat(postListDtos.get(0).getGame().getType()).isEqualTo("운동 종류");
         assertThat(postListDtos.get(0).getGame().getCurrentMemberCount()).isEqualTo(2);
+        assertThat(postListDtos.get(0).getGame().getIsRegistered()).isEqualTo(true);
         assertThat(postListDtos.get(1).getHits()).isEqualTo(100L);
         assertThat(postListDtos.get(1).getGame().getPlace()).isEqualTo("운동 장소");
         assertThat(postListDtos.get(1).getGame().getCurrentMemberCount()).isEqualTo(1);
+        assertThat(postListDtos.get(1).getGame().getIsRegistered()).isEqualTo(false);
     }
 }
