@@ -7,11 +7,13 @@ import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Member;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.services.GetPostsService;
+import kr.megaptera.smash.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -29,32 +31,34 @@ class PostControllerTest {
     @MockBean
     private GetPostsService getPostsService;
 
-    private Post post1;
-    private Game gameOfPost1;
-    private List<Member> membersOfGame1;
+    private List<PostListDto> postListDtos;
 
-    private Post post2;
-    private Game gameOfPost2;
-    private List<Member> membersOfGame2;
+    @SpyBean
+    private JwtUtil jwtUtil;
+
+    private Long userId = 1L;
+
+    private String token;
 
     @BeforeEach
     void setUp() {
-        post1 = Post.fake(1L);
-        post2 = Post.fake(2L);
-        gameOfPost1 = Game.fake(1L, 1L);
-        gameOfPost2 = Game.fake(2L, 2L);
-        membersOfGame1 = List.of(
-            Member.fake(1L, 1L),
-            Member.fake(2L, 1L)
-        );
-        membersOfGame2 = List.of(
-            Member.fake(3L, 2L)
-        );
-    }
+        token = jwtUtil.encode(userId);
 
-    @Test
-    void posts() throws Exception {
-        List<PostListDto> postListDtos = List.of(
+        Post post1 = Post.fake(1L);
+        Game gameOfPost1 = Game.fake(1L, 1L);
+        List<Member> membersOfGame1 = List.of(
+            Member.fake(1L, 1L, 1L),
+            Member.fake(2L, 2L, 1L)
+        );
+        Post post2 = Post.fake(2L);
+        Game gameOfPost2 = Game.fake(2L, 2L);
+        List<Member> membersOfGame2 = List.of(
+            Member.fake(3L, 3L, 2L)
+        );
+
+        // TODO: true, false를 어떻게 의미있는 값으로 반환?
+
+        postListDtos = List.of(
             new PostListDto(
                 post1.id(),
                 post1.hits(),
@@ -63,7 +67,8 @@ class PostControllerTest {
                     gameOfPost1.date(),
                     gameOfPost1.place(),
                     membersOfGame1.size(),
-                    gameOfPost1.targetMemberCount()
+                    gameOfPost1.targetMemberCount(),
+                    true
                 )
             ),
             new PostListDto(
@@ -74,20 +79,29 @@ class PostControllerTest {
                     gameOfPost2.date(),
                     gameOfPost2.place(),
                     membersOfGame2.size(),
-                    gameOfPost2.targetMemberCount()
+                    gameOfPost2.targetMemberCount(),
+                    false
                 )
             )
         );
-        PostsDto postsDto = new PostsDto(postListDtos);
-        given(getPostsService.findAll()).willReturn(postsDto);
+    }
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts"))
+    @Test
+    void posts() throws Exception {
+        PostsDto postsDto = new PostsDto(postListDtos);
+        given(getPostsService.findAll(userId)).willReturn(postsDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                .header("Authorization", "Bearer " + token))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"hits\":100")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"currentMemberCount\":1")
+            ))
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("\"isRegistered\":false")
             ));
     }
 }

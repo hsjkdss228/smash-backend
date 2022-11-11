@@ -49,27 +49,27 @@ public class BackdoorController {
         );
         jdbcTemplate.update(
             "insert into MEMBER(" +
-                "ID, GAME_ID, NAME) " +
-                "values(?, ?, ?)",
-            1L, 1L, "운동 1 참가자 1"
+                "ID, USER_ID, GAME_ID, NAME) " +
+                "values(?, ?, ?, ?)",
+            1L, 1L, 1L, "운동 1 참가자 1"
         );
         jdbcTemplate.update(
             "insert into MEMBER(" +
-                "ID, GAME_ID, NAME) " +
-                "values(?, ?, ?)",
-            2L, 1L, "운동 1 참가자 2"
+                "ID, USER_ID, GAME_ID, NAME) " +
+                "values(?, ?, ?, ?)",
+            2L, 2L, 1L, "운동 1 참가자 2"
         );
         jdbcTemplate.update(
             "insert into MEMBER(" +
-                "ID, GAME_ID, NAME) " +
-                "values(?, ?, ?)",
-            3L, 1L, "운동 1 참가자 3"
+                "ID, USER_ID, GAME_ID, NAME) " +
+                "values(?, ?, ?, ?)",
+            3L, 3L, 1L, "운동 1 참가자 3"
         );
         jdbcTemplate.update(
             "insert into MEMBER(" +
-                "ID, GAME_ID, NAME) " +
-                "values(?, ?, ?)",
-            4L, 2L, "운동 2 참가자 1"
+                "ID, USER_ID, GAME_ID, NAME) " +
+                "values(?, ?, ?, ?)",
+            4L, 4L, 2L, "운동 2 참가자 1"
         );
 
         return "게시물 목록 조회 백도어 세팅이 완료되었습니다.";

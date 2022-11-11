@@ -31,7 +31,7 @@ public class GetPostsService {
         this.memberRepository = memberRepository;
     }
 
-    public PostsDto findAll() {
+    public PostsDto findAll(Long accessedUserId) {
         List<Post> posts = postRepository.findAll();
 
         List<Game> games = posts.stream()
@@ -45,12 +45,14 @@ public class GetPostsService {
             members.addAll(membersOfGame);
         });
 
-        return createPostDtos(posts, games, members);
+        return createPostDtos(posts, games, members, accessedUserId);
     }
 
     private PostsDto createPostDtos(List<Post> posts,
                                     List<Game> games,
-                                    List<Member> members) {
+                                    List<Member> members,
+                                    Long accessedUserId
+    ) {
         List<PostListDto> postListDtos = posts.stream()
             .map(post -> {
                 Game gameOfPost = games.stream()
@@ -62,8 +64,13 @@ public class GetPostsService {
                     .toList()
                     .size();
 
+                Boolean isRegistered = members.stream()
+                    .anyMatch(member -> member.gameId().equals(gameOfPost.id())
+                            && member.userId().equals(accessedUserId));
+
                 GameInPostListDto gameInPostListDto
-                    = gameOfPost.toGameInPostListDto(currentMemberCount);
+                    = gameOfPost.toGameInPostListDto(
+                        currentMemberCount, isRegistered);
 
                 return post.toPostListDto(gameInPostListDto);
             })

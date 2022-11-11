@@ -78,13 +78,15 @@ public class Game {
     );
   }
 
-  public GameInPostListDto toGameInPostListDto(Integer currentMemberCount) {
+  public GameInPostListDto toGameInPostListDto(Integer currentMemberCount,
+                                               Boolean isRegistered) {
     return new GameInPostListDto(
         type,
         date,
         place,
         currentMemberCount,
-        targetMemberCount
+        targetMemberCount,
+        isRegistered
     );
   }
 }
