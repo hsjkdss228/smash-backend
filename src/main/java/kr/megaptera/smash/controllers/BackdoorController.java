@@ -47,6 +47,7 @@ public class BackdoorController {
                 "values(?, ?, ?, ?, ?, ?)",
             2L, 2L, "배구", "2022년 11월 14일 15:00~17:00", "장충체육관", 12
         );
+
         jdbcTemplate.update(
             "insert into MEMBER(" +
                 "ID, USER_ID, GAME_ID, NAME) " +
@@ -70,6 +71,31 @@ public class BackdoorController {
                 "ID, USER_ID, GAME_ID, NAME) " +
                 "values(?, ?, ?, ?)",
             4L, 4L, 2L, "운동 2 참가자 1"
+        );
+
+        jdbcTemplate.update(
+            "insert into PERSON(" +
+                "ID, NAME, GENDER) " +
+                "values(?, ?, ?)",
+            1L, "사용자 1", "남성"
+        );
+        jdbcTemplate.update(
+            "insert into PERSON(" +
+                "ID, NAME, GENDER) " +
+                "values(?, ?, ?)",
+            2L, "사용자 2", "남성"
+        );
+        jdbcTemplate.update(
+            "insert into PERSON(" +
+                "ID, NAME, GENDER) " +
+                "values(?, ?, ?)",
+            3L, "사용자 3", "남성"
+        );
+        jdbcTemplate.update(
+            "insert into PERSON(" +
+                "ID, NAME, GENDER) " +
+                "values(?, ?, ?)",
+            4L, "사용자 4", "여성"
         );
 
         return "게시물 목록 조회 백도어 세팅이 완료되었습니다.";

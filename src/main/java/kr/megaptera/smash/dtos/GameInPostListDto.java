@@ -1,6 +1,8 @@
 package kr.megaptera.smash.dtos;
 
 public class GameInPostListDto {
+    private final Long id;
+
     private final String type;
 
     private final String date;
@@ -13,18 +15,24 @@ public class GameInPostListDto {
 
     private final Boolean isRegistered;
 
-    public GameInPostListDto(String type,
+    public GameInPostListDto(Long id,
+                             String type,
                              String date,
                              String place,
                              Integer currentMemberCount,
                              Integer targetMemberCount,
                              Boolean isRegistered) {
+        this.id = id;
         this.type = type;
         this.date = date;
         this.place = place;
         this.currentMemberCount = currentMemberCount;
         this.targetMemberCount = targetMemberCount;
         this.isRegistered = isRegistered;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getType() {

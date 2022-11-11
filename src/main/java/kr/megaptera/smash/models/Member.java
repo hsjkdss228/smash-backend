@@ -23,8 +23,18 @@ public class Member {
   public Member(Long id,
                 Long userId,
                 Long gameId,
-                String name) {
+                String name
+  ) {
     this.id = id;
+    this.userId = userId;
+    this.gameId = gameId;
+    this.name = name;
+  }
+
+  public Member(Long userId,
+                Long gameId,
+                String name
+  ) {
     this.userId = userId;
     this.gameId = gameId;
     this.name = name;
@@ -34,12 +44,26 @@ public class Member {
 
   public static Member fake(Long id,
                             Long userId,
-                            Long gameId) {
+                            Long gameId
+  ) {
     return new Member(
       id,
       userId,
       gameId,
       "참가자 이름"
+    );
+  }
+
+  public static Member fake(Long id,
+                            Long userId,
+                            Long gameId,
+                            String name
+  ) {
+    return new Member(
+        id,
+        userId,
+        gameId,
+        name
     );
   }
 

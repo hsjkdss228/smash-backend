@@ -81,7 +81,7 @@ public class Game {
   public GameInPostListDto toGameInPostListDto(Integer currentMemberCount,
                                                Boolean isRegistered) {
     return new GameInPostListDto(
-        type,
+        id, type,
         date,
         place,
         currentMemberCount,
