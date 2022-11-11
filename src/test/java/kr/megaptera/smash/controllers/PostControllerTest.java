@@ -63,6 +63,7 @@ class PostControllerTest {
                 post1.id(),
                 post1.hits(),
                 new GameInPostListDto(
+                    gameOfPost1.id(),
                     gameOfPost1.type(),
                     gameOfPost1.date(),
                     gameOfPost1.place(),
@@ -75,6 +76,7 @@ class PostControllerTest {
                 post2.id(),
                 post2.hits(),
                 new GameInPostListDto(
+                    gameOfPost2.id(),
                     gameOfPost2.type(),
                     gameOfPost2.date(),
                     gameOfPost2.place(),
@@ -98,10 +100,14 @@ class PostControllerTest {
                 containsString("\"hits\":100")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
+                containsString("\"game\":{\"id\":1")
+            ))
+            .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"currentMemberCount\":1")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"isRegistered\":false")
-            ));
+            ))
+        ;
     }
 }

@@ -29,6 +29,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     try {
       Long userId = jwtUtil.decode(accessToken);
+
       request.setAttribute("userId", userId);
       return true;
     } catch (JWTDecodeException exception) {
