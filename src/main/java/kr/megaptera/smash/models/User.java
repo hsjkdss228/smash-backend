@@ -1,43 +1,46 @@
 package kr.megaptera.smash.models;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "PERSON")
+@Table(name = "users")
 public class User {
-  @Id
-  @GeneratedValue
-  private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-  private String name;
+    @Embedded
+    private UserName name;
 
-  private String gender;
+    @Embedded
+    private UserGender gender;
 
-  private User() {
+    private User() {
 
-  }
+    }
 
-  public User(Long id,
-              String name,
-              String gender
-  ) {
-    this.id = id;
-    this.name = name;
-    this.gender = gender;
-  }
+    public User(Long id,
+                UserName name,
+                UserGender gender
+    ) {
+        this.id = id;
+        this.name = name;
+        this.gender = gender;
+    }
 
-  public String name() {
-    return name;
-  }
+    public UserName name() {
+        return name;
+    }
 
-  public static User fake(Long id) {
-    return new User(
-        id,
-        "유저 이름",
-        "성별"
-    );
-  }
+    public static User fake(Long id) {
+        return new User(
+            id,
+            new UserName("유저 이름"),
+            new UserGender("성별")
+        );
+    }
 }

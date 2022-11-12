@@ -1,10 +1,14 @@
 package kr.megaptera.smash.models;
 
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "members")
 public class Member {
   @Id
   @GeneratedValue
@@ -14,7 +18,8 @@ public class Member {
 
   private Long gameId;
 
-  private String name;
+  @Embedded
+  private MemberName name;
 
   private Member() {
 
@@ -23,7 +28,7 @@ public class Member {
   public Member(Long id,
                 Long userId,
                 Long gameId,
-                String name
+                MemberName name
   ) {
     this.id = id;
     this.userId = userId;
@@ -33,14 +38,20 @@ public class Member {
 
   public Member(Long userId,
                 Long gameId,
-                String name
+                MemberName name
   ) {
     this.userId = userId;
     this.gameId = gameId;
     this.name = name;
   }
 
-  // TODO: 알아볼 수 없는 값들을 값 객체로 정의
+  public Long userId() {
+    return userId;
+  }
+
+  public Long gameId() {
+    return gameId;
+  }
 
   public static Member fake(Long id,
                             Long userId,
@@ -50,14 +61,14 @@ public class Member {
       id,
       userId,
       gameId,
-      "참가자 이름"
+      new MemberName("참가자 이름")
     );
   }
 
   public static Member fake(Long id,
                             Long userId,
                             Long gameId,
-                            String name
+                            MemberName name
   ) {
     return new Member(
         id,
@@ -65,13 +76,5 @@ public class Member {
         gameId,
         name
     );
-  }
-
-  public Long userId() {
-    return userId;
-  }
-
-  public Long gameId() {
-    return gameId;
   }
 }

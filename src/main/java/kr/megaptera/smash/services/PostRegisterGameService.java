@@ -5,7 +5,9 @@ import kr.megaptera.smash.exceptions.AlreadyRegisteredGame;
 import kr.megaptera.smash.exceptions.GameNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Member;
+import kr.megaptera.smash.models.MemberName;
 import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.models.UserName;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.MemberRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -50,7 +52,11 @@ public class PostRegisterGameService {
         User user = userRepository.findById(userId)
             .orElseThrow(UserNotFound::new);
 
-        Member member = new Member(userId, gameId, user.name());
+        Member member = new Member(
+            userId,
+            gameId,
+            new MemberName(user.name().value())
+        );
         Member savedMember = memberRepository.save(member);
 
         return new RegisterGameResultDto(savedMember.gameId());
