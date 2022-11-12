@@ -1,10 +1,16 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.RegisterGameResultDto;
+import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
+import kr.megaptera.smash.models.GameDate;
+import kr.megaptera.smash.models.GameTargetMemberCount;
 import kr.megaptera.smash.models.Member;
 import kr.megaptera.smash.models.MemberName;
+import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.models.UserGender;
+import kr.megaptera.smash.models.UserName;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.MemberRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -42,23 +48,28 @@ class PostRegisterGameServiceTest {
 
     @Test
     void registerGame() {
-        Long userId = 1L;
         Long gameId = 1L;
-        Game game = Game.fake(1L, 1L);
+        Game game = new Game(
+            gameId,
+            1L,
+            new Exercise("운동 종류"),
+            new GameDate("운동 날짜"),
+            new Place("운동 장소"),
+            new GameTargetMemberCount(5)
+        );
         given(gameRepository.findById(gameId)).willReturn(Optional.of(game));
 
         List<Member> members = List.of(
-            // TODO: 신청 작업 백엔드 마무리되면 즉시 사용되는 객체들을 값 객체로 변환!!!!
-            // id, userId, gameId
-            Member.fake(1L, 2L, gameId),
-            Member.fake(2L, 3L, gameId)
+            new Member(1L, 2L, gameId, new MemberName("참가자 1")),
+            new Member(2L, 3L, gameId, new MemberName("참가자 2"))
         );
         given(memberRepository.findByGameId(gameId)).willReturn(members);
 
-        User user = User.fake(userId);
+        Long userId = 1L;
+        User user = new User(userId, new UserName("사용자명"), new UserGender("남성"));
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
-        Member registeredMember = Member.fake(3L, userId, gameId, new MemberName(user.name().value()));
+        Member registeredMember = new Member(3L, userId, gameId, new MemberName(user.name().value()));
         given(memberRepository.save(any(Member.class))).willReturn(registeredMember);
 
         RegisterGameResultDto registerGameResultDto

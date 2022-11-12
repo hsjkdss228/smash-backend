@@ -35,12 +35,4 @@ public class User {
     public UserName name() {
         return name;
     }
-
-    public static User fake(Long id) {
-        return new User(
-            id,
-            new UserName("유저 이름"),
-            new UserGender("성별")
-        );
-    }
 }
