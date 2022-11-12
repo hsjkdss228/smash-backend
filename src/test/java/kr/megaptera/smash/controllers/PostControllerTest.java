@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
@@ -44,44 +45,41 @@ class PostControllerTest {
     void setUp() {
         token = jwtUtil.encode(userId);
 
-        Post post1 = Post.fake(1L);
-        Game gameOfPost1 = Game.fake(1L, 1L);
-        List<Member> membersOfGame1 = List.of(
-            Member.fake(1L, 1L, 1L),
-            Member.fake(2L, 2L, 1L)
-        );
-        Post post2 = Post.fake(2L);
-        Game gameOfPost2 = Game.fake(2L, 2L);
-        List<Member> membersOfGame2 = List.of(
-            Member.fake(3L, 3L, 2L)
-        );
+        long generationCount = 2;
+        List<Post> posts = Post.fakes(generationCount);
+        List<Game> games = Game.fakes(generationCount);
+        List<List<Member>> membersOfGames = new ArrayList<>();
+        for (long gameId = 1; gameId <= generationCount; gameId += 1) {
+            List<Member> members = Member.fakes(generationCount, gameId);
+            membersOfGames.add(members);
+        }
 
         // TODO: true, false를 어떻게 의미있는 값으로 반환?
 
         postListDtos = List.of(
             new PostListDto(
-                post1.id(),
-                post1.hits().value(),
+                posts.get(0).id(),
+                posts.get(0).hits().value(),
                 new GameInPostListDto(
-                    gameOfPost1.id(),
-                    gameOfPost1.exercise().name(),
-                    gameOfPost1.date().value(),
-                    gameOfPost1.place().name(),
-                    membersOfGame1.size(),
-                    gameOfPost1.targetMemberCount().value(),
+                    games.get(0).id(),
+                    games.get(0).exercise().name(),
+                    games.get(0).date().value(),
+                    games.get(0).place().name(),
+                    membersOfGames.get(0).size(),
+                    games.get(0).targetMemberCount().value(),
                     true
                 )
             ),
             new PostListDto(
-                post2.id(),
-                post2.hits().value(),
+                posts.get(1).id(),
+                posts.get(1).hits().value(),
                 new GameInPostListDto(
-                    gameOfPost2.id(),
-                    gameOfPost2.exercise().name(),
-                    gameOfPost2.date().value(),
-                    gameOfPost2.place().name(),
-                    membersOfGame2.size(),
-                    gameOfPost2.targetMemberCount().value(),
+                    games.get(1).id(),
+                    games.get(1).exercise().name(),
+                    games.get(1).date().value(),
+                    games.get(1).place().name(),
+                    membersOfGames.get(1).size(),
+                    games.get(1).targetMemberCount().value(),
                     false
                 )
             )
@@ -97,13 +95,13 @@ class PostControllerTest {
                 .header("Authorization", "Bearer " + token))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"hits\":100")
+                containsString("\"hits\":123")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"game\":{\"id\":1")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"currentMemberCount\":1")
+                containsString("\"currentMemberCount\":2")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"isRegistered\":false")
