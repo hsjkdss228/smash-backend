@@ -5,18 +5,22 @@ import kr.megaptera.smash.dtos.PostListDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "posts")
 public class Post {
   @Id
   @GeneratedValue
   private Long id;
 
-  private Long hits;
+  @Embedded
+  private PostHits hits;
 
   @CreationTimestamp
   private LocalDateTime createdAt;
@@ -29,14 +33,14 @@ public class Post {
   }
 
   public Post(Long id,
-              Long hits
+              PostHits hits
   ) {
     this.id = id;
     this.hits = hits;
   }
 
   public Post(Long id,
-              Long hits,
+              PostHits hits,
               LocalDateTime createdAt,
               LocalDateTime updatedAt
   ) {
@@ -50,7 +54,7 @@ public class Post {
     return id;
   }
 
-  public Long hits() {
+  public PostHits hits() {
     return hits;
   }
 
@@ -59,7 +63,7 @@ public class Post {
   public static Post fake(Long id) {
     return new Post(
         id,
-        100L,
+        new PostHits(100L),
         LocalDateTime.now(),
         LocalDateTime.now()
     );
@@ -68,7 +72,7 @@ public class Post {
   public PostListDto toPostListDto(GameInPostListDto gameInPostListDto) {
     return new PostListDto(
         id,
-        hits,
+        hits.value(),
         gameInPostListDto
     );
   }

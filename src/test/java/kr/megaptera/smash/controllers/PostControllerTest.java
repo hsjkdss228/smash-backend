@@ -61,27 +61,27 @@ class PostControllerTest {
         postListDtos = List.of(
             new PostListDto(
                 post1.id(),
-                post1.hits(),
+                post1.hits().value(),
                 new GameInPostListDto(
                     gameOfPost1.id(),
-                    gameOfPost1.type(),
-                    gameOfPost1.date(),
-                    gameOfPost1.place(),
+                    gameOfPost1.exercise().name(),
+                    gameOfPost1.date().value(),
+                    gameOfPost1.place().name(),
                     membersOfGame1.size(),
-                    gameOfPost1.targetMemberCount(),
+                    gameOfPost1.targetMemberCount().value(),
                     true
                 )
             ),
             new PostListDto(
                 post2.id(),
-                post2.hits(),
+                post2.hits().value(),
                 new GameInPostListDto(
                     gameOfPost2.id(),
-                    gameOfPost2.type(),
-                    gameOfPost2.date(),
-                    gameOfPost2.place(),
+                    gameOfPost2.exercise().name(),
+                    gameOfPost2.date().value(),
+                    gameOfPost2.place().name(),
                     membersOfGame2.size(),
-                    gameOfPost2.targetMemberCount(),
+                    gameOfPost2.targetMemberCount().value(),
                     false
                 )
             )

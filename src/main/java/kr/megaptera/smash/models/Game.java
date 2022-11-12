@@ -2,11 +2,14 @@ package kr.megaptera.smash.models;
 
 import kr.megaptera.smash.dtos.GameInPostListDto;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "games")
 public class Game {
   @Id
   @GeneratedValue
@@ -14,13 +17,17 @@ public class Game {
 
   private Long postId;
 
-  private String type;
+  @Embedded
+  private Exercise exercise;
 
-  private String date;
+  @Embedded
+  private GameDate date;
 
-  private String place;
+  @Embedded
+  private Place place;
 
-  private Integer targetMemberCount;
+  @Embedded
+  private GameTargetMemberCount targetMemberCount;
 
   private Game() {
 
@@ -28,14 +35,14 @@ public class Game {
 
   public Game(Long id,
               Long postId,
-              String type,
-              String date,
-              String place,
-              Integer targetMemberCount
+              Exercise exercise,
+              GameDate date,
+              Place place,
+              GameTargetMemberCount targetMemberCount
   ) {
     this.id = id;
     this.postId = postId;
-    this.type = type;
+    this.exercise = exercise;
     this.date = date;
     this.place = place;
     this.targetMemberCount = targetMemberCount;
@@ -49,43 +56,42 @@ public class Game {
     return postId;
   }
 
-  public String type() {
-    return type;
+  public Exercise exercise() {
+    return exercise;
   }
 
-  public String date() {
+  public GameDate date() {
     return date;
   }
 
-  public String place() {
+  public Place place() {
     return place;
   }
 
-  public Integer targetMemberCount() {
+  public GameTargetMemberCount targetMemberCount() {
     return targetMemberCount;
   }
-
-  // TODO: 알아볼 수 없는 값들을 값 객체로 정의
 
   public static Game fake(Long id, Long postId) {
     return new Game(
         id,
         postId,
-        "운동 종류",
-        "운동 날짜",
-        "운동 장소",
-        5
+        new Exercise("운동 종류"),
+        new GameDate("운동 날짜"),
+        new Place("운동 장소"),
+        new GameTargetMemberCount(5)
     );
   }
 
   public GameInPostListDto toGameInPostListDto(Integer currentMemberCount,
                                                Boolean isRegistered) {
     return new GameInPostListDto(
-        id, type,
-        date,
-        place,
+        id,
+        exercise.name(),
+        date.value(),
+        place.name(),
         currentMemberCount,
-        targetMemberCount,
+        targetMemberCount.value(),
         isRegistered
     );
   }

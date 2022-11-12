@@ -3,6 +3,7 @@ package kr.megaptera.smash.services;
 import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Member;
+import kr.megaptera.smash.models.MemberName;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.MemberRepository;
@@ -57,7 +58,7 @@ class PostRegisterGameServiceTest {
         User user = User.fake(userId);
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
-        Member registeredMember = Member.fake(3L, userId, gameId, user.name());
+        Member registeredMember = Member.fake(3L, userId, gameId, new MemberName(user.name().value()));
         given(memberRepository.save(any(Member.class))).willReturn(registeredMember);
 
         RegisterGameResultDto registerGameResultDto

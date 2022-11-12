@@ -23,76 +23,76 @@ public class BackdoorController {
         resetDatabaseForPosts();
 
         jdbcTemplate.update(
-            "insert into POST(" +
+            "insert into POSTS(" +
                 "ID, HITS, CREATED_AT, UPDATED_AT) " +
                 "values(?, ?, ?, ?)",
             1L, 123L, LocalDateTime.now(), LocalDateTime.now()
         );
         jdbcTemplate.update(
-            "insert into POST(" +
+            "insert into POSTS(" +
                 "ID, HITS, CREATED_AT, UPDATED_AT) " +
                 "values(?, ?, ?, ?)",
             2L, 5593L, LocalDateTime.now(), LocalDateTime.now()
         );
 
         jdbcTemplate.update(
-            "insert into GAME(" +
-                "ID, POST_ID, TYPE, DATE, PLACE, TARGET_MEMBER_COUNT) " +
+            "insert into GAMES(" +
+                "ID, POST_ID, EXERCISE_NAME, DATE, PLACE_NAME, TARGET_MEMBER_COUNT) " +
                 "values(?, ?, ?, ?, ?, ?)",
             1L, 1L, "축구", "2022년 11월 13일 15:00~17:00", "잠실종합운동장", 24
         );
         jdbcTemplate.update(
-            "insert into GAME(" +
-                "ID, POST_ID, TYPE, DATE, PLACE, TARGET_MEMBER_COUNT) " +
+            "insert into GAMES(" +
+                "ID, POST_ID, EXERCISE_NAME, DATE, PLACE_NAME, TARGET_MEMBER_COUNT) " +
                 "values(?, ?, ?, ?, ?, ?)",
             2L, 2L, "배구", "2022년 11월 14일 15:00~17:00", "장충체육관", 12
         );
 
         jdbcTemplate.update(
-            "insert into MEMBER(" +
+            "insert into MEMBERS(" +
                 "ID, USER_ID, GAME_ID, NAME) " +
                 "values(?, ?, ?, ?)",
-            1L, 1L, 1L, "운동 1 참가자 1"
+            1L, 1L, 1L, "사용자 1"
         );
         jdbcTemplate.update(
-            "insert into MEMBER(" +
+            "insert into MEMBERS(" +
                 "ID, USER_ID, GAME_ID, NAME) " +
                 "values(?, ?, ?, ?)",
-            2L, 2L, 1L, "운동 1 참가자 2"
+            2L, 2L, 1L, "사용자 2"
         );
         jdbcTemplate.update(
-            "insert into MEMBER(" +
+            "insert into MEMBERS(" +
                 "ID, USER_ID, GAME_ID, NAME) " +
                 "values(?, ?, ?, ?)",
-            3L, 3L, 1L, "운동 1 참가자 3"
+            3L, 3L, 1L, "사용자 3"
         );
         jdbcTemplate.update(
-            "insert into MEMBER(" +
+            "insert into MEMBERS(" +
                 "ID, USER_ID, GAME_ID, NAME) " +
                 "values(?, ?, ?, ?)",
-            4L, 4L, 2L, "운동 2 참가자 1"
+            4L, 4L, 2L, "사용자 4"
         );
 
         jdbcTemplate.update(
-            "insert into PERSON(" +
+            "insert into USERS(" +
                 "ID, NAME, GENDER) " +
                 "values(?, ?, ?)",
             1L, "사용자 1", "남성"
         );
         jdbcTemplate.update(
-            "insert into PERSON(" +
+            "insert into USERS(" +
                 "ID, NAME, GENDER) " +
                 "values(?, ?, ?)",
             2L, "사용자 2", "남성"
         );
         jdbcTemplate.update(
-            "insert into PERSON(" +
+            "insert into USERS(" +
                 "ID, NAME, GENDER) " +
                 "values(?, ?, ?)",
             3L, "사용자 3", "남성"
         );
         jdbcTemplate.update(
-            "insert into PERSON(" +
+            "insert into USERS(" +
                 "ID, NAME, GENDER) " +
                 "values(?, ?, ?)",
             4L, "사용자 4", "여성"
@@ -102,8 +102,9 @@ public class BackdoorController {
     }
 
     private void resetDatabaseForPosts() {
-        jdbcTemplate.execute("delete from POST");
-        jdbcTemplate.execute("delete from GAME");
-        jdbcTemplate.execute("delete from MEMBER");
+        jdbcTemplate.execute("delete from POSTS");
+        jdbcTemplate.execute("delete from GAMES");
+        jdbcTemplate.execute("delete from MEMBERS");
+        jdbcTemplate.execute("delete from USERS");
     }
 }
