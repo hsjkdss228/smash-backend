@@ -3,7 +3,8 @@ package kr.megaptera.smash.services;
 import kr.megaptera.smash.dtos.GameInPostListDto;
 import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
-import kr.megaptera.smash.exceptions.PostNotFound;
+import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Member;
 import kr.megaptera.smash.models.Post;
@@ -31,21 +32,25 @@ public class GetPostsService {
         this.memberRepository = memberRepository;
     }
 
-    public PostsDto findAll(Long accessedUserId) {
-        List<Post> posts = postRepository.findAll();
+    public PostsDto findAll(Long accessedUserId) throws PostsFailed {
+        try {
+            List<Post> posts = postRepository.findAll();
 
-        List<Game> games = posts.stream()
-            .map(post -> gameRepository.findByPostId(post.id())
-                .orElseThrow(PostNotFound::new))
-            .toList();
+            List<Game> games = posts.stream()
+                .map(post -> gameRepository.findByPostId(post.id())
+                    .orElseThrow(GameNotFound::new))
+                .toList();
 
-        List<Member> members = new ArrayList<>();
-        games.forEach(game -> {
-            List<Member> membersOfGame = memberRepository.findByGameId(game.id());
-            members.addAll(membersOfGame);
-        });
+            List<Member> members = new ArrayList<>();
+            games.forEach(game -> {
+                List<Member> membersOfGame = memberRepository.findByGameId(game.id());
+                members.addAll(membersOfGame);
+            });
 
-        return createPostDtos(posts, games, members, accessedUserId);
+            return createPostDtos(posts, games, members, accessedUserId);
+        } catch (GameNotFound exception) {
+            throw new PostsFailed(exception.getMessage());
+        }
     }
 
     private PostsDto createPostDtos(List<Post> posts,
@@ -66,11 +71,11 @@ public class GetPostsService {
 
                 Boolean isRegistered = members.stream()
                     .anyMatch(member -> member.gameId().equals(gameOfPost.id())
-                            && member.userId().equals(accessedUserId));
+                        && member.userId().equals(accessedUserId));
 
                 GameInPostListDto gameInPostListDto
                     = gameOfPost.toGameInPostListDto(
-                        currentMemberCount, isRegistered);
+                    currentMemberCount, isRegistered);
 
                 return post.toPostListDto(gameInPostListDto);
             })

@@ -3,6 +3,7 @@ package kr.megaptera.smash.controllers;
 import kr.megaptera.smash.dtos.GameInPostListDto;
 import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
+import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Member;
 import kr.megaptera.smash.models.Post;
@@ -32,10 +33,10 @@ class PostControllerTest {
     @MockBean
     private GetPostsService getPostsService;
 
-    private List<PostListDto> postListDtos;
-
     @SpyBean
     private JwtUtil jwtUtil;
+
+    private List<PostListDto> postListDtos;
 
     private Long userId = 1L;
 
@@ -105,6 +106,20 @@ class PostControllerTest {
             ))
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"isRegistered\":false")
+            ))
+        ;
+    }
+
+    @Test
+    void postsFailed() throws Exception {
+        given(getPostsService.findAll(userId))
+            .willThrow(PostsFailed.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("errorMessage")
             ))
         ;
     }
