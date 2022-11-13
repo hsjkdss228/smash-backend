@@ -22,9 +22,9 @@ public class RegisterController {
     @PostMapping("games/{gameId}")
     @ResponseStatus(HttpStatus.CREATED)
     public RegisterGameResultDto registerGame(
-        @RequestAttribute("userId") Long userId,
+        @RequestAttribute("userId") Long accessedUserId,
         @PathVariable("gameId") Long gameId
     ) {
-        return postRegisterGameService.registerGame(gameId, userId);
+        return postRegisterGameService.registerGame(gameId, accessedUserId);
     }
 }

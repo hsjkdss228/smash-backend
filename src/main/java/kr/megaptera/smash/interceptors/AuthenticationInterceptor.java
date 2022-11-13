@@ -21,6 +21,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                            Object handler) throws Exception {
     String authorization = request.getHeader("Authorization");
 
+    System.out.println("authorization: " + authorization);
+
     if (authorization == null || !authorization.startsWith("Bearer ")) {
       return true;
     }

@@ -27,11 +27,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class PostRegisterGameServiceTest {
+    private PostRegisterGameService postRegisterGameService;
+
     private GameRepository gameRepository;
     private MemberRepository memberRepository;
     private UserRepository userRepository;
-
-    private PostRegisterGameService postRegisterGameService;
 
     @BeforeEach
     void setUp() {
