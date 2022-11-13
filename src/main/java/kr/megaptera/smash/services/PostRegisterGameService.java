@@ -1,9 +1,7 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.RegisterGameResultDto;
-import kr.megaptera.smash.exceptions.AlreadyRegisteredGame;
-import kr.megaptera.smash.exceptions.GameNotFound;
-import kr.megaptera.smash.exceptions.UserNotFound;
+import kr.megaptera.smash.exceptions.RegisterGameFailed;
 import kr.megaptera.smash.models.Member;
 import kr.megaptera.smash.models.MemberName;
 import kr.megaptera.smash.models.User;
@@ -32,24 +30,22 @@ public class PostRegisterGameService {
 
     public RegisterGameResultDto registerGame(Long gameId,
                                               Long accessedUserId) {
-        // TODO: Controller에 GameNotFound Exception Handler,
-        //   AlreadyRegisteredGame Exception Handler,
-        //   UserNotFound Exception Handler 추가
-
         if (gameRepository.findById(gameId).isEmpty()) {
-            throw new GameNotFound();
+            throw new RegisterGameFailed(
+                "주어진 게임 번호에 해당하는 게임을 찾을 수 없습니다.");
         }
 
         List<Member> members = memberRepository.findByGameId(gameId);
 
         members.forEach(member -> {
             if (member.userId().equals(accessedUserId)) {
-                throw new AlreadyRegisteredGame();
+                throw new RegisterGameFailed("이미 신청이 완료된 운동입니다.");
             }
         });
 
         User user = userRepository.findById(accessedUserId)
-            .orElseThrow(UserNotFound::new);
+            .orElseThrow(() -> new RegisterGameFailed(
+                "주어진 사용자 번호에 해당하는 사용자를 찾을 수 없습니다."));
 
         Member member = new Member(
             accessedUserId,
