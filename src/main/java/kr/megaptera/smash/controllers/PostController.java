@@ -1,8 +1,8 @@
 package kr.megaptera.smash.controllers;
 
-import kr.megaptera.smash.dtos.PostNotFoundErrorDto;
 import kr.megaptera.smash.dtos.PostsDto;
-import kr.megaptera.smash.exceptions.PostNotFound;
+import kr.megaptera.smash.dtos.PostsFailedErrorDto;
+import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.services.GetPostsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,9 +26,9 @@ public class PostController {
         return getPostsService.findAll(accessedUserId);
     }
 
-    @ExceptionHandler(PostNotFound.class)
+    @ExceptionHandler(PostsFailed.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public PostNotFoundErrorDto postNotFound(PostNotFound exception) {
-        return new PostNotFoundErrorDto(exception.getMessage());
+    public PostsFailedErrorDto postsFailed(PostsFailed exception) {
+        return new PostsFailedErrorDto(exception.getMessage());
     }
 }
