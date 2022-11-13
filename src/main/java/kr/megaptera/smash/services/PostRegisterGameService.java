@@ -7,7 +7,6 @@ import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Member;
 import kr.megaptera.smash.models.MemberName;
 import kr.megaptera.smash.models.User;
-import kr.megaptera.smash.models.UserName;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.MemberRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -32,7 +31,7 @@ public class PostRegisterGameService {
     }
 
     public RegisterGameResultDto registerGame(Long gameId,
-                                              Long userId) {
+                                              Long accessedUserId) {
         // TODO: Controller에 GameNotFound Exception Handler,
         //   AlreadyRegisteredGame Exception Handler,
         //   UserNotFound Exception Handler 추가
@@ -44,16 +43,16 @@ public class PostRegisterGameService {
         List<Member> members = memberRepository.findByGameId(gameId);
 
         members.forEach(member -> {
-            if (member.userId().equals(userId)) {
+            if (member.userId().equals(accessedUserId)) {
                 throw new AlreadyRegisteredGame();
             }
         });
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findById(accessedUserId)
             .orElseThrow(UserNotFound::new);
 
         Member member = new Member(
-            userId,
+            accessedUserId,
             gameId,
             new MemberName(user.name().value())
         );

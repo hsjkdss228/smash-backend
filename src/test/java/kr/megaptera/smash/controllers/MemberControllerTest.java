@@ -1,7 +1,6 @@
 package kr.megaptera.smash.controllers;
 
-import kr.megaptera.smash.dtos.RegisterGameResultDto;
-import kr.megaptera.smash.services.PostRegisterGameService;
+import kr.megaptera.smash.services.DeleteGameMemberService;
 import kr.megaptera.smash.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,16 +12,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
-@WebMvcTest(RegisterController.class)
-class RegisterControllerTest {
+@WebMvcTest(MemberController.class)
+class MemberControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private PostRegisterGameService postRegisterGameService;
+    private DeleteGameMemberService deleteGameMemberService;
 
     @SpyBean
     private JwtUtil jwtUtil;
@@ -38,21 +36,14 @@ class RegisterControllerTest {
     }
 
     @Test
-    void registerToGame() throws Exception {
+    void deleteMember() throws Exception {
         userId = 1L;
         Long gameId = 1L;
-        RegisterGameResultDto registerGameResultDto
-            = new RegisterGameResultDto(gameId);
 
-        given(postRegisterGameService.registerGame(gameId, userId))
-            .willReturn(registerGameResultDto);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/registers/games/1")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/members/games/1")
                 .header("Authorization", "Bearer " + token))
-            .andExpect(MockMvcResultMatchers.status().isCreated())
-            .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"gameId\":1")
-            ))
-        ;
+            .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        verify(deleteGameMemberService).deleteGameMember(userId, gameId);
     }
 }
