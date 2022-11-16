@@ -18,6 +18,15 @@ public class BackdoorController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @GetMapping("clear-posts")
+    public String emptyPosts() {
+        jdbcTemplate.execute("delete from POSTS");
+        jdbcTemplate.execute("delete from GAMES");
+        jdbcTemplate.execute("delete from MEMBERS");
+
+        return "게시물 목록 비우기 백도어 세팅이 완료되었습니다.";
+    }
+
     @GetMapping("setup-posts")
     public String setupPosts() {
         resetDatabaseForPosts();
@@ -106,5 +115,30 @@ public class BackdoorController {
         jdbcTemplate.execute("delete from GAMES");
         jdbcTemplate.execute("delete from MEMBERS");
         jdbcTemplate.execute("delete from USERS");
+    }
+
+    @GetMapping("clear-members")
+    public String emptyMembers() {
+        jdbcTemplate.execute("delete from MEMBERS");
+
+        return "운동 참가 멤버 비우기 백도어 세팅이 완료되었습니다.";
+    }
+
+    @GetMapping("setup-members")
+    public String setupMembers() {
+        jdbcTemplate.update(
+            "insert into MEMBERS(" +
+                "ID, USER_ID, GAME_ID, NAME) " +
+                "values(?, ?, ?, ?)",
+            1L, 1L, 1L, "사용자 1"
+        );
+        jdbcTemplate.update(
+            "insert into MEMBERS(" +
+                "ID, USER_ID, GAME_ID, NAME) " +
+                "values(?, ?, ?, ?)",
+            2L, 1L, 2L, "사용자 1"
+        );
+
+        return "운동 참가 멤버 백도어 세팅이 완료되었습니다.";
     }
 }

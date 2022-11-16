@@ -17,8 +17,26 @@ class BackdoorControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    void clearPosts() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/backdoor/clear-posts"))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
     void setupPosts() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/backdoor/setup-posts"))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void clearMembers() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/backdoor/clear-members"))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void setupMembers() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/backdoor/setup-members"))
             .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

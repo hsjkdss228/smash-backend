@@ -32,7 +32,19 @@ public class User {
         this.gender = gender;
     }
 
+    public Long id() {
+        return id;
+    }
+
     public UserName name() {
         return name;
+    }
+
+    public static User fake(String name) {
+        return new User(
+            1L,
+            new UserName(name),
+            new UserGender("여성")
+        );
     }
 }
