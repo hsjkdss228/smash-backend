@@ -46,6 +46,10 @@ public class Member {
         this.name = name;
     }
 
+    public Long id() {
+        return id;
+    }
+
     public Long userId() {
         return userId;
     }

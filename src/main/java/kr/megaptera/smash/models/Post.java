@@ -25,8 +25,13 @@ public class Post {
     @GeneratedValue
     private Long id;
 
+    private Long userId;
+
     @Embedded
     private PostHits hits;
+
+    @Embedded
+    private PostDetail detail;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -39,19 +44,27 @@ public class Post {
     }
 
     public Post(Long id,
-                PostHits hits
+                Long userId,
+                PostHits hits,
+                PostDetail detail
     ) {
         this.id = id;
+        this.userId = userId;
         this.hits = hits;
+        this.detail = detail;
     }
 
     public Post(Long id,
+                Long userId,
                 PostHits hits,
+                PostDetail detail,
                 LocalDateTime createdAt,
                 LocalDateTime updatedAt
     ) {
         this.id = id;
+        this.userId = userId;
         this.hits = hits;
+        this.detail = detail;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -60,8 +73,27 @@ public class Post {
         return id;
     }
 
+    public Long userId() {
+        return userId;
+    }
+
     public PostHits hits() {
         return hits;
+    }
+
+    public PostDetail detail() {
+        return detail;
+    }
+
+    public static Post fake(String detail) {
+        return new Post(
+            1L,
+            1L,
+            new PostHits(1234L),
+            new PostDetail(detail),
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        );
     }
 
     public static List<Post> fakes(long generationCount) {
@@ -69,7 +101,9 @@ public class Post {
         for (long id = 1; id <= generationCount; id += 1) {
             Post post = new Post(
                 id,
+                1L,
                 new PostHits(123L),
+                new PostDetail("게시글 상세 정보 내용입니다."),
                 LocalDateTime.now(),
                 LocalDateTime.now()
             );

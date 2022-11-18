@@ -90,6 +90,17 @@ public class Game {
         return games;
     }
 
+    public static Game fake(String exerciseName, String placeName) {
+        return new Game(
+            1L,
+            1L,
+            new Exercise(exerciseName),
+            new GameDate("경기 날짜"),
+            new Place(placeName),
+            new GameTargetMemberCount(10)
+        );
+    }
+
     public GameInPostListDto toGameInPostListDto(Integer currentMemberCount,
                                                  Boolean isRegistered) {
         return new GameInPostListDto(
