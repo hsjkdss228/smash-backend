@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByGameId(Long gameId);
     Optional<Member> findByGameIdAndUserId(Long gameId, Long userId);
+    List<Member> findAllByGameId(Long gameId);
 }

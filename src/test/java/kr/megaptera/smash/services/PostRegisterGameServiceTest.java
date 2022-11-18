@@ -12,6 +12,7 @@ import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.models.UserGender;
 import kr.megaptera.smash.models.UserName;
+import kr.megaptera.smash.models.UserPhoneNumber;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.MemberRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -69,11 +70,21 @@ class PostRegisterGameServiceTest {
         given(memberRepository.findByGameId(gameId)).willReturn(members);
 
         Long userId = 1L;
-        User user = new User(userId, new UserName("사용자명"), new UserGender("남성"));
+        User user = new User(
+            userId,
+            new UserName("사용자명"),
+            new UserGender("남성"),
+            new UserPhoneNumber("010-2222-2222")
+        );
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
-        Member registeredMember = new Member(3L, userId, gameId, new MemberName(user.name().value()));
-        given(memberRepository.save(any(Member.class))).willReturn(registeredMember);
+        Member registeredMember = new Member(3L,
+            userId,
+            gameId,
+            new MemberName(user.name().value())
+        );
+        given(memberRepository.save(any(Member.class)))
+            .willReturn(registeredMember);
 
         RegisterGameResultDto registerGameResultDto
             = postRegisterGameService.registerGame(gameId, userId);

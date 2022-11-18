@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -19,17 +21,36 @@ public class User {
     @Embedded
     private UserGender gender;
 
+    @Embedded
+    private UserPhoneNumber phoneNumber;
+
     private User() {
 
     }
 
     public User(Long id,
                 UserName name,
-                UserGender gender
+                UserGender gender,
+                UserPhoneNumber phoneNumber
     ) {
         this.id = id;
         this.name = name;
         this.gender = gender;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public static List<User> fakes(long generationCount) {
+        List<User> users = new ArrayList<>();
+        for (long id = 1; id <= generationCount; id += 1) {
+            User user = new User(
+                id,
+                new UserName("사용자 " + id),
+                new UserGender("성별"),
+                new UserPhoneNumber("010-0000-0000")
+            );
+            users.add(user);
+        }
+        return users;
     }
 
     public Long id() {
@@ -40,11 +61,20 @@ public class User {
         return name;
     }
 
+    public UserGender gender() {
+        return gender;
+    }
+
+    public UserPhoneNumber phoneNumber() {
+        return phoneNumber;
+    }
+
     public static User fake(String name) {
         return new User(
             1L,
             new UserName(name),
-            new UserGender("여성")
+            new UserGender("여성"),
+            new UserPhoneNumber("010-8888-8888")
         );
     }
 }

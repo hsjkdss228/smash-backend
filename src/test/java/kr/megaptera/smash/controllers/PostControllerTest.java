@@ -1,12 +1,15 @@
 package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.dtos.GameInPostListDto;
+import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Member;
 import kr.megaptera.smash.models.Post;
+import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.services.GetPostService;
 import kr.megaptera.smash.services.GetPostsService;
 import kr.megaptera.smash.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,22 +33,33 @@ class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    // posts
     @MockBean
     private GetPostsService getPostsService;
 
+    private List<PostListDto> postListDtos;
+    private PostsDto postsDto;
+
+    // post
+    @MockBean
+    private GetPostService getPostService;
+
+    private PostDetailDto postDetailDto;
+
+    // stubs
     @SpyBean
     private JwtUtil jwtUtil;
 
-    private List<PostListDto> postListDtos;
+    private String token;
 
     private Long userId = 1L;
-
-    private String token;
+    private Long targetPostId = 1L;
 
     @BeforeEach
     void setUp() {
         token = jwtUtil.encode(userId);
 
+        // posts
         long generationCount = 2;
         List<Post> posts = Post.fakes(generationCount);
         List<Game> games = Game.fakes(generationCount);
@@ -54,9 +68,8 @@ class PostControllerTest {
             List<Member> members = Member.fakes(generationCount, gameId);
             membersOfGames.add(members);
         }
-
-        // TODO: true, false를 어떻게 의미있는 값으로 반환?
-
+        Boolean isRegistered = true;
+        Boolean isNotRegistered = false;
         postListDtos = List.of(
             new PostListDto(
                 posts.get(0).id(),
@@ -68,7 +81,7 @@ class PostControllerTest {
                     games.get(0).place().name(),
                     membersOfGames.get(0).size(),
                     games.get(0).targetMemberCount().value(),
-                    true
+                    isRegistered
                 )
             ),
             new PostListDto(
@@ -81,15 +94,29 @@ class PostControllerTest {
                     games.get(1).place().name(),
                     membersOfGames.get(1).size(),
                     games.get(1).targetMemberCount().value(),
-                    false
+                    isNotRegistered
                 )
             )
+        );
+        postsDto = new PostsDto(postListDtos);
+
+
+        // post
+        Post post = Post.fake("주말 오전 테니스 같이하실 여성분들 찾습니다!");
+        User user = User.fake("The Prince of the Tennis");
+        Boolean isAuthor = true;
+        postDetailDto = new PostDetailDto(
+            post.id(),
+            post.hits().value(),
+            user.name().value(),
+            user.phoneNumber().value(),
+            post.detail().value(),
+            isAuthor
         );
     }
 
     @Test
     void posts() throws Exception {
-        PostsDto postsDto = new PostsDto(postListDtos);
         given(getPostsService.findAll(userId)).willReturn(postsDto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
@@ -120,6 +147,20 @@ class PostControllerTest {
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("errorMessage")
+            ))
+        ;
+    }
+
+    @Test
+    void post() throws Exception {
+        given(getPostService.findTargetPost(userId, targetPostId))
+            .willReturn(postDetailDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/1")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("\"authorName\":\"The Prince of the Tennis\"")
             ))
         ;
     }
