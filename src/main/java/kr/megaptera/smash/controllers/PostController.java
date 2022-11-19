@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("posts")
 public class PostController {
     private final GetPostsService getPostsService;
     private final GetPostService getPostService;
@@ -34,7 +34,7 @@ public class PostController {
         return getPostsService.findAll(accessedUserId);
     }
 
-    @GetMapping("/{postId}")
+    @GetMapping("{postId}")
     public PostDetailDto post(
         @RequestAttribute("userId") Long accessedUserId,
         @PathVariable("postId") Long targetPostId

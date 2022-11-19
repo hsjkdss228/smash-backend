@@ -6,7 +6,7 @@ import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.models.Game;
-import kr.megaptera.smash.models.Member;
+import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.services.GetPostService;
@@ -63,9 +63,9 @@ class PostControllerTest {
         long generationCount = 2;
         List<Post> posts = Post.fakes(generationCount);
         List<Game> games = Game.fakes(generationCount);
-        List<List<Member>> membersOfGames = new ArrayList<>();
+        List<List<Register>> membersOfGames = new ArrayList<>();
         for (long gameId = 1; gameId <= generationCount; gameId += 1) {
-            List<Member> members = Member.fakes(generationCount, gameId);
+            List<Register> members = Register.fakeMembers(generationCount, gameId);
             membersOfGames.add(members);
         }
         Boolean isRegistered = true;

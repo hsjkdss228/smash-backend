@@ -1,5 +1,6 @@
 package kr.megaptera.smash.controllers;
 
+import kr.megaptera.smash.models.RegisterStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,7 @@ public class BackdoorController {
     public String emptyPosts() {
         jdbcTemplate.execute("delete from POSTS");
         jdbcTemplate.execute("delete from GAMES");
-        jdbcTemplate.execute("delete from MEMBERS");
+        jdbcTemplate.execute("delete from REGISTERS");
 
         return "게시물 목록 비우기 백도어 세팅이 완료되었습니다.";
     }
@@ -58,28 +59,28 @@ public class BackdoorController {
         );
 
         jdbcTemplate.update(
-            "insert into MEMBERS(" +
-                "ID, USER_ID, GAME_ID, NAME) " +
+            "insert into REGISTERS(" +
+                "ID, USER_ID, GAME_ID, STATUS) " +
                 "values(?, ?, ?, ?)",
-            1L, 1L, 1L, "사용자 1"
+            1L, 1L, 1L, RegisterStatus.ACCEPTED
         );
         jdbcTemplate.update(
-            "insert into MEMBERS(" +
-                "ID, USER_ID, GAME_ID, NAME) " +
+            "insert into REGISTERS(" +
+                "ID, USER_ID, GAME_ID, STATUS) " +
                 "values(?, ?, ?, ?)",
-            2L, 2L, 1L, "사용자 2"
+            2L, 2L, 1L, RegisterStatus.ACCEPTED
         );
         jdbcTemplate.update(
-            "insert into MEMBERS(" +
-                "ID, USER_ID, GAME_ID, NAME) " +
+            "insert into REGISTERS(" +
+                "ID, USER_ID, GAME_ID, STATUS) " +
                 "values(?, ?, ?, ?)",
-            3L, 3L, 1L, "사용자 3"
+            3L, 3L, 1L, RegisterStatus.ACCEPTED
         );
         jdbcTemplate.update(
-            "insert into MEMBERS(" +
-                "ID, USER_ID, GAME_ID, NAME) " +
+            "insert into REGISTERS(" +
+                "ID, USER_ID, GAME_ID, STATUS) " +
                 "values(?, ?, ?, ?)",
-            4L, 4L, 2L, "사용자 4"
+            4L, 4L, 2L, RegisterStatus.ACCEPTED
         );
 
         jdbcTemplate.update(
@@ -113,13 +114,13 @@ public class BackdoorController {
     private void resetDatabaseForPosts() {
         jdbcTemplate.execute("delete from POSTS");
         jdbcTemplate.execute("delete from GAMES");
-        jdbcTemplate.execute("delete from MEMBERS");
+        jdbcTemplate.execute("delete from REGISTERS");
         jdbcTemplate.execute("delete from USERS");
     }
 
     @GetMapping("clear-members")
     public String emptyMembers() {
-        jdbcTemplate.execute("delete from MEMBERS");
+        jdbcTemplate.execute("delete from REGISTERS");
 
         return "운동 참가 멤버 비우기 백도어 세팅이 완료되었습니다.";
     }
@@ -127,16 +128,16 @@ public class BackdoorController {
     @GetMapping("setup-members")
     public String setupMembers() {
         jdbcTemplate.update(
-            "insert into MEMBERS(" +
-                "ID, USER_ID, GAME_ID, NAME) " +
+            "insert into REGISTERS(" +
+                "ID, USER_ID, GAME_ID, STATUS) " +
                 "values(?, ?, ?, ?)",
-            1L, 1L, 1L, "사용자 1"
+            1L, 1L, 1L, RegisterStatus.ACCEPTED
         );
         jdbcTemplate.update(
-            "insert into MEMBERS(" +
-                "ID, USER_ID, GAME_ID, NAME) " +
+            "insert into REGISTERS(" +
+                "ID, USER_ID, GAME_ID, STATUS) " +
                 "values(?, ?, ?, ?)",
-            2L, 1L, 2L, "사용자 1"
+            2L, 1L, 2L, RegisterStatus.ACCEPTED
         );
 
         return "운동 참가 멤버 백도어 세팅이 완료되었습니다.";

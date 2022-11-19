@@ -6,10 +6,11 @@ import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.exceptions.GameNotFound;
 import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.models.Game;
-import kr.megaptera.smash.models.Member;
+import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.Post;
+import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.repositories.GameRepository;
-import kr.megaptera.smash.repositories.MemberRepository;
+import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +23,14 @@ import java.util.List;
 public class GetPostsService {
     private final PostRepository postRepository;
     private final GameRepository gameRepository;
-    private final MemberRepository memberRepository;
+    private final RegisterRepository registerRepository;
 
     public GetPostsService(PostRepository postRepository,
                            GameRepository gameRepository,
-                           MemberRepository memberRepository) {
+                           RegisterRepository registerRepository) {
         this.postRepository = postRepository;
         this.gameRepository = gameRepository;
-        this.memberRepository = memberRepository;
+        this.registerRepository = registerRepository;
     }
 
     public PostsDto findAll(Long accessedUserId) throws PostsFailed {
@@ -41,10 +42,16 @@ public class GetPostsService {
                     .orElseThrow(GameNotFound::new))
                 .toList();
 
-            List<Member> members = new ArrayList<>();
+            List<Register> members = new ArrayList<>();
             games.forEach(game -> {
-                List<Member> membersOfGame = memberRepository.findByGameId(game.id());
-                members.addAll(membersOfGame);
+                List<Register> membersOfGame
+                    = registerRepository.findAllByGameId(game.id())
+                    .stream()
+                    .filter(member -> member.status().value()
+                        .equals(RegisterStatus.ACCEPTED))
+                    .toList();
+
+                    members.addAll(membersOfGame);
             });
 
             return createPostDtos(posts, games, members, accessedUserId);
@@ -55,7 +62,7 @@ public class GetPostsService {
 
     private PostsDto createPostDtos(List<Post> posts,
                                     List<Game> games,
-                                    List<Member> members,
+                                    List<Register> members,
                                     Long accessedUserId
     ) {
         List<PostListDto> postListDtos = posts.stream()

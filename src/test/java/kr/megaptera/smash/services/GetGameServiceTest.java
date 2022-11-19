@@ -5,10 +5,10 @@ import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.GameDate;
 import kr.megaptera.smash.models.GameTargetMemberCount;
-import kr.megaptera.smash.models.Member;
+import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.repositories.GameRepository;
-import kr.megaptera.smash.repositories.MemberRepository;
+import kr.megaptera.smash.repositories.RegisterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,14 +23,14 @@ class GetGameServiceTest {
     private GetGameService getGameService;
 
     private GameRepository gameRepository;
-    private MemberRepository memberRepository;
+    private RegisterRepository registerRepository;
 
     @BeforeEach
     void setUp() {
         gameRepository = mock(GameRepository.class);
-        memberRepository = mock(MemberRepository.class);
+        registerRepository = mock(RegisterRepository.class);
 
-        getGameService = new GetGameService(gameRepository, memberRepository);
+        getGameService = new GetGameService(gameRepository, registerRepository);
     }
 
     @Test
@@ -45,13 +45,13 @@ class GetGameServiceTest {
             new Place("목동야구장"),
             new GameTargetMemberCount(10)
         );
-        List<Member> members = Member.fakes(8, 1L);
+        List<Register> members = Register.fakeMembers(8, 1L);
         Long targetPostId = 1L;
         Long accessedUserId = 10L;
 
         given(gameRepository.findByPostId(targetPostId))
             .willReturn(Optional.of(game));
-        given(memberRepository.findAllByGameId(game.id()))
+        given(registerRepository.findAllByGameId(game.id()))
             .willReturn(members);
 
         GameDetailDto gameDetailDto

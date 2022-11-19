@@ -42,7 +42,7 @@ public class SmashApplication {
                     .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.POST.name(),
-                        HttpMethod.DELETE.name()
+                        HttpMethod.PATCH.name()
                     );
             }
         };

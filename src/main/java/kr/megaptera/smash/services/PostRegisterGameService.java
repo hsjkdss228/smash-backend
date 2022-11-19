@@ -2,11 +2,11 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.RegisterGameFailed;
-import kr.megaptera.smash.models.Member;
-import kr.megaptera.smash.models.MemberName;
+import kr.megaptera.smash.models.Register;
+import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
-import kr.megaptera.smash.repositories.MemberRepository;
+import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,14 +17,14 @@ import java.util.List;
 @Transactional
 public class PostRegisterGameService {
     private final GameRepository gameRepository;
-    private final MemberRepository memberRepository;
+    private final RegisterRepository registerRepository;
     private final UserRepository userRepository;
 
     public PostRegisterGameService(GameRepository gameRepository,
-                                   MemberRepository memberRepository,
+                                   RegisterRepository registerRepository,
                                    UserRepository userRepository) {
         this.gameRepository = gameRepository;
-        this.memberRepository = memberRepository;
+        this.registerRepository = registerRepository;
         this.userRepository = userRepository;
     }
 
@@ -35,11 +35,13 @@ public class PostRegisterGameService {
                 "주어진 게임 번호에 해당하는 게임을 찾을 수 없습니다.");
         }
 
-        List<Member> members = memberRepository.findByGameId(gameId);
+        List<Register> applicantsAndMembers = registerRepository.findByGameId(gameId);
 
-        members.forEach(member -> {
-            if (member.userId().equals(accessedUserId)) {
-                throw new RegisterGameFailed("이미 신청이 완료된 운동입니다.");
+        applicantsAndMembers.forEach(person -> {
+            if (person.userId().equals(accessedUserId)
+                && (person.status().value().equals(RegisterStatus.PROCESSING)
+                || person.status().value().equals(RegisterStatus.ACCEPTED))) {
+                throw new RegisterGameFailed("이미 신청 중이거나 신청이 완료된 운동입니다.");
             }
         });
 
@@ -47,13 +49,13 @@ public class PostRegisterGameService {
             .orElseThrow(() -> new RegisterGameFailed(
                 "주어진 사용자 번호에 해당하는 사용자를 찾을 수 없습니다."));
 
-        Member member = new Member(
+        Register register = new Register(
             accessedUserId,
             gameId,
-            new MemberName(user.name().value())
+            new RegisterStatus(RegisterStatus.PROCESSING)
         );
-        Member savedMember = memberRepository.save(member);
+        Register saved = registerRepository.save(register);
 
-        return new RegisterGameResultDto(savedMember.gameId());
+        return new RegisterGameResultDto(saved.gameId());
     }
 }

@@ -6,15 +6,15 @@ import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.GameDate;
 import kr.megaptera.smash.models.GameTargetMemberCount;
-import kr.megaptera.smash.models.Member;
-import kr.megaptera.smash.models.MemberName;
+import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.Place;
+import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.models.UserGender;
 import kr.megaptera.smash.models.UserName;
 import kr.megaptera.smash.models.UserPhoneNumber;
 import kr.megaptera.smash.repositories.GameRepository;
-import kr.megaptera.smash.repositories.MemberRepository;
+import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,18 +34,18 @@ class PostRegisterGameServiceTest {
     private PostRegisterGameService postRegisterGameService;
 
     private GameRepository gameRepository;
-    private MemberRepository memberRepository;
+    private RegisterRepository registerRepository;
     private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
         gameRepository = mock(GameRepository.class);
-        memberRepository = mock(MemberRepository.class);
+        registerRepository = mock(RegisterRepository.class);
         userRepository = mock(UserRepository.class);
 
         postRegisterGameService = new PostRegisterGameService(
             gameRepository,
-            memberRepository,
+            registerRepository,
             userRepository
         );
     }
@@ -63,11 +63,19 @@ class PostRegisterGameServiceTest {
         );
         given(gameRepository.findById(gameId)).willReturn(Optional.of(game));
 
-        List<Member> members = List.of(
-            new Member(1L, 2L, gameId, new MemberName("참가자 1")),
-            new Member(2L, 3L, gameId, new MemberName("참가자 2"))
+        List<Register> members = List.of(
+            new Register(
+                1L,
+                2L,
+                gameId,
+                new RegisterStatus(RegisterStatus.ACCEPTED)),
+            new Register(
+                2L,
+                3L,
+                gameId,
+                new RegisterStatus(RegisterStatus.ACCEPTED))
         );
-        given(memberRepository.findByGameId(gameId)).willReturn(members);
+        given(registerRepository.findByGameId(gameId)).willReturn(members);
 
         Long userId = 1L;
         User user = new User(
@@ -78,12 +86,13 @@ class PostRegisterGameServiceTest {
         );
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
-        Member registeredMember = new Member(3L,
+        Register registeredMember = new Register(
+            3L,
             userId,
             gameId,
-            new MemberName(user.name().value())
+            new RegisterStatus(RegisterStatus.ACCEPTED)
         );
-        given(memberRepository.save(any(Member.class)))
+        given(registerRepository.save(any(Register.class)))
             .willReturn(registeredMember);
 
         RegisterGameResultDto registerGameResultDto
@@ -93,8 +102,8 @@ class PostRegisterGameServiceTest {
         assertThat(registerGameResultDto.getGameId()).isEqualTo(gameId);
 
         verify(gameRepository).findById(gameId);
-        verify(memberRepository).findByGameId(gameId);
-        verify(memberRepository).save(any(Member.class));
+        verify(registerRepository).findByGameId(gameId);
+        verify(registerRepository).save(any(Register.class));
     }
 
     @Test
@@ -109,9 +118,9 @@ class PostRegisterGameServiceTest {
         });
 
         verify(gameRepository).findById(wrongGameId);
-        verify(memberRepository, never()).findByGameId(any(Long.class));
+        verify(registerRepository, never()).findByGameId(any(Long.class));
         verify(userRepository, never()).findById(any(Long.class));
-        verify(memberRepository, never()).save(any(Member.class));
+        verify(registerRepository, never()).save(any(Register.class));
     }
 
     @Test
@@ -129,10 +138,14 @@ class PostRegisterGameServiceTest {
             .willReturn(Optional.of(game));
 
         Long userId = 1L;
-        List<Member> members = List.of(
-            new Member(1L, userId, alreadyRegisteredGameId, new MemberName("참가자 1"))
+        List<Register> members = List.of(
+            new Register(
+                1L,
+                userId,
+                alreadyRegisteredGameId,
+                new RegisterStatus(RegisterStatus.ACCEPTED))
         );
-        given(memberRepository.findByGameId(alreadyRegisteredGameId))
+        given(registerRepository.findByGameId(alreadyRegisteredGameId))
             .willReturn(members);
 
         assertThrows(RegisterGameFailed.class, () -> {
@@ -140,9 +153,9 @@ class PostRegisterGameServiceTest {
         });
 
         verify(gameRepository).findById(alreadyRegisteredGameId);
-        verify(memberRepository).findByGameId(alreadyRegisteredGameId);
+        verify(registerRepository).findByGameId(alreadyRegisteredGameId);
         verify(userRepository, never()).findById(any(Long.class));
-        verify(memberRepository, never()).save(any(Member.class));
+        verify(registerRepository, never()).save(any(Register.class));
     }
 
     @Test
@@ -159,10 +172,14 @@ class PostRegisterGameServiceTest {
         given(gameRepository.findById(gameId)).willReturn(Optional.of(game));
 
         Long notExistedUserId = 113L;
-        List<Member> members = List.of(
-            new Member(1L, notExistedUserId, gameId, new MemberName("참가자 1"))
+        List<Register> members = List.of(
+            new Register(
+                1L,
+                notExistedUserId,
+                gameId,
+                new RegisterStatus(RegisterStatus.ACCEPTED))
         );
-        given(memberRepository.findByGameId(gameId))
+        given(registerRepository.findByGameId(gameId))
             .willReturn(members);
         given(userRepository.findById(notExistedUserId))
             .willThrow(RegisterGameFailed.class);
@@ -172,8 +189,8 @@ class PostRegisterGameServiceTest {
         });
 
         verify(gameRepository).findById(gameId);
-        verify(memberRepository).findByGameId(gameId);
+        verify(registerRepository).findByGameId(gameId);
         verify(userRepository, never()).findById(notExistedUserId);
-        verify(memberRepository, never()).save(any(Member.class));
+        verify(registerRepository, never()).save(any(Register.class));
     }
 }

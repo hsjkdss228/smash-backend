@@ -1,11 +1,18 @@
 package kr.megaptera.smash.controllers;
 
+import kr.megaptera.smash.dtos.ApplicantsDetailDto;
+import kr.megaptera.smash.dtos.MembersDetailDto;
 import kr.megaptera.smash.dtos.RegisterGameFailedErrorDto;
 import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.RegisterGameFailed;
+import kr.megaptera.smash.services.GetAcceptedRegisterService;
+import kr.megaptera.smash.services.GetProcessingRegisterService;
+import kr.megaptera.smash.services.PatchRegisterToCancelService;
 import kr.megaptera.smash.services.PostRegisterGameService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -21,10 +28,33 @@ public class RegisterController {
     private static final Integer USER_NOT_FOUND = 102;
     private static final Integer DEFAULT = 103;
 
+    private final GetAcceptedRegisterService getAcceptedRegisterService;
+    private final GetProcessingRegisterService getProcessingRegisterService;
     private final PostRegisterGameService postRegisterGameService;
+    private final PatchRegisterToCancelService patchRegisterToCancelService;
 
-    public RegisterController(PostRegisterGameService postRegisterGameService) {
+    public RegisterController(GetAcceptedRegisterService getAcceptedRegisterService,
+                              GetProcessingRegisterService getProcessingRegisterService,
+                              PostRegisterGameService postRegisterGameService,
+                              PatchRegisterToCancelService patchRegisterToCancelService) {
+        this.getAcceptedRegisterService = getAcceptedRegisterService;
+        this.getProcessingRegisterService = getProcessingRegisterService;
         this.postRegisterGameService = postRegisterGameService;
+        this.patchRegisterToCancelService = patchRegisterToCancelService;
+    }
+
+    @GetMapping("/members/games/{gameId}")
+    public MembersDetailDto members(
+        @PathVariable("gameId") Long targetGameId
+    ) {
+        return getAcceptedRegisterService.findMembers(targetGameId);
+    }
+
+    @GetMapping("/applicants/games/{gameId}")
+    public ApplicantsDetailDto applicants(
+        @PathVariable("gameId") Long targetGameId
+    ) {
+        return getProcessingRegisterService.findApplicants(targetGameId);
     }
 
     @PostMapping("games/{gameId}")
@@ -34,6 +64,19 @@ public class RegisterController {
         @PathVariable("gameId") Long gameId
     ) {
         return postRegisterGameService.registerGame(gameId, accessedUserId);
+    }
+
+    // TODO: cancelRegister는 추후 Query Param을 이용해
+    //   신청취소/수락/거절의 동작을 구분해 수행하게 할 예정
+    //   하나의 controller에서 각기 다른 service를 호출
+
+    @PatchMapping("games/{gameId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancelRegister(
+        @RequestAttribute("userId") Long accessedUserId,
+        @PathVariable("gameId") Long gameId
+    ) {
+        patchRegisterToCancelService.patchRegisterToCancel(accessedUserId, gameId);
     }
 
     @ExceptionHandler(RegisterGameFailed.class)

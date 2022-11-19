@@ -2,7 +2,7 @@ package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.dtos.GameDetailDto;
 import kr.megaptera.smash.models.Game;
-import kr.megaptera.smash.models.Member;
+import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.services.GetGameService;
 import kr.megaptera.smash.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ class GameControllerTest {
         token = jwtUtil.encode(userId);
 
         Game game = Game.fake("스케이트", "Mokdong Ice Rink");
-        List<Member> members = Member.fakes(5, game.id());
+        List<Register> members = Register.fakeMembers(5, game.id());
         Boolean isNotRegistered = false;
         gameDetailDto = new GameDetailDto(
             game.id(),
