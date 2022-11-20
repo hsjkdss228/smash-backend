@@ -10,7 +10,9 @@ import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.services.GetAcceptedRegisterService;
 import kr.megaptera.smash.services.GetProcessingRegisterService;
-import kr.megaptera.smash.services.PatchRegisterToCancelService;
+import kr.megaptera.smash.services.PatchRegisterToAcceptedService;
+import kr.megaptera.smash.services.PatchRegisterToCanceledService;
+import kr.megaptera.smash.services.PatchRegisterToRejectedService;
 import kr.megaptera.smash.services.PostRegisterGameService;
 import kr.megaptera.smash.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +29,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @WebMvcTest(RegisterController.class)
@@ -53,9 +54,17 @@ class RegisterControllerTest {
     @MockBean
     private PostRegisterGameService postRegisterGameService;
 
-    // PATCH registers/games/{gameId}
+    // PATCH registers/{gameId}?status=canceled
     @MockBean
-    private PatchRegisterToCancelService patchRegisterToCancelService;
+    private PatchRegisterToCanceledService patchRegisterToCanceledService;
+
+    // PATCH registers/{gameId}?status=accepted
+    @MockBean
+    private PatchRegisterToAcceptedService patchRegisterToAcceptedService;
+
+    // PATCH registers/{gameId}?status=rejected
+    @MockBean
+    private PatchRegisterToRejectedService patchRegisterToRejectedService;
 
     @SpyBean
     private JwtUtil jwtUtil;
@@ -63,12 +72,14 @@ class RegisterControllerTest {
     private String token;
 
     private Long gameId;
+    private Long registerId;
     private Long userId;
 
     @BeforeEach
     void setUp() {
         gameId = 1L;
         userId = 1L;
+        registerId = 4L;
         token = jwtUtil.encode(userId);
 
         // GET registers/members/games/{gameId}
@@ -200,10 +211,31 @@ class RegisterControllerTest {
 
     @Test
     void cancelRegister() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.patch("/registers/games/1")
-                .header("Authorization", "Bearer " + token))
+        mockMvc.perform(MockMvcRequestBuilders.patch("/registers/4")
+                .header("Authorization", "Bearer " + token)
+                .param("status", "canceled"))
             .andExpect(MockMvcResultMatchers.status().isNoContent());
 
-        verify(patchRegisterToCancelService).patchRegisterToCancel(userId, gameId);
+        verify(patchRegisterToCanceledService).patchRegisterToCanceled(registerId, userId);
+    }
+
+    @Test
+    void acceptRegister() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/registers/4")
+                .header("Authorization", "Bearer " + token)
+                .param("status", "accepted"))
+            .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        verify(patchRegisterToAcceptedService).patchRegisterToAccepted(registerId);
+    }
+
+    @Test
+    void rejectRegister() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/registers/4")
+                .header("Authorization", "Bearer " + token)
+                .param("status", "rejected"))
+            .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        verify(patchRegisterToRejectedService).patchRegisterToRejected(registerId);
     }
 }

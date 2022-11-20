@@ -7,7 +7,9 @@ import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.RegisterGameFailed;
 import kr.megaptera.smash.services.GetAcceptedRegisterService;
 import kr.megaptera.smash.services.GetProcessingRegisterService;
-import kr.megaptera.smash.services.PatchRegisterToCancelService;
+import kr.megaptera.smash.services.PatchRegisterToAcceptedService;
+import kr.megaptera.smash.services.PatchRegisterToCanceledService;
+import kr.megaptera.smash.services.PatchRegisterToRejectedService;
 import kr.megaptera.smash.services.PostRegisterGameService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,16 +34,22 @@ public class RegisterController {
     private final GetAcceptedRegisterService getAcceptedRegisterService;
     private final GetProcessingRegisterService getProcessingRegisterService;
     private final PostRegisterGameService postRegisterGameService;
-    private final PatchRegisterToCancelService patchRegisterToCancelService;
+    private final PatchRegisterToCanceledService patchRegisterToCanceledService;
+    private final PatchRegisterToAcceptedService patchRegisterToAcceptedService;
+    private final PatchRegisterToRejectedService patchRegisterToRejectedService;
 
     public RegisterController(GetAcceptedRegisterService getAcceptedRegisterService,
                               GetProcessingRegisterService getProcessingRegisterService,
                               PostRegisterGameService postRegisterGameService,
-                              PatchRegisterToCancelService patchRegisterToCancelService) {
+                              PatchRegisterToCanceledService patchRegisterToCanceledService,
+                              PatchRegisterToAcceptedService patchRegisterToAcceptedService,
+                              PatchRegisterToRejectedService patchRegisterToRejectedService) {
         this.getAcceptedRegisterService = getAcceptedRegisterService;
         this.getProcessingRegisterService = getProcessingRegisterService;
         this.postRegisterGameService = postRegisterGameService;
-        this.patchRegisterToCancelService = patchRegisterToCancelService;
+        this.patchRegisterToCanceledService = patchRegisterToCanceledService;
+        this.patchRegisterToAcceptedService = patchRegisterToAcceptedService;
+        this.patchRegisterToRejectedService = patchRegisterToRejectedService;
     }
 
     @GetMapping("/members/games/{gameId}")
@@ -66,17 +75,21 @@ public class RegisterController {
         return postRegisterGameService.registerGame(gameId, accessedUserId);
     }
 
-    // TODO: cancelRegister는 추후 Query Param을 이용해
-    //   신청취소/수락/거절의 동작을 구분해 수행하게 할 예정
-    //   하나의 controller에서 각기 다른 service를 호출
-
-    @PatchMapping("games/{gameId}")
+    @PatchMapping("{registerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void cancelRegister(
+    public void changeRegister(
         @RequestAttribute("userId") Long accessedUserId,
-        @PathVariable("gameId") Long gameId
+        @PathVariable("registerId") Long registerId,
+        @RequestParam(value = "status") String status
     ) {
-        patchRegisterToCancelService.patchRegisterToCancel(accessedUserId, gameId);
+        switch (status) {
+            case "canceled" -> patchRegisterToCanceledService.
+                patchRegisterToCanceled(registerId, accessedUserId);
+            case "accepted" -> patchRegisterToAcceptedService.
+                patchRegisterToAccepted(registerId);
+            case "rejected" -> patchRegisterToRejectedService.
+                patchRegisterToRejected(registerId);
+        }
     }
 
     @ExceptionHandler(RegisterGameFailed.class)
