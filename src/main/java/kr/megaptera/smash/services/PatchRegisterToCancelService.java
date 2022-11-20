@@ -1,6 +1,6 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.exceptions.MemberNotFound;
+import kr.megaptera.smash.exceptions.RegisterNotFound;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class PatchRegisterToCancelService {
     public void patchRegisterToCancel(Long accessedUserId, Long gameId) {
         Register register
             = registerRepository.findByGameIdAndUserId(gameId, accessedUserId)
-            .orElseThrow(MemberNotFound::new);
+            .orElseThrow(RegisterNotFound::new);
 
         register.cancelRegister();
     }

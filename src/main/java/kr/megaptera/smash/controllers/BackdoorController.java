@@ -32,6 +32,8 @@ public class BackdoorController {
     public String setupPosts() {
         resetDatabaseForPosts();
 
+        // TODO: 변경된 모델의 column에 맞게 backdoor도 바뀌어야 함!!!!!
+
         jdbcTemplate.update(
             "insert into POSTS(" +
                 "ID, HITS, CREATED_AT, UPDATED_AT) " +

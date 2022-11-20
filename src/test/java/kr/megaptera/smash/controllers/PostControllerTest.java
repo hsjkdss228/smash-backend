@@ -59,6 +59,13 @@ class PostControllerTest {
     void setUp() {
         token = jwtUtil.encode(userId);
 
+        Boolean isAuthor = true;
+        Boolean isNotAuthor = false;
+        Long notRegisteredRegisterId = -1L;
+        String notRegisteredRegisterStatus = "none";
+        Long processingRegisteredId = 1L;
+        String processingRegisterStatus = "processing";
+
         // posts
         long generationCount = 2;
         List<Post> posts = Post.fakes(generationCount);
@@ -68,12 +75,12 @@ class PostControllerTest {
             List<Register> members = Register.fakeMembers(generationCount, gameId);
             membersOfGames.add(members);
         }
-        Boolean isRegistered = true;
-        Boolean isNotRegistered = false;
+
         postListDtos = List.of(
             new PostListDto(
                 posts.get(0).id(),
                 posts.get(0).hits().value(),
+                isAuthor,
                 new GameInPostListDto(
                     games.get(0).id(),
                     games.get(0).exercise().name(),
@@ -81,12 +88,14 @@ class PostControllerTest {
                     games.get(0).place().name(),
                     membersOfGames.get(0).size(),
                     games.get(0).targetMemberCount().value(),
-                    isRegistered
+                    notRegisteredRegisterId,
+                    notRegisteredRegisterStatus
                 )
             ),
             new PostListDto(
                 posts.get(1).id(),
                 posts.get(1).hits().value(),
+                isNotAuthor,
                 new GameInPostListDto(
                     games.get(1).id(),
                     games.get(1).exercise().name(),
@@ -94,7 +103,8 @@ class PostControllerTest {
                     games.get(1).place().name(),
                     membersOfGames.get(1).size(),
                     games.get(1).targetMemberCount().value(),
-                    isNotRegistered
+                    processingRegisteredId,
+                    processingRegisterStatus
                 )
             )
         );
@@ -102,9 +112,8 @@ class PostControllerTest {
 
 
         // post
-        Post post = Post.fake("주말 오전 테니스 같이하실 여성분들 찾습니다!");
+        Post post = Post.fake("주말 오전 테니스 같이하실 여성분들 찾습니다.");
         User user = User.fake("The Prince of the Tennis");
-        Boolean isAuthor = true;
         postDetailDto = new PostDetailDto(
             post.id(),
             post.hits().value(),
@@ -132,7 +141,7 @@ class PostControllerTest {
                 containsString("\"currentMemberCount\":2")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"isRegistered\":false")
+                containsString("\"registerStatus\":\"none\"")
             ))
         ;
     }

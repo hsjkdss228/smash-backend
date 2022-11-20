@@ -4,12 +4,14 @@ import kr.megaptera.smash.dtos.GameDetailDto;
 import kr.megaptera.smash.exceptions.GameNotFound;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Register;
+import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -28,10 +30,32 @@ public class GetGameService {
         Game game = gameRepository.findByPostId(targetPostId)
             .orElseThrow(GameNotFound::new);
 
-        List<Register> members = registerRepository.findAllByGameId(game.id());
+        List<Register> members = registerRepository.findAllByGameId(game.id())
+            .stream()
+            .filter(register -> register.status().value()
+                .equals(RegisterStatus.ACCEPTED))
+            .toList();
 
-        Boolean isRegistered = members.stream()
-            .anyMatch(member -> member.userId().equals(accessedUserId));
+        Register myRegister = registerRepository
+            .findAllByGameIdAndUserId(game.id(), accessedUserId)
+            .stream()
+            .filter(register -> register.status().value()
+                .equals(RegisterStatus.ACCEPTED)
+                || register.status().value()
+                .equals(RegisterStatus.PROCESSING))
+            .findFirst().orElse(null);
+
+        Long registerId = myRegister == null
+            ? -1
+            : myRegister.id();
+
+        String registerStatus = myRegister == null
+            ? "none"
+            : switch (myRegister.status().value()) {
+            case RegisterStatus.PROCESSING -> "processing";
+            case RegisterStatus.ACCEPTED -> "accepted";
+            default -> "none";
+        };
 
         return new GameDetailDto(
             game.id(),
@@ -40,7 +64,8 @@ public class GetGameService {
             game.place().name(),
             members.size(),
             game.targetMemberCount().value(),
-            isRegistered
+            registerId,
+            registerStatus
         );
     }
 }
