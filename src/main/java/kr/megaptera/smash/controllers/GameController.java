@@ -22,11 +22,6 @@ public class GameController {
         @RequestAttribute("userId") Long accessedUserId,
         @PathVariable("postId") Long targetPostId
     ) {
-        System.out.println("*".repeat(20));
-        System.out.println("accessedUserId: " + accessedUserId);
-        System.out.println("targetPostId: " + targetPostId);
-        System.out.println("*".repeat(20));
-
         return getGameService.findTargetGame(accessedUserId, targetPostId);
     }
 }

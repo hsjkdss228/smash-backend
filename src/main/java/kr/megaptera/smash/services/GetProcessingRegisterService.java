@@ -30,7 +30,7 @@ public class GetProcessingRegisterService {
 
         List<ApplicantDetailDto> applicantDetailDtos = registers.stream()
             .filter(register -> register.status().value()
-                .equals(RegisterStatus.ACCEPTED))
+                .equals(RegisterStatus.PROCESSING))
             .map(register -> {
                 User user = userRepository.findById(register.userId())
                     .orElseThrow(UserNotFound::new);

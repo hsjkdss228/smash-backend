@@ -3,13 +3,13 @@ package kr.megaptera.smash.dtos;
 import java.util.List;
 
 public class ApplicantsDetailDto {
-    private final List<ApplicantDetailDto> applicantDetailDtos;
+    private final List<ApplicantDetailDto> applicants;
 
-    public ApplicantsDetailDto(List<ApplicantDetailDto> applicantDetailDtos) {
-        this.applicantDetailDtos = applicantDetailDtos;
+    public ApplicantsDetailDto(List<ApplicantDetailDto> applicants) {
+        this.applicants = applicants;
     }
 
-    public List<ApplicantDetailDto> getApplicantDetailDtos() {
-        return applicantDetailDtos;
+    public List<ApplicantDetailDto> getApplicants() {
+        return applicants;
     }
 }

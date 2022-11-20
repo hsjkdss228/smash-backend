@@ -13,7 +13,9 @@ public class GameDetailDto {
 
     private final Integer targetMemberCount;
 
-    private final Boolean isRegistered;
+    private final Long registerId;
+
+    private final String registerStatus;
 
     public GameDetailDto(Long id,
                          String type,
@@ -21,14 +23,16 @@ public class GameDetailDto {
                          String place,
                          Integer currentMemberCount,
                          Integer targetMemberCount,
-                         Boolean isRegistered) {
+                         Long registerId,
+                         String registerStatus) {
         this.id = id;
         this.type = type;
         this.date = date;
         this.place = place;
         this.currentMemberCount = currentMemberCount;
         this.targetMemberCount = targetMemberCount;
-        this.isRegistered = isRegistered;
+        this.registerId = registerId;
+        this.registerStatus = registerStatus;
     }
 
     public Long getId() {
@@ -55,7 +59,11 @@ public class GameDetailDto {
         return targetMemberCount;
     }
 
-    public Boolean getIsRegistered() {
-        return isRegistered;
+    public Long getRegisterId() {
+        return registerId;
+    }
+
+    public String getRegisterStatus() {
+        return registerStatus;
     }
 }

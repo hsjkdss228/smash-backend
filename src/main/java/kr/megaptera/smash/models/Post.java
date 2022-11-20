@@ -112,10 +112,12 @@ public class Post {
         return posts;
     }
 
-    public PostListDto toPostListDto(GameInPostListDto gameInPostListDto) {
+    public PostListDto toPostListDto(Boolean isAuthor,
+                                     GameInPostListDto gameInPostListDto) {
         return new PostListDto(
             id,
             hits.value(),
+            isAuthor,
             gameInPostListDto
         );
     }

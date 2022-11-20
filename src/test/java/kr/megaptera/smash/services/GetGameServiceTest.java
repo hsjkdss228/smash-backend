@@ -53,12 +53,15 @@ class GetGameServiceTest {
             .willReturn(Optional.of(game));
         given(registerRepository.findAllByGameId(game.id()))
             .willReturn(members);
+        given(registerRepository.findAllByGameIdAndUserId(game.id(), accessedUserId))
+            .willReturn(List.of());
 
         GameDetailDto gameDetailDto
             = getGameService.findTargetGame(accessedUserId, targetPostId);
 
         assertThat(gameDetailDto).isNotNull();
         assertThat(gameDetailDto.getCurrentMemberCount()).isEqualTo(8);
-        assertThat(gameDetailDto.getIsRegistered()).isFalse();
+        assertThat(gameDetailDto.getRegisterId()).isEqualTo(-1L);
+        assertThat(gameDetailDto.getRegisterStatus()).isEqualTo("none");
     }
 }

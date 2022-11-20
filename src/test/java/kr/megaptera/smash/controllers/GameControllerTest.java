@@ -3,6 +3,7 @@ package kr.megaptera.smash.controllers;
 import kr.megaptera.smash.dtos.GameDetailDto;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Register;
+import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.services.GetGameService;
 import kr.megaptera.smash.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +45,10 @@ class GameControllerTest {
 
         Game game = Game.fake("스케이트", "Mokdong Ice Rink");
         List<Register> members = Register.fakeMembers(5, game.id());
-        Boolean isNotRegistered = false;
+
+        Long registerId = -1L;
+        String registerStatus = "none";
+
         gameDetailDto = new GameDetailDto(
             game.id(),
             game.exercise().name(),
@@ -52,7 +56,8 @@ class GameControllerTest {
             game.place().name(),
             members.size(),
             game.targetMemberCount().value(),
-            isNotRegistered
+            registerId,
+            registerStatus
         );
     }
 
@@ -66,6 +71,13 @@ class GameControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"place\":\"Mokdong Ice Rink\"")
-            ));
+            ))
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("\"registerId\":-1")
+            ))
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("\"registerStatus\":\"none\"")
+            ))
+        ;
     }
 }

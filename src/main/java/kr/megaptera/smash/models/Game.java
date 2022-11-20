@@ -102,7 +102,8 @@ public class Game {
     }
 
     public GameInPostListDto toGameInPostListDto(Integer currentMemberCount,
-                                                 Boolean isRegistered) {
+                                                 Long registerId,
+                                                 String registerStatus) {
         return new GameInPostListDto(
             id,
             exercise.name(),
@@ -110,7 +111,8 @@ public class Game {
             place.name(),
             currentMemberCount,
             targetMemberCount.value(),
-            isRegistered
+            registerId,
+            registerStatus
         );
     }
 }
