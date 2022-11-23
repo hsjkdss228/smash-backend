@@ -10,6 +10,7 @@ import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.models.UserAccount;
 import kr.megaptera.smash.models.UserGender;
 import kr.megaptera.smash.models.UserName;
 import kr.megaptera.smash.models.UserPhoneNumber;
@@ -80,6 +81,7 @@ class PostRegisterGameServiceTest {
         Long userId = 1L;
         User user = new User(
             userId,
+            new UserAccount("MinjiRungRung12"),
             new UserName("사용자명"),
             new UserGender("남성"),
             new UserPhoneNumber("010-2222-2222")

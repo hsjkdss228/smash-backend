@@ -16,6 +16,9 @@ public class User {
     private Long id;
 
     @Embedded
+    private UserAccount account;
+
+    @Embedded
     private UserName name;
 
     @Embedded
@@ -29,11 +32,13 @@ public class User {
     }
 
     public User(Long id,
+                UserAccount account,
                 UserName name,
                 UserGender gender,
                 UserPhoneNumber phoneNumber
     ) {
         this.id = id;
+        this.account = account;
         this.name = name;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
@@ -44,6 +49,7 @@ public class User {
         for (long id = 1; id <= generationCount; id += 1) {
             User user = new User(
                 id,
+                new UserAccount("UserIdentifier" + id),
                 new UserName("사용자 " + id),
                 new UserGender("성별"),
                 new UserPhoneNumber("010-0000-0000")
@@ -55,6 +61,10 @@ public class User {
 
     public Long id() {
         return id;
+    }
+
+    public UserAccount account() {
+        return account;
     }
 
     public UserName name() {
@@ -69,9 +79,10 @@ public class User {
         return phoneNumber;
     }
 
-    public static User fake(String name) {
+    public static User fake(String name, String identifier) {
         return new User(
             1L,
+            new UserAccount(identifier),
             new UserName(name),
             new UserGender("여성"),
             new UserPhoneNumber("010-8888-8888")

@@ -5,6 +5,7 @@ import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.PostDetail;
 import kr.megaptera.smash.models.PostHits;
 import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.models.UserAccount;
 import kr.megaptera.smash.models.UserGender;
 import kr.megaptera.smash.models.UserName;
 import kr.megaptera.smash.models.UserPhoneNumber;
@@ -48,6 +49,7 @@ class GetPostServiceTest {
         );
         User user = new User(
             userId,
+            new UserAccount("BowlingGirl32"),
             new UserName("볼링맨"),
             new UserGender("남성"),
             new UserPhoneNumber("010-8888-8888")

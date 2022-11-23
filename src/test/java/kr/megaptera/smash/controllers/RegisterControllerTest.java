@@ -1,5 +1,6 @@
 package kr.megaptera.smash.controllers;
 
+import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.ApplicantDetailDto;
 import kr.megaptera.smash.dtos.ApplicantsDetailDto;
 import kr.megaptera.smash.dtos.MemberDetailDto;
@@ -31,6 +32,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@MockMvcEncoding
 @WebMvcTest(RegisterController.class)
 class RegisterControllerTest {
     @Autowired
