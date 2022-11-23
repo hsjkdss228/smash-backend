@@ -29,14 +29,43 @@ class BackdoorControllerTest {
     }
 
     @Test
-    void clearMembers() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/backdoor/clear-members"))
+    void setupMembersPosts() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/backdoor/setup-members-posts"))
             .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    void setupMembers() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/backdoor/setup-members"))
+    void setupMembersNotFinished() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/backdoor/setup-members-not-finished"))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void setupMembersFinished() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/backdoor/setup-members-finished"))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void setupMembersRegistered() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/backdoor/setup-members-registered"))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void setupMembersWithApplicants() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/backdoor/setup-members-with-applicants"))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void setupMembersWithoutApplicants() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/backdoor/setup-members-without-applicants"))
             .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

@@ -1,10 +1,11 @@
 package kr.megaptera.smash.controllers;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.exceptions.LoginFailed;
-import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.services.LoginService;
 import kr.megaptera.smash.utils.JwtUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,9 +17,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+@MockMvcEncoding
 @WebMvcTest(SessionController.class)
 class SessionControllerTest {
     @Autowired
@@ -30,16 +34,27 @@ class SessionControllerTest {
     @SpyBean
     private JwtUtil jwtUtil;
 
+    private String identifier;
+    private String password;
+
+    @BeforeEach
+    void setUp() {
+        identifier = "hsjkdss228";
+        password = "Password!1";
+    }
+
     @Test
     void login() throws Exception {
         Long userId = 1L;
-        given(loginService.verifyUser(userId)).willReturn(User.fake("사용자"));
+        given(loginService.verifyUser(identifier, password))
+            .willReturn(userId);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/session")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                    "\"userId\":" + userId +
+                    "\"identifier\":\"" + identifier + "\"," +
+                    "\"password\":\"" + password + "\"" +
                     "}"))
             .andExpect(MockMvcResultMatchers.status().isCreated())
         ;
@@ -48,43 +63,90 @@ class SessionControllerTest {
     }
 
     @Test
-    void loginWithEmptyUserId() throws Exception {
+    void loginWithEmptyIdentifier() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/session")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                    "\"userId\":\"\"" +
+                    "\"identifier\":\"" + "\"," +
+                    "\"password\":\"" + password + "\"" +
                     "}"))
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("200")
+                containsString("아이디를 입력해주세요.")
             ))
         ;
+
+        verify(loginService, never()).verifyUser(any(), any());
     }
 
     @Test
-    void loginWithNotExistingUserId() throws Exception {
-        Long notExistingUserId = 9999L;
-        given(loginService.verifyUser(notExistingUserId))
-            .willThrow(new LoginFailed("존재하지 않는 User Id 입니다. (201)"));
+    void loginWithNotExistingIdentifier() throws Exception {
+        String notExistingIdentifier = "WrongIdentifier1234";
+        given(loginService.verifyUser(notExistingIdentifier, password))
+            .willThrow(new LoginFailed("존재하지 않는 아이디입니다."));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/session")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                    "\"userId\":" + notExistingUserId +
+                    "\"identifier\":\"" + notExistingIdentifier + "\"," +
+                    "\"password\":\"" + password + "\"" +
                     "}"))
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("201")
+                containsString("존재하지 않는 아이디입니다.")
             ))
         ;
+
+        verify(loginService).verifyUser(notExistingIdentifier, password);
+    }
+
+    @Test
+    void loginWithEmptyPassword() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/session")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                    "\"identifier\":\"" + identifier + "\"," +
+                    "\"password\":\"" + "\"" +
+                    "}"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("비밀번호를 입력해주세요.")
+            ))
+        ;
+
+        verify(loginService, never()).verifyUser(any(), any());
+    }
+
+    @Test
+    void loginWithNotMatchingPassword() throws Exception {
+        String notMatchingPassword = "WrongPassword!1";
+        given(loginService.verifyUser(identifier, notMatchingPassword))
+            .willThrow(new LoginFailed("비밀번호가 일치하지 않습니다."));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/session")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                    "\"identifier\":\"" + identifier + "\"," +
+                    "\"password\":\"" + notMatchingPassword + "\"" +
+                    "}"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("비밀번호가 일치하지 않습니다.")
+            ))
+        ;
+
+        verify(loginService).verifyUser(identifier, notMatchingPassword);
     }
 
     @Test
     void loginWithEncodingError() throws Exception {
         Long userId = 1L;
-        given(loginService.verifyUser(userId)).willReturn(User.fake("사용자"));
+        given(loginService.verifyUser(identifier, password))
+            .willReturn(userId);
         given(jwtUtil.encode(userId))
             .willThrow(JWTDecodeException.class);
 
@@ -92,14 +154,16 @@ class SessionControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                    "\"userId\":" + userId +
+                    "\"identifier\":\"" + identifier + "\"," +
+                    "\"password\":\"" + password + "\"" +
                     "}"))
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("202")
+                containsString("인코딩 과정에서 문제가 발생했습니다.")
             ))
         ;
 
+        verify(loginService).verifyUser(identifier, password);
         verify(jwtUtil).encode(1L);
     }
 }

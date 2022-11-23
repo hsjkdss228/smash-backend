@@ -5,6 +5,7 @@ import kr.megaptera.smash.dtos.ApplicantsDetailDto;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.models.UserAccount;
 import kr.megaptera.smash.models.UserGender;
 import kr.megaptera.smash.models.UserName;
 import kr.megaptera.smash.models.UserPhoneNumber;
@@ -67,12 +68,14 @@ class GetProcessingRegisterServiceTest {
         users = List.of(
             new User(
                 1L,
+                new UserAccount("hsjkdss228"),
                 new UserName("사용자 이름 1"),
                 new UserGender("남성"),
                 new UserPhoneNumber("010-1234-5678")
             ),
             new User(
                 2L,
+                new UserAccount("dhkddlsgn228"),
                 new UserName("사용자 이름 2"),
                 new UserGender("여성"),
                 new UserPhoneNumber("010-2345-6789")

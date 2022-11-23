@@ -8,6 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -43,7 +46,8 @@ public class SmashApplication {
                         HttpMethod.GET.name(),
                         HttpMethod.POST.name(),
                         HttpMethod.PATCH.name()
-                    );
+                    )
+                ;
             }
         };
     }
@@ -56,5 +60,10 @@ public class SmashApplication {
     @Bean
     public JwtUtil jwtUtil() {
         return new JwtUtil(jwtSecret);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new Argon2PasswordEncoder();
     }
 }

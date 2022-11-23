@@ -1,5 +1,6 @@
 package kr.megaptera.smash.controllers;
 
+import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.GameInPostListDto;
 import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostListDto;
@@ -28,6 +29,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 
+@MockMvcEncoding
 @WebMvcTest(PostController.class)
 class PostControllerTest {
     @Autowired
@@ -113,7 +115,7 @@ class PostControllerTest {
 
         // post
         Post post = Post.fake("주말 오전 테니스 같이하실 여성분들 찾습니다.");
-        User user = User.fake("The Prince of the Tennis");
+        User user = User.fake("The Prince of the Tennis", "PrinceOfTennis1234");
         postDetailDto = new PostDetailDto(
             post.id(),
             post.hits().value(),

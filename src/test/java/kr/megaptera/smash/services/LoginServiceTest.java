@@ -1,11 +1,12 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.exceptions.LoginFailed;
-import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -18,35 +19,40 @@ import static org.mockito.Mockito.verify;
 class LoginServiceTest {
     private UserRepository userRepository;
     private LoginService loginService;
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
         userRepository = mock(UserRepository.class);
-        loginService = new LoginService(userRepository);
+        passwordEncoder = new Argon2PasswordEncoder();
+        loginService = new LoginService(userRepository, passwordEncoder);
     }
 
     @Test
     void verifyUser() {
-        Long userId = 1L;
-        given(userRepository.findById(userId))
-            .willReturn(Optional.of(User.fake("찾아진 사용자")));
+        String identifier = "hsjkdss228";
+        String password = "Password!1";
+        User user = User.fake("찾아진 사용자", identifier);
+        user.account().changePassword(password, passwordEncoder);
+        given(userRepository.findByAccountIdentifier(identifier))
+            .willReturn(Optional.of(user));
 
-        User user = loginService.verifyUser(userId);
+        Long userId = loginService.verifyUser(identifier, password);
 
-        assertThat(user).isNotNull();
-        assertThat(user.name().value()).isEqualTo("찾아진 사용자");
+        assertThat(userId).isEqualTo(userId);
 
-        verify(userRepository).findById(userId);
+        verify(userRepository).findByAccountIdentifier(identifier);
     }
 
     @Test
     void verifyUserFail() {
-        Long notExistingUserId = 9999L;
-        given(userRepository.findById(notExistingUserId))
-            .willThrow(UserNotFound.class);
+        String notExistingIdentifier = "abcdefgh123";
+        String password = "Password!1";
+        given(userRepository.findByAccountIdentifier(notExistingIdentifier))
+            .willThrow(LoginFailed.class);
 
         assertThrows(LoginFailed.class, () -> {
-            loginService.verifyUser(notExistingUserId);
+            loginService.verifyUser(notExistingIdentifier, password);
         });
     }
 }

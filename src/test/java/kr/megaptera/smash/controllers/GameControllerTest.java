@@ -1,9 +1,9 @@
 package kr.megaptera.smash.controllers;
 
+import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.GameDetailDto;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Register;
-import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.services.GetGameService;
 import kr.megaptera.smash.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +21,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 
+@MockMvcEncoding
 @WebMvcTest(GameController.class)
 class GameControllerTest {
     @Autowired
