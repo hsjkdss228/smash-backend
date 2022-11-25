@@ -1,15 +1,18 @@
 package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.config.MockMvcEncoding;
+import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
 import kr.megaptera.smash.dtos.GameInPostListDto;
+import kr.megaptera.smash.dtos.PostAndGameRequestDto;
 import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.models.Game;
-import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.Post;
+import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.services.CreatePostService;
 import kr.megaptera.smash.services.GetPostService;
 import kr.megaptera.smash.services.GetPostsService;
 import kr.megaptera.smash.utils.JwtUtil;
@@ -19,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -35,18 +39,25 @@ class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    // posts
+    // GET posts
     @MockBean
     private GetPostsService getPostsService;
 
     private List<PostListDto> postListDtos;
     private PostsDto postsDto;
 
-    // post
+    // GET post
     @MockBean
     private GetPostService getPostService;
 
     private PostDetailDto postDetailDto;
+
+    // POST posts
+    @MockBean
+    private CreatePostService createPostService;
+
+    private PostAndGameRequestDto postAndGameRequestDto;
+    private CreatePostAndGameResultDto createPostAndGameResultDto;
 
     // stubs
     @SpyBean
@@ -56,6 +67,7 @@ class PostControllerTest {
 
     private Long userId = 1L;
     private Long targetPostId = 1L;
+    private Long createdPostId = 11L;
 
     @BeforeEach
     void setUp() {
@@ -68,7 +80,7 @@ class PostControllerTest {
         Long processingRegisteredId = 1L;
         String processingRegisterStatus = "processing";
 
-        // posts
+        // GET posts
         long generationCount = 2;
         List<Post> posts = Post.fakes(generationCount);
         List<Game> games = Game.fakes(generationCount);
@@ -86,7 +98,7 @@ class PostControllerTest {
                 new GameInPostListDto(
                     games.get(0).id(),
                     games.get(0).exercise().name(),
-                    games.get(0).date().value(),
+                    games.get(0).dateTime().joinDateAndTime(),
                     games.get(0).place().name(),
                     membersOfGames.get(0).size(),
                     games.get(0).targetMemberCount().value(),
@@ -101,7 +113,7 @@ class PostControllerTest {
                 new GameInPostListDto(
                     games.get(1).id(),
                     games.get(1).exercise().name(),
-                    games.get(1).date().value(),
+                    games.get(1).dateTime().joinDateAndTime(),
                     games.get(1).place().name(),
                     membersOfGames.get(1).size(),
                     games.get(1).targetMemberCount().value(),
@@ -113,7 +125,7 @@ class PostControllerTest {
         postsDto = new PostsDto(postListDtos);
 
 
-        // post
+        // GET post
         Post post = Post.fake("주말 오전 테니스 같이하실 여성분들 찾습니다.");
         User user = User.fake("The Prince of the Tennis", "PrinceOfTennis1234");
         postDetailDto = new PostDetailDto(
@@ -124,6 +136,19 @@ class PostControllerTest {
             post.detail().value(),
             isAuthor
         );
+
+        // POST post
+        Integer gameTargetMemberCount = 10;
+        postAndGameRequestDto = new PostAndGameRequestDto(
+            "운동 이름",
+            "2022-11-25T00:00:00.000Z",
+            "09,00,12,50",
+            "운동 장소",
+            gameTargetMemberCount,
+            "게시물 상세 내용"
+        );
+        createPostAndGameResultDto
+            = new CreatePostAndGameResultDto(createdPostId);
     }
 
     @Test
@@ -172,6 +197,37 @@ class PostControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"authorName\":\"The Prince of the Tennis\"")
+            ))
+        ;
+    }
+
+    @Test
+    void createPost() throws Exception {
+        given(createPostService.createPost(
+            userId,
+            postAndGameRequestDto.getGameExercise(),
+            postAndGameRequestDto.getGameDate(),
+            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getGameTargetMemberCount(),
+            postAndGameRequestDto.getPostDetail()
+        )).willReturn(createPostAndGameResultDto);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                    "\"gameExercise\":\"운동 이름\"," +
+                    "\"gameDate\":\"2022-11-25T00:00:00.000Z\"," +
+                    "\"gameTime\":\"09,00,12,50\"," +
+                    "\"gamePlace\":\"운동 장소\"," +
+                    "\"gameTargetMemberCount\":10," +
+                    "\"postDetail\":\"게시물 상세 내용\"" +
+                    "}"))
+            .andExpect(MockMvcResultMatchers.status().isCreated())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("\"postId\":11")
             ))
         ;
     }

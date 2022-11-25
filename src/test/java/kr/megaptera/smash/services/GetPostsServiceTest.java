@@ -4,7 +4,7 @@ import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
-import kr.megaptera.smash.models.GameDate;
+import kr.megaptera.smash.models.GameDateTime;
 import kr.megaptera.smash.models.GameTargetMemberCount;
 import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.models.Post;
@@ -18,7 +18,9 @@ import kr.megaptera.smash.repositories.RegisterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,7 +72,11 @@ class GetPostsServiceTest {
                 1L,
                 1L,
                 new Exercise("운동 이름 1"),
-                new GameDate("2022년 10월 13일 14:00~17:00"),
+                new GameDateTime(
+                    LocalDate.of(2022, 10, 13),
+                    LocalTime.of(14, 0),
+                    LocalTime.of(17, 0)
+                ),
                 new Place("장소 이름 1"),
                 new GameTargetMemberCount(10)
             ),
@@ -78,7 +84,11 @@ class GetPostsServiceTest {
                 2L,
                 2L,
                 new Exercise("운동 이름 2"),
-                new GameDate("2022년 10월 14일 14:00~17:00"),
+                new GameDateTime(
+                    LocalDate.of(2022, 10, 14),
+                    LocalTime.of(14, 0),
+                    LocalTime.of(17, 0)
+                ),
                 new Place("장소 이름 2"),
                 new GameTargetMemberCount(8)
             )
