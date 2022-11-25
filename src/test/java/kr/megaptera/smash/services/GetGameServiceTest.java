@@ -3,7 +3,7 @@ package kr.megaptera.smash.services;
 import kr.megaptera.smash.dtos.GameDetailDto;
 import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
-import kr.megaptera.smash.models.GameDate;
+import kr.megaptera.smash.models.GameDateTime;
 import kr.megaptera.smash.models.GameTargetMemberCount;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.Place;
@@ -12,6 +12,8 @@ import kr.megaptera.smash.repositories.RegisterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +43,11 @@ class GetGameServiceTest {
             gameId,
             postId,
             new Exercise("야구"),
-            new GameDate("2022년 8월 21일 19:00~22:00"),
+            new GameDateTime(
+                LocalDate.of(2022, 8, 22),
+                LocalTime.of(19, 0),
+                LocalTime.of(22, 0)
+            ),
             new Place("목동야구장"),
             new GameTargetMemberCount(10)
         );

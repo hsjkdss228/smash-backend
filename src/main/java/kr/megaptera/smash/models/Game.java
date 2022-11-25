@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class Game {
     private Exercise exercise;
 
     @Embedded
-    private GameDate date;
+    private GameDateTime dateTime;
 
     @Embedded
     private Place place;
@@ -35,17 +37,30 @@ public class Game {
 
     }
 
+    public Game(Long postId,
+                Exercise exercise,
+                GameDateTime dateTime,
+                Place place,
+                GameTargetMemberCount targetMemberCount
+    ) {
+        this.postId = postId;
+        this.exercise = exercise;
+        this.dateTime = dateTime;
+        this.place = place;
+        this.targetMemberCount = targetMemberCount;
+    }
+
     public Game(Long id,
                 Long postId,
                 Exercise exercise,
-                GameDate date,
+                GameDateTime dateTime,
                 Place place,
                 GameTargetMemberCount targetMemberCount
     ) {
         this.id = id;
         this.postId = postId;
         this.exercise = exercise;
-        this.date = date;
+        this.dateTime = dateTime;
         this.place = place;
         this.targetMemberCount = targetMemberCount;
     }
@@ -62,8 +77,8 @@ public class Game {
         return exercise;
     }
 
-    public GameDate date() {
-        return date;
+    public GameDateTime dateTime() {
+        return dateTime;
     }
 
     public Place place() {
@@ -81,7 +96,11 @@ public class Game {
                 id,
                 id,
                 new Exercise("운동 종류"),
-                new GameDate("운동 날짜"),
+                new GameDateTime(
+                    LocalDate.of(2022, 12, 24),
+                    LocalTime.of(10, 0),
+                    LocalTime.of(16, 30)
+                ),
                 new Place("운동 장소"),
                 new GameTargetMemberCount(10)
             );
@@ -95,7 +114,11 @@ public class Game {
             1L,
             1L,
             new Exercise(exerciseName),
-            new GameDate("경기 날짜"),
+            new GameDateTime(
+                LocalDate.of(2022, 12, 24),
+                LocalTime.of(10, 0),
+                LocalTime.of(16, 30)
+            ),
             new Place(placeName),
             new GameTargetMemberCount(10)
         );
@@ -107,7 +130,7 @@ public class Game {
         return new GameInPostListDto(
             id,
             exercise.name(),
-            date.value(),
+            dateTime.joinDateAndTime(),
             place.name(),
             currentMemberCount,
             targetMemberCount.value(),

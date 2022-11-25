@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @RestController
 @RequestMapping("/backdoor")
@@ -73,9 +75,12 @@ public class BackdoorController {
         );
         jdbcTemplate.update(
             "insert into GAMES(" +
-                "ID, POST_ID, EXERCISE_NAME, DATE, PLACE_NAME, TARGET_MEMBER_COUNT) " +
-                "values(?, ?, ?, ?, ?, ?)",
-            1L, 1L, "축구", "2022년 11월 13일 15:00~17:00", "잠실종합운동장", 4
+                "ID, POST_ID, EXERCISE_NAME, DATE, START_TIME, END_TIME, " +
+                "PLACE_NAME, TARGET_MEMBER_COUNT) " +
+                "values(?, ?, ?, ?, ?, ?, ?, ?)",
+            1L, 1L, "축구",
+            LocalDate.of(2022, 11, 13), LocalTime.of(15, 0), LocalTime.of(17, 0),
+            "잠실종합운동장", 4
         );
         jdbcTemplate.update(
             "insert into POSTS(" +
@@ -86,9 +91,12 @@ public class BackdoorController {
         );
         jdbcTemplate.update(
             "insert into GAMES(" +
-                "ID, POST_ID, EXERCISE_NAME, DATE, PLACE_NAME, TARGET_MEMBER_COUNT) " +
-                "values(?, ?, ?, ?, ?, ?)",
-            2L, 2L, "배구", "2022년 11월 14일 15:00~17:00", "장충체육관", 4
+                "ID, POST_ID, EXERCISE_NAME, DATE, START_TIME, END_TIME, " +
+                "PLACE_NAME, TARGET_MEMBER_COUNT) " +
+                "values(?, ?, ?, ?, ?, ?, ?, ?)",
+            2L, 2L, "배구",
+            LocalDate.of(2022, 11, 14), LocalTime.of(15, 0), LocalTime.of(17, 0),
+            "장충체육관", 4
         );
 
         return "게시물 목록 백도어 세팅이 완료되었습니다.";
@@ -176,9 +184,12 @@ public class BackdoorController {
         );
         jdbcTemplate.update(
             "insert into GAMES(" +
-                "ID, POST_ID, EXERCISE_NAME, DATE, PLACE_NAME, TARGET_MEMBER_COUNT) " +
-                "values(?, ?, ?, ?, ?, ?)",
-            1L, 1L, "배드민턴", "2022년 11월 13일 14:00~17:00", "올림픽공원", 4
+                "ID, POST_ID, EXERCISE_NAME, DATE, START_TIME, END_TIME, " +
+                "PLACE_NAME, TARGET_MEMBER_COUNT) " +
+                "values(?, ?, ?, ?, ?, ?, ?, ?)",
+            1L, 1L, "배드민턴",
+            LocalDate.of(2022, 11, 13), LocalTime.of(14, 0), LocalTime.of(17, 0),
+            "올림픽공원", 4
         );
     }
 

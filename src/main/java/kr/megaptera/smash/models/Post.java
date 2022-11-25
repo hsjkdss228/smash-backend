@@ -43,6 +43,15 @@ public class Post {
 
     }
 
+    public Post(Long userId,
+                PostHits hits,
+                PostDetail detail
+    ) {
+        this.userId = userId;
+        this.hits = hits;
+        this.detail = detail;
+    }
+
     public Post(Long id,
                 Long userId,
                 PostHits hits,

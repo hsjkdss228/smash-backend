@@ -59,7 +59,7 @@ public class GetGameService {
         return new GameDetailDto(
             game.id(),
             game.exercise().name(),
-            game.date().value(),
+            game.dateTime().joinDateAndTime(),
             game.place().name(),
             members.size(),
             game.targetMemberCount().value(),

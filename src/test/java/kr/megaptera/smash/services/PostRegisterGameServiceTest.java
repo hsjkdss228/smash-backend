@@ -4,10 +4,10 @@ import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.RegisterGameFailed;
 import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
-import kr.megaptera.smash.models.GameDate;
+import kr.megaptera.smash.models.GameDateTime;
 import kr.megaptera.smash.models.GameTargetMemberCount;
-import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.Place;
+import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.models.UserAccount;
@@ -20,6 +20,8 @@ import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +60,11 @@ class PostRegisterGameServiceTest {
             gameId,
             1L,
             new Exercise("운동 종류"),
-            new GameDate("운동 날짜"),
+            new GameDateTime(
+                LocalDate.of(2022, 10, 20),
+                LocalTime.of(14, 0),
+                LocalTime.of(17, 0)
+            ),
             new Place("운동 장소"),
             new GameTargetMemberCount(5)
         );
@@ -132,7 +138,11 @@ class PostRegisterGameServiceTest {
             alreadyRegisteredGameId,
             1L,
             new Exercise("운동 종류"),
-            new GameDate("운동 날짜"),
+            new GameDateTime(
+                LocalDate.of(2022, 10, 21),
+                LocalTime.of(20, 0),
+                LocalTime.of(23, 30)
+            ),
             new Place("운동 장소"),
             new GameTargetMemberCount(5)
         );
@@ -167,7 +177,11 @@ class PostRegisterGameServiceTest {
             gameId,
             1L,
             new Exercise("운동 종류"),
-            new GameDate("운동 날짜"),
+            new GameDateTime(
+                LocalDate.of(2023, 1, 2),
+                LocalTime.of(12, 0),
+                LocalTime.of(16, 0)
+            ),
             new Place("운동 장소"),
             new GameTargetMemberCount(5)
         );
