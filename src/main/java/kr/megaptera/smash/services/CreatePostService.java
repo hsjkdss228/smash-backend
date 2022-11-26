@@ -40,7 +40,12 @@ public class CreatePostService {
         Long accessedUserId,
         String gameExercise,
         String gameDate,
-        String gameTime,
+        String gameStartTimeAmPm,
+        String gameStartHour,
+        String gameStartMinute,
+        String gameEndTimeAmPm,
+        String gameEndHour,
+        String gameEndMinute,
         String gamePlace,
         Integer gameTargetMemberCount,
         String postDetail
@@ -58,7 +63,12 @@ public class CreatePostService {
 
         GameDateTime gameDateTime = createGameDateTime(
             gameDate,
-            gameTime
+            gameStartTimeAmPm,
+            gameStartHour,
+            gameStartMinute,
+            gameEndTimeAmPm,
+            gameEndHour,
+            gameEndMinute
         );
 
         Game game = new Game(
@@ -74,17 +84,28 @@ public class CreatePostService {
     }
 
     public GameDateTime createGameDateTime(String gameDate,
-                                            String gameTime) {
+                                           String gameStartTimeAmPm,
+                                           String gameStartHour,
+                                           String gameStartMinute,
+                                           String gameEndTimeAmPm,
+                                           String gameEndHour,
+                                           String gameEndMinute
+    ) {
         String[] yearMonthDay = gameDate.split("-");
         int year = parseDateType(yearMonthDay[0]);
         int month = parseDateType(yearMonthDay[1]);
         int day = parseDateType(yearMonthDay[2].split("T")[0]);
 
-        String[] startAndEndHourMinute = gameTime.split(",");
-        int startHour = Integer.parseInt(startAndEndHourMinute[0]);
-        int startMinute = Integer.parseInt(startAndEndHourMinute[1]);
-        int endHour = Integer.parseInt(startAndEndHourMinute[2]);
-        int endMinute = Integer.parseInt(startAndEndHourMinute[3]);
+        int startHour = calculateHour(
+            Integer.parseInt(gameStartHour),
+            gameStartTimeAmPm
+        );
+        int endHour = calculateHour(
+            Integer.parseInt(gameEndHour),
+            gameEndTimeAmPm
+        );
+        int startMinute = Integer.parseInt(gameStartMinute);
+        int endMinute = Integer.parseInt(gameEndMinute);
 
         return new GameDateTime(
             LocalDate.of(year, month, day),
@@ -95,5 +116,16 @@ public class CreatePostService {
 
     public int parseDateType(String dateType) {
         return Integer.parseInt(dateType);
+    }
+
+    public int calculateHour(int hour,
+                             String timeAmPm) {
+        if (hour == 12 && timeAmPm.equals("am")) {
+            return 0;
+        }
+        if (hour < 12 && timeAmPm.equals("pm")) {
+            return hour + 12;
+        }
+        return hour;
     }
 }

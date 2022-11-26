@@ -62,7 +62,7 @@ class CreatePostServiceTest {
         postAndGameRequestDto = new PostAndGameRequestDto(
             "운동 이름",
             "2022-12-22T00:00:00.000Z",
-            "09,00,12,50",
+            "am", "11", "30", "pm", "04", "00",
             "운동 장소",
             gameTargetMemberCount,
             "게시물 상세 내용"
@@ -126,7 +126,12 @@ class CreatePostServiceTest {
             user.id(),
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail()
@@ -144,11 +149,21 @@ class CreatePostServiceTest {
     @Test
     void createGameDateTime() {
         String gameDate = "2022-4-3T00:00:00.000Z";
-        String gameTime = "07,30,11,00";
+        String gameStartTimeAmPm = "am";
+        String gameStartHour = "07";
+        String gameStartMinute = "30";
+        String gameEndTimeAmPm = "pm";
+        String gameEndHour = "11";
+        String gameEndMinute = "00";
 
         GameDateTime gameDateTime = createPostService.createGameDateTime(
             gameDate,
-            gameTime
+            gameStartTimeAmPm,
+            gameStartHour,
+            gameStartMinute,
+            gameEndTimeAmPm,
+            gameEndHour,
+            gameEndMinute
         );
 
         assertThat(gameDateTime.date())
@@ -156,7 +171,7 @@ class CreatePostServiceTest {
         assertThat(gameDateTime.startTime())
             .isEqualTo(LocalTime.of(7, 30));
         assertThat(gameDateTime.endTime())
-            .isEqualTo(LocalTime.of(11, 0));
+            .isEqualTo(LocalTime.of(23, 0));
     }
 
     @Test
@@ -169,7 +184,12 @@ class CreatePostServiceTest {
                 user.id(),
                 postAndGameRequestDto.getGameExercise(),
                 postAndGameRequestDto.getGameDate(),
-                postAndGameRequestDto.getGameTime(),
+                postAndGameRequestDto.getGameStartTimeAmPm(),
+                postAndGameRequestDto.getGameStartHour(),
+                postAndGameRequestDto.getGameStartMinute(),
+                postAndGameRequestDto.getGameEndTimeAmPm(),
+                postAndGameRequestDto.getGameEndHour(),
+                postAndGameRequestDto.getGameEndMinute(),
                 postAndGameRequestDto.getGamePlace(),
                 postAndGameRequestDto.getGameTargetMemberCount(),
                 postAndGameRequestDto.getPostDetail()

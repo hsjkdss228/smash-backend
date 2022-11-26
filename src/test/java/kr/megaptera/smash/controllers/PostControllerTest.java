@@ -143,7 +143,7 @@ class PostControllerTest {
         postAndGameRequestDto = new PostAndGameRequestDto(
             "운동 이름",
             "2022-11-25T00:00:00.000Z",
-            "09,00,12,50",
+            "am", "09", "00", "pm", "12", "50",
             "운동 장소",
             gameTargetMemberCount,
             "게시물 상세 내용"
@@ -206,7 +206,12 @@ class PostControllerTest {
         Long userId,
         String gameExercise,
         String gameDate,
-        String gameTime,
+        String gameStartTimeAmPm,
+        String gameStartHour,
+        String gameStartMinute,
+        String gameEndTimeAmPm,
+        String gameEndHour,
+        String gameEndMinute,
         String gamePlace,
         Integer gameTargetMemberCount,
         String postDetail
@@ -215,7 +220,12 @@ class PostControllerTest {
             userId,
             gameExercise,
             gameDate,
-            gameTime,
+            gameStartTimeAmPm,
+            gameStartHour,
+            gameStartMinute,
+            gameEndTimeAmPm,
+            gameEndHour,
+            gameEndMinute,
             gamePlace,
             gameTargetMemberCount,
             postDetail
@@ -228,7 +238,12 @@ class PostControllerTest {
                 .content("{" +
                     "\"gameExercise\":\"" + gameExercise + "\"," +
                     "\"gameDate\":\"" + gameDate + "\"," +
-                    "\"gameTime\":\"" + gameTime + "\"," +
+                    "\"gameStartTimeAmPm\":\"" + gameStartTimeAmPm + "\"," +
+                    "\"gameStartHour\":\"" + gameStartHour + "\"," +
+                    "\"gameStartMinute\":\"" + gameStartMinute + "\"," +
+                    "\"gameEndTimeAmPm\":\"" + gameEndTimeAmPm + "\"," +
+                    "\"gameEndHour\":\"" + gameEndHour + "\"," +
+                    "\"gameEndMinute\":\"" + gameEndMinute + "\"," +
                     "\"gamePlace\":\"" + gamePlace + "\"," +
                     "\"gameTargetMemberCount\":" + gameTargetMemberCount + "," +
                     "\"postDetail\":\"" + postDetail + "\"" +
@@ -244,7 +259,12 @@ class PostControllerTest {
         Long userId,
         String gameExercise,
         String gameDate,
-        String gameTime,
+        String gameStartTimeAmPm,
+        String gameStartHour,
+        String gameStartMinute,
+        String gameEndTimeAmPm,
+        String gameEndHour,
+        String gameEndMinute,
         String gamePlace,
         Integer gameTargetMemberCount,
         String postDetail,
@@ -254,7 +274,12 @@ class PostControllerTest {
             userId,
             gameExercise,
             gameDate,
-            gameTime,
+            gameStartTimeAmPm,
+            gameStartHour,
+            gameStartMinute,
+            gameEndTimeAmPm,
+            gameEndHour,
+            gameEndMinute,
             gamePlace,
             gameTargetMemberCount,
             postDetail
@@ -267,7 +292,12 @@ class PostControllerTest {
                 .content("{" +
                     "\"gameExercise\":\"" + gameExercise + "\"," +
                     "\"gameDate\":\"" + gameDate + "\"," +
-                    "\"gameTime\":\"" + gameTime + "\"," +
+                    "\"gameStartTimeAmPm\":\"" + gameStartTimeAmPm + "\"," +
+                    "\"gameStartHour\":\"" + gameStartHour + "\"," +
+                    "\"gameStartMinute\":\"" + gameStartMinute + "\"," +
+                    "\"gameEndTimeAmPm\":\"" + gameEndTimeAmPm + "\"," +
+                    "\"gameEndHour\":\"" + gameEndHour + "\"," +
+                    "\"gameEndMinute\":\"" + gameEndMinute + "\"," +
                     "\"gamePlace\":\"" + gamePlace + "\"," +
                     "\"gameTargetMemberCount\":" + gameTargetMemberCount + "," +
                     "\"postDetail\":\"" + postDetail + "\"" +
@@ -285,7 +315,12 @@ class PostControllerTest {
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail()
@@ -300,7 +335,12 @@ class PostControllerTest {
             userId,
             blankGameExercise,
             postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),
@@ -316,7 +356,12 @@ class PostControllerTest {
             userId,
             postAndGameRequestDto.getGameExercise(),
             blankGameDate,
-            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),
@@ -325,14 +370,19 @@ class PostControllerTest {
     }
 
     @Test
-    void createPostWithBlankGameTime() throws Exception {
-        String blankGameTime = "";
-        String errorMessage = "운동 시간을 입력해주세요.";
+    void createPostWithBlankGameStartTimeAmPm() throws Exception {
+        String blankGameStartTimeAmPm = "";
+        String errorMessage = "시작시간 오전/오후 구분을 입력해주세요.";
         createPostWithError(
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
-            blankGameTime,
+            blankGameStartTimeAmPm,
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),
@@ -341,14 +391,19 @@ class PostControllerTest {
     }
 
     @Test
-    void createPostWithNotFilledGameTime() throws Exception {
-        String notFilledGameTime = "08,,11,30";
-        String errorMessage = "입력하지 않은 운동 시간이 있습니다.";
+    void createPostWithBlankGameStartHour() throws Exception {
+        String blankGameStartHour = "";
+        String errorMessage = "시작 시간을 입력해주세요.";
         createPostWithError(
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
-            notFilledGameTime,
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            blankGameStartHour,
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),
@@ -364,7 +419,12 @@ class PostControllerTest {
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             blankGamePlace,
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),
@@ -380,7 +440,12 @@ class PostControllerTest {
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             nullGameTargetMemberCount,
             postAndGameRequestDto.getPostDetail(),
@@ -396,7 +461,12 @@ class PostControllerTest {
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             blankPostDetail,
@@ -411,7 +481,12 @@ class PostControllerTest {
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),

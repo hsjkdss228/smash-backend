@@ -34,13 +34,17 @@ import java.util.stream.Collectors;
 public class PostController {
     private static final Integer BLANK_GAME_EXERCISE = 100;
     private static final Integer BLANK_GAME_DATE = 101;
-    private static final Integer BLANK_GAME_TIME = 102;
-    private static final Integer NOT_FILLED_GAME_TIME = 103;
-    private static final Integer BLANK_GAME_PLACE = 104;
-    private static final Integer NULL_GAME_TARGET_MEMBER_COUNT = 105;
-    private static final Integer BLANK_POST_DETAIL = 106;
-    private static final Integer USER_NOT_FOUND = 107;
-    private static final Integer DEFAULT_ERROR = 108;
+    private static final Integer BLANK_GAME_START_AM_PM = 102;
+    private static final Integer BLANK_GAME_START_HOUR = 103;
+    private static final Integer BLANK_GAME_START_MINUTE = 104;
+    private static final Integer BLANK_GAME_END_AM_PM = 105;
+    private static final Integer BLANK_GAME_END_HOUR = 106;
+    private static final Integer BLANK_GAME_END_MINUTE = 107;
+    private static final Integer BLANK_GAME_PLACE = 108;
+    private static final Integer NULL_GAME_TARGET_MEMBER_COUNT = 109;
+    private static final Integer BLANK_POST_DETAIL = 110;
+    private static final Integer USER_NOT_FOUND = 111;
+    private static final Integer DEFAULT_ERROR = 112;
 
     private final GetPostsService getPostsService;
     private final GetPostService getPostService;
@@ -90,7 +94,12 @@ public class PostController {
             accessedUserId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGameStartTimeAmPm(),
+            postAndGameRequestDto.getGameStartHour(),
+            postAndGameRequestDto.getGameStartMinute(),
+            postAndGameRequestDto.getGameEndTimeAmPm(),
+            postAndGameRequestDto.getGameEndHour(),
+            postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail()
@@ -123,8 +132,12 @@ public class PostController {
         return switch (errorMessage) {
             case "운동을 입력해주세요." -> BLANK_GAME_EXERCISE;
             case "운동 날짜를 입력해주세요." -> BLANK_GAME_DATE;
-            case "운동 시간을 입력해주세요." -> BLANK_GAME_TIME;
-            case "입력하지 않은 운동 시간이 있습니다." -> NOT_FILLED_GAME_TIME;
+            case "시작시간 오전/오후 구분을 입력해주세요." -> BLANK_GAME_START_AM_PM;
+            case "시작 시간을 입력해주세요." -> BLANK_GAME_START_HOUR;
+            case "시작 분을 입력해주세요." -> BLANK_GAME_START_MINUTE;
+            case "종료시간 오전/오후 구분을 입력해주세요." -> BLANK_GAME_END_AM_PM;
+            case "종료 시간을 입력해주세요." -> BLANK_GAME_END_HOUR;
+            case "종료 분을 입력해주세요." -> BLANK_GAME_END_MINUTE;
             case "운동 장소 이름을 입력해주세요." -> BLANK_GAME_PLACE;
             case "사용자 수를 입력해주세요." -> NULL_GAME_TARGET_MEMBER_COUNT;
             case "게시물 상세 내용을 입력해주세요." -> BLANK_POST_DETAIL;

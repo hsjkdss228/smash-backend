@@ -1,11 +1,9 @@
 package kr.megaptera.smash.dtos;
 
 import kr.megaptera.smash.validations.NotBlankGroup;
-import kr.megaptera.smash.validations.PatternMatchGroup;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 public class PostAndGameRequestDto {
     @NotBlank(
@@ -20,12 +18,33 @@ public class PostAndGameRequestDto {
 
     @NotBlank(
         groups = NotBlankGroup.class,
-        message = "운동 시간을 입력해주세요.")
-    @Pattern(
-        groups = PatternMatchGroup.class,
-        regexp = "^(?=.*\\d)\\d{1,2},\\d{1,2},\\d{1,2},\\d{1,2}$",
-        message = "입력하지 않은 운동 시간이 있습니다.")
-    private String gameTime;
+        message = "시작시간 오전/오후 구분을 입력해주세요.")
+    private String gameStartTimeAmPm;
+
+    @NotBlank(
+        groups = NotBlankGroup.class,
+        message = "시작 시간을 입력해주세요.")
+    private String gameStartHour;
+
+    @NotBlank(
+        groups = NotBlankGroup.class,
+        message = "시작 분을 입력해주세요.")
+    private String gameStartMinute;
+
+    @NotBlank(
+        groups = NotBlankGroup.class,
+        message = "종료시간 오전/오후 구분을 입력해주세요.")
+    private String gameEndTimeAmPm;
+
+    @NotBlank(
+        groups = NotBlankGroup.class,
+        message = "종료 시간을 입력해주세요.")
+    private String gameEndHour;
+
+    @NotBlank(
+        groups = NotBlankGroup.class,
+        message = "종료 분을 입력해주세요.")
+    private String gameEndMinute;
 
     @NotBlank(
         groups = NotBlankGroup.class,
@@ -48,13 +67,24 @@ public class PostAndGameRequestDto {
 
     public PostAndGameRequestDto(String gameExercise,
                                  String gameDate,
-                                 String gameTime,
+                                 String gameStartTimeAmPm,
+                                 String gameStartHour,
+                                 String gameStartMinute,
+                                 String gameEndTimeAmPm,
+                                 String gameEndHour,
+                                 String gameEndMinute,
                                  String gamePlace,
                                  Integer gameTargetMemberCount,
-                                 String postDetail) {
+                                 String postDetail
+    ) {
         this.gameExercise = gameExercise;
         this.gameDate = gameDate;
-        this.gameTime = gameTime;
+        this.gameStartTimeAmPm = gameStartTimeAmPm;
+        this.gameStartHour = gameStartHour;
+        this.gameStartMinute = gameStartMinute;
+        this.gameEndTimeAmPm = gameEndTimeAmPm;
+        this.gameEndHour = gameEndHour;
+        this.gameEndMinute = gameEndMinute;
         this.gamePlace = gamePlace;
         this.gameTargetMemberCount = gameTargetMemberCount;
         this.postDetail = postDetail;
@@ -68,8 +98,28 @@ public class PostAndGameRequestDto {
         return gameDate;
     }
 
-    public String getGameTime() {
-        return gameTime;
+    public String getGameStartTimeAmPm() {
+        return gameStartTimeAmPm;
+    }
+
+    public String getGameStartHour() {
+        return gameStartHour;
+    }
+
+    public String getGameStartMinute() {
+        return gameStartMinute;
+    }
+
+    public String getGameEndTimeAmPm() {
+        return gameEndTimeAmPm;
+    }
+
+    public String getGameEndHour() {
+        return gameEndHour;
+    }
+
+    public String getGameEndMinute() {
+        return gameEndMinute;
     }
 
     public String getGamePlace() {
