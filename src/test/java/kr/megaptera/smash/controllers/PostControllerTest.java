@@ -7,6 +7,7 @@ import kr.megaptera.smash.dtos.PostAndGameRequestDto;
 import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
+import kr.megaptera.smash.exceptions.CreatePostFailed;
 import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Post;
@@ -201,16 +202,23 @@ class PostControllerTest {
         ;
     }
 
-    @Test
-    void createPost() throws Exception {
+    private void createPostNormal(
+        Long userId,
+        String gameExercise,
+        String gameDate,
+        String gameTime,
+        String gamePlace,
+        Integer gameTargetMemberCount,
+        String postDetail
+    ) throws Exception {
         given(createPostService.createPost(
             userId,
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameTime(),
-            postAndGameRequestDto.getGamePlace(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail()
+            gameExercise,
+            gameDate,
+            gameTime,
+            gamePlace,
+            gameTargetMemberCount,
+            postDetail
         )).willReturn(createPostAndGameResultDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
@@ -218,17 +226,196 @@ class PostControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                    "\"gameExercise\":\"운동 이름\"," +
-                    "\"gameDate\":\"2022-11-25T00:00:00.000Z\"," +
-                    "\"gameTime\":\"09,00,12,50\"," +
-                    "\"gamePlace\":\"운동 장소\"," +
-                    "\"gameTargetMemberCount\":10," +
-                    "\"postDetail\":\"게시물 상세 내용\"" +
+                    "\"gameExercise\":\"" + gameExercise + "\"," +
+                    "\"gameDate\":\"" + gameDate + "\"," +
+                    "\"gameTime\":\"" + gameTime + "\"," +
+                    "\"gamePlace\":\"" + gamePlace + "\"," +
+                    "\"gameTargetMemberCount\":" + gameTargetMemberCount + "," +
+                    "\"postDetail\":\"" + postDetail + "\"" +
                     "}"))
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"postId\":11")
             ))
         ;
+    }
+
+    private void createPostWithError(
+        Long userId,
+        String gameExercise,
+        String gameDate,
+        String gameTime,
+        String gamePlace,
+        Integer gameTargetMemberCount,
+        String postDetail,
+        String errorMessage
+    ) throws Exception {
+        given(createPostService.createPost(
+            userId,
+            gameExercise,
+            gameDate,
+            gameTime,
+            gamePlace,
+            gameTargetMemberCount,
+            postDetail
+        )).willThrow(new CreatePostFailed(errorMessage));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                    "\"gameExercise\":\"" + gameExercise + "\"," +
+                    "\"gameDate\":\"" + gameDate + "\"," +
+                    "\"gameTime\":\"" + gameTime + "\"," +
+                    "\"gamePlace\":\"" + gamePlace + "\"," +
+                    "\"gameTargetMemberCount\":" + gameTargetMemberCount + "," +
+                    "\"postDetail\":\"" + postDetail + "\"" +
+                    "}"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString(errorMessage)
+            ))
+        ;
+    }
+
+    @Test
+    void createPost() throws Exception {
+        createPostNormal(
+            userId,
+            postAndGameRequestDto.getGameExercise(),
+            postAndGameRequestDto.getGameDate(),
+            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getGameTargetMemberCount(),
+            postAndGameRequestDto.getPostDetail()
+        );
+    }
+
+    @Test
+    void createPostWithBlankGameExercise() throws Exception {
+        String blankGameExercise = "";
+        String errorMessage = "운동을 입력해주세요.";
+        createPostWithError(
+            userId,
+            blankGameExercise,
+            postAndGameRequestDto.getGameDate(),
+            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getGameTargetMemberCount(),
+            postAndGameRequestDto.getPostDetail(),
+            errorMessage
+        );
+    }
+
+    @Test
+    void createPostWithBlankGameDate() throws Exception {
+        String blankGameDate = "";
+        String errorMessage = "운동 날짜를 입력해주세요.";
+        createPostWithError(
+            userId,
+            postAndGameRequestDto.getGameExercise(),
+            blankGameDate,
+            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getGameTargetMemberCount(),
+            postAndGameRequestDto.getPostDetail(),
+            errorMessage
+        );
+    }
+
+    @Test
+    void createPostWithBlankGameTime() throws Exception {
+        String blankGameTime = "";
+        String errorMessage = "운동 시간을 입력해주세요.";
+        createPostWithError(
+            userId,
+            postAndGameRequestDto.getGameExercise(),
+            postAndGameRequestDto.getGameDate(),
+            blankGameTime,
+            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getGameTargetMemberCount(),
+            postAndGameRequestDto.getPostDetail(),
+            errorMessage
+        );
+    }
+
+    @Test
+    void createPostWithNotFilledGameTime() throws Exception {
+        String notFilledGameTime = "08,,11,30";
+        String errorMessage = "입력하지 않은 운동 시간이 있습니다.";
+        createPostWithError(
+            userId,
+            postAndGameRequestDto.getGameExercise(),
+            postAndGameRequestDto.getGameDate(),
+            notFilledGameTime,
+            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getGameTargetMemberCount(),
+            postAndGameRequestDto.getPostDetail(),
+            errorMessage
+        );
+    }
+
+    @Test
+    void createPostWithBlankGamePlace() throws Exception {
+        String blankGamePlace = "";
+        String errorMessage = "운동 장소 이름을 입력해주세요.";
+        createPostWithError(
+            userId,
+            postAndGameRequestDto.getGameExercise(),
+            postAndGameRequestDto.getGameDate(),
+            postAndGameRequestDto.getGameTime(),
+            blankGamePlace,
+            postAndGameRequestDto.getGameTargetMemberCount(),
+            postAndGameRequestDto.getPostDetail(),
+            errorMessage
+        );
+    }
+
+    @Test
+    void createPostWithNullGameTargetMemberCount() throws Exception {
+        Integer nullGameTargetMemberCount = null;
+        String errorMessage = "사용자 수를 입력해주세요.";
+        createPostWithError(
+            userId,
+            postAndGameRequestDto.getGameExercise(),
+            postAndGameRequestDto.getGameDate(),
+            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGamePlace(),
+            nullGameTargetMemberCount,
+            postAndGameRequestDto.getPostDetail(),
+            errorMessage
+        );
+    }
+
+    @Test
+    void createPostWithBlankPostDetail() throws Exception {
+        String blankPostDetail = "";
+        String errorMessage = "게시물 상세 내용을 입력해주세요.";
+        createPostWithError(
+            userId,
+            postAndGameRequestDto.getGameExercise(),
+            postAndGameRequestDto.getGameDate(),
+            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getGameTargetMemberCount(),
+            blankPostDetail,
+            errorMessage
+        );
+    }
+
+    @Test
+    void createPostWithUserNotFound() throws Exception {
+        String errorMessage = "접속한 사용자를 찾을 수 없습니다.";
+        createPostWithError(
+            userId,
+            postAndGameRequestDto.getGameExercise(),
+            postAndGameRequestDto.getGameDate(),
+            postAndGameRequestDto.getGameTime(),
+            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getGameTargetMemberCount(),
+            postAndGameRequestDto.getPostDetail(),
+            errorMessage
+        );
     }
 }

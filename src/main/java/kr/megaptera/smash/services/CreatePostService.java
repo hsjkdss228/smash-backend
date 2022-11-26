@@ -46,7 +46,8 @@ public class CreatePostService {
         String postDetail
     ) {
         User user = userRepository.findById(accessedUserId)
-            .orElseThrow(() -> new CreatePostFailed("사용자를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CreatePostFailed(
+                "접속한 사용자를 찾을 수 없습니다."));
 
         Post post = new Post(
             user.id(),
