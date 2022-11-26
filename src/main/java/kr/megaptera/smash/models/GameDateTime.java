@@ -42,18 +42,45 @@ public class GameDateTime {
     }
 
     public String joinDateAndTime() {
-        String startHour = formatTime(startTime.getHour());
+        String startTimeAmPm = calculateAmPm(startTime.getHour());
+        String endTimeAmPm = calculateAmPm(endTime.getHour());
+
+        int startHour = convertHourStyle(startTime.getHour(), startTimeAmPm);
+        String formattedStartHour = formatTime(startHour);
+
+        int endHour = convertHourStyle(endTime.getHour(), endTimeAmPm);
+        String formattedEndHour = formatTime(endHour);
+
         String startMinute = formatTime(startTime.getMinute());
-        String endHour = formatTime(endTime.getHour());
         String endMinute = formatTime(endTime.getMinute());
 
         return date.getYear() + "년 "
             + date.getMonthValue() + "월 "
             + date.getDayOfMonth() + "일 "
-            + startHour + ":"
-            + startMinute + "~"
-            + endHour + ":"
+            + startTimeAmPm + " "
+            + formattedStartHour + ":"
+            + startMinute + " ~ "
+            + endTimeAmPm + " "
+            + formattedEndHour + ":"
             + endMinute;
+    }
+
+    private String calculateAmPm(int hour) {
+        return hour < 12
+            ? "오전"
+            : "오후";
+    }
+
+    private int convertHourStyle(int hour, String timeAmPm) {
+        if (hour == 0 && timeAmPm.equals("오전")) {
+            return 12;
+        }
+
+        if (hour > 12 && timeAmPm.equals("오후")) {
+            return hour - 12;
+        }
+
+        return hour;
     }
 
     private String formatTime(int time) {
