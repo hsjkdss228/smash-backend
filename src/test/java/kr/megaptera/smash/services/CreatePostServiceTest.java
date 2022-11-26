@@ -2,6 +2,7 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
 import kr.megaptera.smash.dtos.PostAndGameRequestDto;
+import kr.megaptera.smash.exceptions.CreatePostFailed;
 import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.GameDateTime;
@@ -22,9 +23,11 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 class CreatePostServiceTest {
@@ -154,5 +157,27 @@ class CreatePostServiceTest {
             .isEqualTo(LocalTime.of(7, 30));
         assertThat(gameDateTime.endTime())
             .isEqualTo(LocalTime.of(11, 0));
+    }
+
+    @Test
+    void createPostWithUserNotFound() {
+        given(userRepository.findById(user.id()))
+            .willThrow(CreatePostFailed.class);
+
+        assertThrows(CreatePostFailed.class, () -> {
+            createPostService.createPost(
+                user.id(),
+                postAndGameRequestDto.getGameExercise(),
+                postAndGameRequestDto.getGameDate(),
+                postAndGameRequestDto.getGameTime(),
+                postAndGameRequestDto.getGamePlace(),
+                postAndGameRequestDto.getGameTargetMemberCount(),
+                postAndGameRequestDto.getPostDetail()
+            );
+        });
+
+        verify(userRepository).findById(user.id());
+        verify(postRepository, never()).save(any(Post.class));
+        verify(gameRepository, never()).save(any(Game.class));
     }
 }

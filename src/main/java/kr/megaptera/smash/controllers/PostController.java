@@ -1,15 +1,20 @@
 package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
+import kr.megaptera.smash.dtos.CreatePostFailedErrorDto;
 import kr.megaptera.smash.dtos.PostAndGameRequestDto;
 import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.dtos.PostsFailedErrorDto;
+import kr.megaptera.smash.exceptions.CreatePostFailed;
 import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.services.CreatePostService;
 import kr.megaptera.smash.services.GetPostService;
 import kr.megaptera.smash.services.GetPostsService;
+import kr.megaptera.smash.validations.ValidationSequence;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,9 +25,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("posts")
 public class PostController {
+    private static final Integer BLANK_GAME_EXERCISE = 100;
+    private static final Integer BLANK_GAME_DATE = 101;
+    private static final Integer BLANK_GAME_TIME = 102;
+    private static final Integer NOT_FILLED_GAME_TIME = 103;
+    private static final Integer BLANK_GAME_PLACE = 104;
+    private static final Integer NULL_GAME_TARGET_MEMBER_COUNT = 105;
+    private static final Integer BLANK_POST_DETAIL = 106;
+    private static final Integer USER_NOT_FOUND = 107;
+    private static final Integer DEFAULT_ERROR = 108;
+
     private final GetPostsService getPostsService;
     private final GetPostService getPostService;
     private final CreatePostService createPostService;
@@ -54,11 +73,18 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public CreatePostAndGameResultDto createPost(
         @RequestAttribute("userId") Long accessedUserId,
-        @RequestBody PostAndGameRequestDto postAndGameRequestDto
+        @Validated(value = {ValidationSequence.class})
+        @RequestBody PostAndGameRequestDto postAndGameRequestDto,
+        BindingResult bindingResult
     ) {
-        System.out.println("*".repeat(10));
-        System.out.println(postAndGameRequestDto.getGameDate());
-        System.out.println("*".repeat(10));
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getAllErrors()
+                .stream()
+                .map(error -> error.getDefaultMessage())
+                .toList();
+
+            throw new CreatePostFailed(errorMessages);
+        }
 
         return createPostService.createPost(
             accessedUserId,
@@ -75,5 +101,35 @@ public class PostController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public PostsFailedErrorDto postsFailed(PostsFailed exception) {
         return new PostsFailedErrorDto(exception.getMessage());
+    }
+
+    @ExceptionHandler(CreatePostFailed.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CreatePostFailedErrorDto createPostFailed(CreatePostFailed exception) {
+        Map<Integer, String> errorCodeAndMessages
+            = exception.errorMessages()
+            .stream()
+            .collect(Collectors.toMap(
+                this::mapToErrorCode,
+                errorMessage -> mapToErrorCode(errorMessage).equals(DEFAULT_ERROR)
+                    ? "알 수 없는 게시글 작성 오류입니다."
+                    : errorMessage
+            ));
+
+        return new CreatePostFailedErrorDto(errorCodeAndMessages);
+    }
+
+    private Integer mapToErrorCode(String errorMessage) {
+        return switch (errorMessage) {
+            case "운동을 입력해주세요." -> BLANK_GAME_EXERCISE;
+            case "운동 날짜를 입력해주세요." -> BLANK_GAME_DATE;
+            case "운동 시간을 입력해주세요." -> BLANK_GAME_TIME;
+            case "입력하지 않은 운동 시간이 있습니다." -> NOT_FILLED_GAME_TIME;
+            case "운동 장소 이름을 입력해주세요." -> BLANK_GAME_PLACE;
+            case "사용자 수를 입력해주세요." -> NULL_GAME_TARGET_MEMBER_COUNT;
+            case "게시물 상세 내용을 입력해주세요." -> BLANK_POST_DETAIL;
+            case "접속한 사용자를 찾을 수 없습니다." -> USER_NOT_FOUND;
+            default -> DEFAULT_ERROR;
+        };
     }
 }
