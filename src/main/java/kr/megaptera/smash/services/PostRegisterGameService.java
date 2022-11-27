@@ -2,6 +2,7 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.RegisterGameFailed;
+import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
@@ -30,10 +31,9 @@ public class PostRegisterGameService {
 
     public RegisterGameResultDto registerGame(Long gameId,
                                               Long accessedUserId) {
-        if (gameRepository.findById(gameId).isEmpty()) {
-            throw new RegisterGameFailed(
-                "주어진 게임 번호에 해당하는 게임을 찾을 수 없습니다.");
-        }
+        Game game = gameRepository.findById(gameId)
+            .orElseThrow(() -> new RegisterGameFailed(
+                "주어진 게임 번호에 해당하는 게임을 찾을 수 없습니다."));
 
         List<Register> applicantsAndMembers = registerRepository.findByGameId(gameId);
 
@@ -48,6 +48,14 @@ public class PostRegisterGameService {
         User user = userRepository.findById(accessedUserId)
             .orElseThrow(() -> new RegisterGameFailed(
                 "주어진 사용자 번호에 해당하는 사용자를 찾을 수 없습니다."));
+
+        List<Register> members = applicantsAndMembers.stream()
+            .filter(person -> person.status().value().equals(RegisterStatus.ACCEPTED))
+            .toList();
+
+        if (members.size() >= game.targetMemberCount().value()) {
+            throw new RegisterGameFailed("참가 정원이 모두 차 참가를 신청할 수 없습니다.", game.id());
+        }
 
         Register register = new Register(
             accessedUserId,

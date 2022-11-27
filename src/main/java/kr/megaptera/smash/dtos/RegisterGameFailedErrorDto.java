@@ -5,9 +5,14 @@ public class RegisterGameFailedErrorDto {
 
     private final String errorMessage;
 
-    public RegisterGameFailedErrorDto(Integer errorCode, String errorMessage) {
+    private final Long gameId;
+
+    public RegisterGameFailedErrorDto(Integer errorCode,
+                                      String errorMessage,
+                                      Long gameId) {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
+        this.gameId = gameId;
     }
 
     public Integer getErrorCode() {
@@ -16,5 +21,9 @@ public class RegisterGameFailedErrorDto {
 
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    public Long getGameId() {
+        return gameId;
     }
 }
