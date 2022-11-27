@@ -10,7 +10,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -45,7 +44,8 @@ public class SmashApplication {
                     .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.POST.name(),
-                        HttpMethod.PATCH.name()
+                        HttpMethod.PATCH.name(),
+                        HttpMethod.DELETE.name()
                     )
                 ;
             }

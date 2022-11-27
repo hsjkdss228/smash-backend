@@ -14,6 +14,7 @@ import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.services.CreatePostService;
+import kr.megaptera.smash.services.DeletePostService;
 import kr.megaptera.smash.services.GetPostService;
 import kr.megaptera.smash.services.GetPostsService;
 import kr.megaptera.smash.utils.JwtUtil;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @MockMvcEncoding
 @WebMvcTest(PostController.class)
@@ -47,7 +49,7 @@ class PostControllerTest {
     private List<PostListDto> postListDtos;
     private PostsDto postsDto;
 
-    // GET post
+    // GET posts/{postId}
     @MockBean
     private GetPostService getPostService;
 
@@ -59,6 +61,10 @@ class PostControllerTest {
 
     private PostAndGameRequestDto postAndGameRequestDto;
     private CreatePostAndGameResultDto createPostAndGameResultDto;
+
+    // DELETE posts/{postId}
+    @MockBean
+    private DeletePostService deletePostService;
 
     // stubs
     @SpyBean
@@ -126,7 +132,7 @@ class PostControllerTest {
         postsDto = new PostsDto(postListDtos);
 
 
-        // GET post
+        // GET posts/{postId}
         Post post = Post.fake("주말 오전 테니스 같이하실 여성분들 찾습니다.");
         User user = User.fake("The Prince of the Tennis", "PrinceOfTennis1234");
         postDetailDto = new PostDetailDto(
@@ -492,5 +498,14 @@ class PostControllerTest {
             postAndGameRequestDto.getPostDetail(),
             errorMessage
         );
+    }
+
+    @Test
+    void deletePost() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/posts/1")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        verify(deletePostService).deletePost(userId, targetPostId);
     }
 }

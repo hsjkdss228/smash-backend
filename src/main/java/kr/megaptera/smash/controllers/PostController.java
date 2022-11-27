@@ -9,12 +9,14 @@ import kr.megaptera.smash.dtos.PostsFailedErrorDto;
 import kr.megaptera.smash.exceptions.CreatePostFailed;
 import kr.megaptera.smash.exceptions.PostsFailed;
 import kr.megaptera.smash.services.CreatePostService;
+import kr.megaptera.smash.services.DeletePostService;
 import kr.megaptera.smash.services.GetPostService;
 import kr.megaptera.smash.services.GetPostsService;
 import kr.megaptera.smash.validations.ValidationSequence;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,13 +51,16 @@ public class PostController {
     private final GetPostsService getPostsService;
     private final GetPostService getPostService;
     private final CreatePostService createPostService;
+    private final DeletePostService deletePostService;
 
     public PostController(GetPostsService getPostsService,
                           GetPostService getPostService,
-                          CreatePostService createPostService) {
+                          CreatePostService createPostService,
+                          DeletePostService deletePostService) {
         this.getPostsService = getPostsService;
         this.getPostService = getPostService;
         this.createPostService = createPostService;
+        this.deletePostService = deletePostService;
     }
 
     @GetMapping
@@ -104,6 +109,15 @@ public class PostController {
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail()
         );
+    }
+
+    @DeleteMapping("{postId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePost(
+        @RequestAttribute("userId") Long accessedUserId,
+        @PathVariable("postId") Long targetPostId
+    ) {
+        deletePostService.deletePost(accessedUserId, targetPostId);
     }
 
     @ExceptionHandler(PostsFailed.class)
