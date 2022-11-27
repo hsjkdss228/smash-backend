@@ -1,5 +1,11 @@
 package kr.megaptera.smash.services;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import kr.megaptera.smash.dtos.ApplicantDetailDto;
 import kr.megaptera.smash.dtos.ApplicantsDetailDto;
 import kr.megaptera.smash.models.Register;
@@ -11,11 +17,6 @@ import kr.megaptera.smash.models.UserName;
 import kr.megaptera.smash.models.UserPhoneNumber;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -36,50 +37,50 @@ class GetProcessingRegisterServiceTest {
         registerRepository = mock(RegisterRepository.class);
         userRepository = mock(UserRepository.class);
         getProcessingRegisterService
-            = new GetProcessingRegisterService(
-            registerRepository, userRepository);
+                = new GetProcessingRegisterService(
+                registerRepository, userRepository);
 
         applicants = List.of(
-            new Register(
-                1L,
-                1L,
-                1L,
-                new RegisterStatus(RegisterStatus.PROCESSING)
-            ),
-            new Register(
-                2L,
-                2L,
-                1L,
-                new RegisterStatus(RegisterStatus.PROCESSING)
-            ),
-            new Register(
-                3L,
-                3L,
-                1L,
-                new RegisterStatus(RegisterStatus.ACCEPTED)
-            ),
-            new Register(
-                4L,
-                4L,
-                1L,
-                new RegisterStatus(RegisterStatus.CANCELED)
-            )
+                new Register(
+                        1L,
+                        1L,
+                        1L,
+                        RegisterStatus.processing()
+                ),
+                new Register(
+                        2L,
+                        2L,
+                        1L,
+                        RegisterStatus.processing()
+                ),
+                new Register(
+                        3L,
+                        3L,
+                        1L,
+                        RegisterStatus.accepted()
+                ),
+                new Register(
+                        4L,
+                        4L,
+                        1L,
+                        RegisterStatus.canceled()
+                )
         );
         users = List.of(
-            new User(
-                1L,
-                new UserAccount("hsjkdss228"),
-                new UserName("사용자 이름 1"),
-                new UserGender("남성"),
-                new UserPhoneNumber("010-1234-5678")
-            ),
-            new User(
-                2L,
-                new UserAccount("dhkddlsgn228"),
-                new UserName("사용자 이름 2"),
-                new UserGender("여성"),
-                new UserPhoneNumber("010-2345-6789")
-            )
+                new User(
+                        1L,
+                        new UserAccount("hsjkdss228"),
+                        new UserName("사용자 이름 1"),
+                        new UserGender("남성"),
+                        new UserPhoneNumber("010-1234-5678")
+                ),
+                new User(
+                        2L,
+                        new UserAccount("dhkddlsgn228"),
+                        new UserName("사용자 이름 2"),
+                        new UserGender("여성"),
+                        new UserPhoneNumber("010-2345-6789")
+                )
         );
     }
 
@@ -87,18 +88,18 @@ class GetProcessingRegisterServiceTest {
     void findApplicants() {
         Long targetGameId = 1L;
         given(registerRepository.findAllByGameId(targetGameId))
-            .willReturn(applicants);
+                .willReturn(applicants);
         given(userRepository.findById(applicants.get(0).userId()))
-            .willReturn(Optional.of(users.get(0)));
+                .willReturn(Optional.of(users.get(0)));
         given(userRepository.findById(applicants.get(1).userId()))
-            .willReturn(Optional.of(users.get(1)));
+                .willReturn(Optional.of(users.get(1)));
 
         ApplicantsDetailDto applicantsDetailDto
-            = getProcessingRegisterService.findApplicants(targetGameId);
+                = getProcessingRegisterService.findApplicants(targetGameId);
 
         assertThat(applicantsDetailDto).isNotNull();
         List<ApplicantDetailDto> applicantDetailDtos
-            = applicantsDetailDto.getApplicants();
+                = applicantsDetailDto.getApplicants();
         assertThat(applicantDetailDtos.size()).isEqualTo(2);
         assertThat(applicantDetailDtos.get(0).getName()).isEqualTo("사용자 이름 1");
         assertThat(applicantDetailDtos.get(1).getGender()).isEqualTo("여성");
