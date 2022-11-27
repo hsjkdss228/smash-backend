@@ -29,7 +29,8 @@ public class RegisterController {
     private static final Integer GAME_NOT_FOUND = 100;
     private static final Integer ALREADY_REGISTERED_GAME = 101;
     private static final Integer USER_NOT_FOUND = 102;
-    private static final Integer DEFAULT = 103;
+    private static final Integer FULLY_PARTICIPANTS = 103;
+    private static final Integer DEFAULT = 104;
 
     private final GetAcceptedRegisterService getAcceptedRegisterService;
     private final GetProcessingRegisterService getProcessingRegisterService;
@@ -99,7 +100,12 @@ public class RegisterController {
         String errorMessage = errorCode.equals(DEFAULT)
             ? "알 수 없는 에러입니다."
             : exception.getMessage();
-        return new RegisterGameFailedErrorDto(errorCode, errorMessage);
+
+        return new RegisterGameFailedErrorDto(
+            errorCode,
+            errorMessage,
+            exception.getGameId()
+        );
     }
 
     private Integer setCodeFromMessage(String errorMessage) {
@@ -107,6 +113,7 @@ public class RegisterController {
             case "주어진 게임 번호에 해당하는 게임을 찾을 수 없습니다." -> GAME_NOT_FOUND;
             case "이미 신청이 완료된 운동입니다." -> ALREADY_REGISTERED_GAME;
             case "주어진 사용자 번호에 해당하는 사용자를 찾을 수 없습니다." -> USER_NOT_FOUND;
+            case "참가 정원이 모두 차 참가를 신청할 수 없습니다." -> FULLY_PARTICIPANTS;
             default -> DEFAULT;
         };
     }

@@ -212,6 +212,21 @@ class RegisterControllerTest {
     }
 
     @Test
+    void registerGameFailedWithFullyParticipants() throws Exception {
+        given(postRegisterGameService.registerGame(gameId, userId))
+            .willThrow(new RegisterGameFailed(
+                "참가 정원이 모두 차 참가를 신청할 수 없습니다."));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/registers/games/1")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("103")
+            ))
+        ;
+    }
+
+    @Test
     void cancelRegister() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.patch("/registers/4")
                 .header("Authorization", "Bearer " + token)

@@ -209,4 +209,54 @@ class PostRegisterGameServiceTest {
         verify(userRepository, never()).findById(notExistedUserId);
         verify(registerRepository, never()).save(any(Register.class));
     }
+
+    @Test
+    void registerGameWithFullyParticipants() {
+        Long gameId = 1L;
+        Game game = new Game(
+            gameId,
+            1L,
+            new Exercise("운동 종류"),
+            new GameDateTime(
+                LocalDate.of(2022, 10, 20),
+                LocalTime.of(14, 0),
+                LocalTime.of(17, 0)
+            ),
+            new Place("운동 장소"),
+            new GameTargetMemberCount(2)
+        );
+        given(gameRepository.findById(gameId)).willReturn(Optional.of(game));
+
+        List<Register> members = List.of(
+            new Register(
+                1L,
+                2L,
+                gameId,
+                new RegisterStatus(RegisterStatus.ACCEPTED)),
+            new Register(
+                2L,
+                3L,
+                gameId,
+                new RegisterStatus(RegisterStatus.ACCEPTED))
+        );
+        given(registerRepository.findByGameId(gameId)).willReturn(members);
+
+        Long userId = 1L;
+        User user = new User(
+            userId,
+            new UserAccount("MinjiRungRung12"),
+            new UserName("민지룽룽"),
+            new UserGender("여성"),
+            new UserPhoneNumber("010-2222-2222")
+        );
+        given(userRepository.findById(userId)).willReturn(Optional.of(user));
+
+        assertThrows(RegisterGameFailed.class, () -> {
+            postRegisterGameService.registerGame(gameId, userId);
+        });
+
+        verify(gameRepository).findById(gameId);
+        verify(registerRepository).findByGameId(gameId);
+        verify(registerRepository, never()).save(any(Register.class));
+    }
 }
