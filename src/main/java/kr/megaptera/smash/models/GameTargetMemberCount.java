@@ -21,10 +21,18 @@ public class GameTargetMemberCount {
         return value;
     }
 
+    public boolean reach(long count) {
+        return count >= value;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         GameTargetMemberCount that = (GameTargetMemberCount) o;
         return Objects.equals(value, that.value);
     }
@@ -36,8 +44,6 @@ public class GameTargetMemberCount {
 
     @Override
     public String toString() {
-        return "GameTargetMemberCount{" +
-            "value=" + value +
-            '}';
+        return value.toString();
     }
 }

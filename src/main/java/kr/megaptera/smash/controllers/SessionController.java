@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import kr.megaptera.smash.dtos.LoginFailedErrorDto;
 import kr.megaptera.smash.dtos.LoginRequestDto;
 import kr.megaptera.smash.dtos.LoginResultDto;
+import kr.megaptera.smash.exceptions.AuthenticationError;
 import kr.megaptera.smash.exceptions.LoginFailed;
 import kr.megaptera.smash.services.LoginService;
 import kr.megaptera.smash.utils.JwtUtil;
@@ -44,7 +45,7 @@ public class SessionController {
         }
 
         Long userId = loginService.verifyUser(
-            loginRequestDto.getIdentifier(),
+            loginRequestDto.getUsername(),
             loginRequestDto.getPassword()
         );
 
@@ -52,7 +53,7 @@ public class SessionController {
             String accessToken = jwtUtil.encode(userId);
             return new LoginResultDto(accessToken);
         } catch (JWTDecodeException exception) {
-            throw new LoginFailed("인코딩 과정에서 문제가 발생했습니다.");
+            throw new AuthenticationError();
         }
     }
 

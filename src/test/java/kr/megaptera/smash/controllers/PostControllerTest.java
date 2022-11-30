@@ -2,17 +2,19 @@ package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
-import kr.megaptera.smash.dtos.GameInPostListDto;
 import kr.megaptera.smash.dtos.PostAndGameRequestDto;
-import kr.megaptera.smash.dtos.PostDetailDto;
-import kr.megaptera.smash.dtos.PostListDto;
-import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.exceptions.CreatePostFailed;
-import kr.megaptera.smash.exceptions.PostsFailed;
+import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Game;
+import kr.megaptera.smash.models.GameTargetMemberCount;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.repositories.GameRepository;
+import kr.megaptera.smash.repositories.PostRepository;
+import kr.megaptera.smash.repositories.RegisterRepository;
+import kr.megaptera.smash.repositories.UserRepository;
 import kr.megaptera.smash.services.CreatePostService;
 import kr.megaptera.smash.services.DeletePostService;
 import kr.megaptera.smash.services.GetPostService;
@@ -29,8 +31,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
@@ -42,109 +44,38 @@ class PostControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    // GET posts
-    @MockBean
+    @SpyBean
     private GetPostsService getPostsService;
 
-    private List<PostListDto> postListDtos;
-    private PostsDto postsDto;
-
-    // GET posts/{postId}
-    @MockBean
+    @SpyBean
     private GetPostService getPostService;
 
-    private PostDetailDto postDetailDto;
-
-    // POST posts
     @MockBean
     private CreatePostService createPostService;
+
+    @MockBean
+    private DeletePostService deletePostService;
+
+    @MockBean
+    private PostRepository postRepository;
+
+    @MockBean
+    private GameRepository gameRepository;
+
+    @MockBean
+    private RegisterRepository registerRepository;
+
+    @MockBean
+    private UserRepository userRepository;
 
     private PostAndGameRequestDto postAndGameRequestDto;
     private CreatePostAndGameResultDto createPostAndGameResultDto;
 
-    // DELETE posts/{postId}
-    @MockBean
-    private DeletePostService deletePostService;
-
-    // stubs
     @SpyBean
     private JwtUtil jwtUtil;
 
-    private String token;
-
-    private Long userId = 1L;
-    private Long targetPostId = 1L;
-    private Long createdPostId = 11L;
-
     @BeforeEach
     void setUp() {
-        token = jwtUtil.encode(userId);
-
-        Boolean isAuthor = true;
-        Boolean isNotAuthor = false;
-        Long notRegisteredRegisterId = -1L;
-        String notRegisteredRegisterStatus = "none";
-        Long processingRegisteredId = 1L;
-        String processingRegisterStatus = "processing";
-
-        // GET posts
-        long generationCount = 2;
-        List<Post> posts = Post.fakes(generationCount);
-        List<Game> games = Game.fakes(generationCount);
-        List<List<Register>> membersOfGames = new ArrayList<>();
-        for (long gameId = 1; gameId <= generationCount; gameId += 1) {
-            List<Register> members = Register.fakeMembers(generationCount, gameId);
-            membersOfGames.add(members);
-        }
-
-        postListDtos = List.of(
-            new PostListDto(
-                posts.get(0).id(),
-                posts.get(0).hits().value(),
-                isAuthor,
-                new GameInPostListDto(
-                    games.get(0).id(),
-                    games.get(0).exercise().name(),
-                    games.get(0).dateTime().joinDateAndTime(),
-                    games.get(0).place().name(),
-                    membersOfGames.get(0).size(),
-                    games.get(0).targetMemberCount().value(),
-                    notRegisteredRegisterId,
-                    notRegisteredRegisterStatus
-                )
-            ),
-            new PostListDto(
-                posts.get(1).id(),
-                posts.get(1).hits().value(),
-                isNotAuthor,
-                new GameInPostListDto(
-                    games.get(1).id(),
-                    games.get(1).exercise().name(),
-                    games.get(1).dateTime().joinDateAndTime(),
-                    games.get(1).place().name(),
-                    membersOfGames.get(1).size(),
-                    games.get(1).targetMemberCount().value(),
-                    processingRegisteredId,
-                    processingRegisterStatus
-                )
-            )
-        );
-        postsDto = new PostsDto(postListDtos);
-
-
-        // GET posts/{postId}
-        Post post = Post.fake("주말 오전 테니스 같이하실 여성분들 찾습니다.");
-        User user = User.fake("The Prince of the Tennis", "PrinceOfTennis1234");
-        postDetailDto = new PostDetailDto(
-            post.id(),
-            post.hits().value(),
-            user.name().value(),
-            user.phoneNumber().value(),
-            post.detail().value(),
-            isAuthor
-        );
-
-        // POST post
         Integer gameTargetMemberCount = 10;
         postAndGameRequestDto = new PostAndGameRequestDto(
             "운동 이름",
@@ -154,56 +85,117 @@ class PostControllerTest {
             gameTargetMemberCount,
             "게시물 상세 내용"
         );
+        Long createdPostId = 11L;
         createPostAndGameResultDto
             = new CreatePostAndGameResultDto(createdPostId);
     }
 
     @Test
     void posts() throws Exception {
-        given(getPostsService.findAll(userId)).willReturn(postsDto);
+        int generationCount = 2;
+        List<Post> posts = Post.fakes(generationCount);
+        List<Game> games = Game.fakes(
+            generationCount,
+            new GameTargetMemberCount(3));
+        List<Register> registersGame1 = List.of(
+            Register.fakeAccepted(1L, games.get(0).id()),
+            Register.fakeProcessing(2L, games.get(0).id()),
+            Register.fakeAccepted(3L, games.get(0).id()),
+            Register.fakeCanceled(4L, games.get(0).id())
+        );
+        List<Register> registersGame2 = List.of(
+            Register.fakeRejected(5L, games.get(1).id()),
+            Register.fakeAccepted(6L, games.get(1).id()),
+            Register.fakeAccepted(7L, games.get(1).id()),
+            Register.fakeAccepted(8L, games.get(1).id())
+        );
+
+        Long currentUserId = 1L;
+        User user = User.fake(currentUserId);
+
+        given(userRepository.findById(currentUserId))
+            .willReturn(Optional.of(user));
+        given(postRepository.findAll()).willReturn(posts);
+        given(gameRepository.findByPostId(posts.get(0).id()))
+            .willReturn(Optional.of(games.get(0)));
+        given(gameRepository.findByPostId(posts.get(1).id()))
+            .willReturn(Optional.of(games.get(1)));
+        given(registerRepository.findAllByGameId(games.get(0).id()))
+            .willReturn(registersGame1);
+        given(registerRepository.findAllByGameId(games.get(1).id()))
+            .willReturn(registersGame2);
+
+        String token = jwtUtil.encode(currentUserId);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                 .header("Authorization", "Bearer " + token))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"hits\":123")
+                containsString("\"game\":{\"id\":2")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"game\":{\"id\":1")
+                containsString("\"currentMemberCount\":3")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"currentMemberCount\":2")
-            ))
-            .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"registerStatus\":\"none\"")
+                containsString("\"isAuthor\":true")
             ))
         ;
     }
 
     @Test
-    void postsFailed() throws Exception {
-        given(getPostsService.findAll(userId))
-            .willThrow(PostsFailed.class);
+    void postsWithUserNotFound() throws Exception {
+        Long invalidUserId = 10L;
+        given(userRepository.findById(invalidUserId))
+            .willThrow(UserNotFound.class);
+//        given(getPostsService.findAll(invalidUserId))
+//            .willThrow(UserNotFound.class);
+        // SpyBean 어노테이션을 주면 given이 먹히지 않는 건가...?
+        // 그보다도 ExceptionHandler가 있는데 왜 예외를 받지 못하는지 모르겠다.
+
+        String token = jwtUtil.encode(invalidUserId);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/posts")
                 .header("Authorization", "Bearer " + token))
-            .andExpect(MockMvcResultMatchers.status().isBadRequest())
-            .andExpect(MockMvcResultMatchers.content().string(
-                containsString("errorMessage")
-            ))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+        ;
+    }
+
+    @Test
+    void postsWithGameNotFound() throws Exception {
+        Long userId = 1L;
+        Long invalidGameId = 10L;
+        given(gameRepository.findById(invalidGameId))
+            .willThrow(GameNotFound.class);
+//        given(getPostsService.findAll(invalidUserId))
+//            .willThrow(GameNotFound.class);
+
+        String token = jwtUtil.encode(userId);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
         ;
     }
 
     @Test
     void post() throws Exception {
-        given(getPostService.findTargetPost(userId, targetPostId))
-            .willReturn(postDetailDto);
+        Long targetPostId = 1L;
+        Post post = Post.fake(targetPostId);
+        given(postRepository.findById(targetPostId))
+            .willReturn(Optional.of(post));
+
+        Long currentUserId = 1L;
+        User user = User.fake(currentUserId);
+        given(userRepository.findById(currentUserId))
+            .willReturn(Optional.of(user));
+
+        String token = jwtUtil.encode(currentUserId);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/posts/1")
                 .header("Authorization", "Bearer " + token))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"authorName\":\"The Prince of the Tennis\"")
+                containsString("\"isAuthor\":true")
             ))
         ;
     }
@@ -237,6 +229,8 @@ class PostControllerTest {
             postDetail
         )).willReturn(createPostAndGameResultDto);
 
+        String token = jwtUtil.encode(userId);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                 .header("Authorization", "Bearer " + token)
                 .accept(MediaType.APPLICATION_JSON)
@@ -261,7 +255,7 @@ class PostControllerTest {
         ;
     }
 
-    private void createPostWithError(
+    private void createPostWithCreatePostFailed(
         Long userId,
         String gameExercise,
         String gameDate,
@@ -291,6 +285,8 @@ class PostControllerTest {
             postDetail
         )).willThrow(new CreatePostFailed(errorMessage));
 
+        String token = jwtUtil.encode(userId);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                 .header("Authorization", "Bearer " + token)
                 .accept(MediaType.APPLICATION_JSON)
@@ -317,6 +313,8 @@ class PostControllerTest {
 
     @Test
     void createPost() throws Exception {
+        Long userId = 1L;
+
         createPostNormal(
             userId,
             postAndGameRequestDto.getGameExercise(),
@@ -335,9 +333,10 @@ class PostControllerTest {
 
     @Test
     void createPostWithBlankGameExercise() throws Exception {
+        Long userId = 1L;
         String blankGameExercise = "";
         String errorMessage = "운동을 입력해주세요.";
-        createPostWithError(
+        createPostWithCreatePostFailed(
             userId,
             blankGameExercise,
             postAndGameRequestDto.getGameDate(),
@@ -356,9 +355,10 @@ class PostControllerTest {
 
     @Test
     void createPostWithBlankGameDate() throws Exception {
+        Long userId = 1L;
         String blankGameDate = "";
         String errorMessage = "운동 날짜를 입력해주세요.";
-        createPostWithError(
+        createPostWithCreatePostFailed(
             userId,
             postAndGameRequestDto.getGameExercise(),
             blankGameDate,
@@ -377,9 +377,10 @@ class PostControllerTest {
 
     @Test
     void createPostWithBlankGameStartTimeAmPm() throws Exception {
+        Long userId = 1L;
         String blankGameStartTimeAmPm = "";
         String errorMessage = "시작시간 오전/오후 구분을 입력해주세요.";
-        createPostWithError(
+        createPostWithCreatePostFailed(
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
@@ -398,9 +399,10 @@ class PostControllerTest {
 
     @Test
     void createPostWithBlankGameStartHour() throws Exception {
+        Long userId = 1L;
         String blankGameStartHour = "";
         String errorMessage = "시작 시간을 입력해주세요.";
-        createPostWithError(
+        createPostWithCreatePostFailed(
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
@@ -419,9 +421,10 @@ class PostControllerTest {
 
     @Test
     void createPostWithBlankGamePlace() throws Exception {
+        Long userId = 1L;
         String blankGamePlace = "";
         String errorMessage = "운동 장소 이름을 입력해주세요.";
-        createPostWithError(
+        createPostWithCreatePostFailed(
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
@@ -440,9 +443,10 @@ class PostControllerTest {
 
     @Test
     void createPostWithNullGameTargetMemberCount() throws Exception {
+        Long userId = 1L;
         Integer nullGameTargetMemberCount = null;
         String errorMessage = "사용자 수를 입력해주세요.";
-        createPostWithError(
+        createPostWithCreatePostFailed(
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
@@ -461,9 +465,10 @@ class PostControllerTest {
 
     @Test
     void createPostWithBlankPostDetail() throws Exception {
+        Long userId = 1L;
         String blankPostDetail = "";
         String errorMessage = "게시물 상세 내용을 입력해주세요.";
-        createPostWithError(
+        createPostWithCreatePostFailed(
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
@@ -482,8 +487,8 @@ class PostControllerTest {
 
     @Test
     void createPostWithUserNotFound() throws Exception {
-        String errorMessage = "접속한 사용자를 찾을 수 없습니다.";
-        createPostWithError(
+        Long userId = 1L;
+        given(createPostService.createPost(
             userId,
             postAndGameRequestDto.getGameExercise(),
             postAndGameRequestDto.getGameDate(),
@@ -495,13 +500,50 @@ class PostControllerTest {
             postAndGameRequestDto.getGameEndMinute(),
             postAndGameRequestDto.getGamePlace(),
             postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail(),
-            errorMessage
-        );
+            postAndGameRequestDto.getPostDetail()
+        )).willThrow(UserNotFound.class);
+
+        String token = jwtUtil.encode(userId);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                    "\"gameExercise\":\""
+                    + postAndGameRequestDto.getGameExercise() + "\"," +
+                    "\"gameDate\":\""
+                    + postAndGameRequestDto.getGameDate() + "\"," +
+                    "\"gameStartTimeAmPm\":\""
+                    + postAndGameRequestDto.getGameStartTimeAmPm() + "\"," +
+                    "\"gameStartHour\":\""
+                    + postAndGameRequestDto.getGameStartHour() + "\"," +
+                    "\"gameStartMinute\":\""
+                    + postAndGameRequestDto.getGameStartMinute() + "\"," +
+                    "\"gameEndTimeAmPm\":\""
+                    + postAndGameRequestDto.getGameEndTimeAmPm() + "\"," +
+                    "\"gameEndHour\":\""
+                    + postAndGameRequestDto.getGameEndHour() + "\"," +
+                    "\"gameEndMinute\":\""
+                    + postAndGameRequestDto.getGameEndMinute() + "\"," +
+                    "\"gamePlace\":\""
+                    + postAndGameRequestDto.getGamePlace() + "\"," +
+                    "\"gameTargetMemberCount\":"
+                    + postAndGameRequestDto.getGameTargetMemberCount() + "," +
+                    "\"postDetail\":\""
+                    + postAndGameRequestDto.getPostDetail() + "\"" +
+                    "}"))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+        ;
     }
 
     @Test
     void deletePost() throws Exception {
+        Long userId = 1L;
+        Long targetPostId = 1L;
+
+        String token = jwtUtil.encode(userId);
+
         mockMvc.perform(MockMvcRequestBuilders.delete("/posts/1")
                 .header("Authorization", "Bearer " + token))
             .andExpect(MockMvcResultMatchers.status().isNoContent());

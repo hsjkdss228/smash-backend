@@ -1,54 +1,45 @@
 package kr.megaptera.smash.models;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 public class UserAccount {
-    @Column(name = "identifier")
-    private String identifier;
+    @Column(name = "username")
+    private String username;
 
-    @Column(name = "password")
-    private String encodedPassword;
-
-    public UserAccount() {
+    private UserAccount() {
 
     }
 
-    public UserAccount(String identifier) {
-        this.identifier = identifier;
+    public UserAccount(String username) {
+        this.username = username;
     }
 
-    public void changePassword(String password,
-                               PasswordEncoder passwordEncoder) {
-        encodedPassword = passwordEncoder.encode(password);
-    }
-
-    public boolean authenticate(String password,
-                                PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(password, encodedPassword);
+    public String username() {
+        return username;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserAccount that = (UserAccount) o;
-        return Objects.equals(identifier, that.identifier);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserAccount userName = (UserAccount) o;
+        return Objects.equals(username, userName.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identifier);
+        return Objects.hash(username);
     }
 
     @Override
     public String toString() {
-        return "UserAccount{" +
-            "identifier='" + identifier + '\'' +
-            '}';
+        return username;
     }
 }

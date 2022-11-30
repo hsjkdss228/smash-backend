@@ -6,10 +6,14 @@ import java.util.Objects;
 
 @Embeddable
 public class RegisterStatus {
-    public static final String PROCESSING = "processing";
-    public static final String CANCELED = "canceled";
-    public static final String ACCEPTED = "accepted";
-    public static final String REJECTED = "rejected";
+    private static final RegisterStatus PROCESSING
+        = new RegisterStatus("processing");
+    private static final RegisterStatus CANCELED
+        = new RegisterStatus("canceled");
+    private static final RegisterStatus ACCEPTED
+        = new RegisterStatus("accepted");
+    private static final RegisterStatus REJECTED
+        = new RegisterStatus("rejected");
 
     @Column(name = "status")
     private String value;
@@ -22,26 +26,30 @@ public class RegisterStatus {
         this.value = value;
     }
 
-    public String value() {
-        return value;
+    public static RegisterStatus processing() {
+        return PROCESSING;
     }
 
-    public void changeToCanceled() {
-        this.value = RegisterStatus.CANCELED;
+    public static RegisterStatus canceled() {
+        return CANCELED;
     }
 
-    public void changeToAccepted() {
-        this.value = RegisterStatus.ACCEPTED;
+    public static RegisterStatus accepted() {
+        return ACCEPTED;
     }
 
-    public void changeToRejected() {
-        this.value = RegisterStatus.REJECTED;
+    public static RegisterStatus rejected() {
+        return REJECTED;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RegisterStatus that = (RegisterStatus) o;
         return Objects.equals(value, that.value);
     }
@@ -53,8 +61,6 @@ public class RegisterStatus {
 
     @Override
     public String toString() {
-        return "RegisterStatus{" +
-            "value='" + value + '\'' +
-            '}';
+        return value;
     }
 }

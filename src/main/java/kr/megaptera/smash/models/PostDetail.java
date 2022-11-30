@@ -23,8 +23,12 @@ public class PostDetail {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PostDetail that = (PostDetail) o;
         return Objects.equals(value, that.value);
     }
@@ -36,8 +40,6 @@ public class PostDetail {
 
     @Override
     public String toString() {
-        return "PostDetail{" +
-            "value='" + value + '\'' +
-            '}';
+        return value;
     }
 }

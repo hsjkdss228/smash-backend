@@ -23,8 +23,12 @@ public class UserGender {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserGender that = (UserGender) o;
         return Objects.equals(value, that.value);
     }
@@ -36,8 +40,6 @@ public class UserGender {
 
     @Override
     public String toString() {
-        return "UserGender{" +
-            "value='" + value + '\'' +
-            '}';
+        return value;
     }
 }

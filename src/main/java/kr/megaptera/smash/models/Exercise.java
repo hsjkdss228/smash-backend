@@ -23,8 +23,12 @@ public class Exercise {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Exercise exercise = (Exercise) o;
         return Objects.equals(name, exercise.name);
     }
@@ -36,8 +40,6 @@ public class Exercise {
 
     @Override
     public String toString() {
-        return "Exercise{" +
-            "name='" + name + '\'' +
-            '}';
+        return name;
     }
 }

@@ -1,6 +1,6 @@
 package kr.megaptera.smash.dtos;
 
-public class ApplicantDetailDto {
+public class RegisterAcceptedDto {
     private final Long id;
 
     private final String name;
@@ -9,10 +9,10 @@ public class ApplicantDetailDto {
 
     private final String phoneNumber;
 
-    public ApplicantDetailDto(Long id,
-                              String name,
-                              String gender,
-                              String phoneNumber) {
+    public RegisterAcceptedDto(Long id,
+                               String name,
+                               String gender,
+                               String phoneNumber) {
         this.id = id;
         this.name = name;
         this.gender = gender;

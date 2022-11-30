@@ -94,6 +94,32 @@ public class Post {
         return detail;
     }
 
+    public Boolean isAuthor(User currentUser) {
+        return userId.equals(currentUser.id());
+    }
+
+    public static Post fake(Long postId) {
+        return new Post(
+            postId,
+            1L,
+            new PostHits(1234L),
+            new PostDetail("게시글 내용"),
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        );
+    }
+
+    public static Post fake(Long postId, Long userId) {
+        return new Post(
+            postId,
+            userId,
+            new PostHits(1234L),
+            new PostDetail("게시글 내용"),
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        );
+    }
+
     public static Post fake(String detail) {
         return new Post(
             1L,
@@ -107,12 +133,13 @@ public class Post {
 
     public static List<Post> fakes(long generationCount) {
         List<Post> posts = new ArrayList<>();
-        for (long id = 1; id <= generationCount; id += 1) {
+        for (long i = 1; i <= generationCount; i += 1) {
+            Long postId = i;
             Post post = new Post(
-                id,
+                postId,
                 1L,
-                new PostHits(123L),
-                new PostDetail("게시글 상세 정보 내용입니다."),
+                new PostHits(i),
+                new PostDetail("게시글 상세 정보 내용 " + i),
                 LocalDateTime.now(),
                 LocalDateTime.now()
             );

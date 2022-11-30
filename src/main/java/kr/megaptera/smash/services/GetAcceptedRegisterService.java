@@ -1,10 +1,9 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.dtos.MemberDetailDto;
-import kr.megaptera.smash.dtos.MembersDetailDto;
+import kr.megaptera.smash.dtos.RegisterAcceptedDto;
+import kr.megaptera.smash.dtos.RegistersAcceptedDto;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Register;
-import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -25,16 +24,19 @@ public class GetAcceptedRegisterService {
         this.userRepository = userRepository;
     }
 
-    public MembersDetailDto findMembers(Long targetGameId) {
+    public RegistersAcceptedDto findAcceptedRegisters(Long targetGameId) {
         List<Register> registers = registerRepository.findAllByGameId(targetGameId);
 
-        List<MemberDetailDto> memberDetailDtos = registers.stream()
-            .filter(register -> register.status().value()
-                .equals(RegisterStatus.ACCEPTED))
+        List<RegisterAcceptedDto> registerAcceptedDtos
+            = registers.stream()
+            .filter(Register::accepted)
             .map(register -> {
-                User user = userRepository.findById(register.userId())
-                    .orElseThrow(UserNotFound::new);
-                return new MemberDetailDto(
+                Long userId = register.userId();
+
+                User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFound(userId));
+
+                return new RegisterAcceptedDto(
                     register.id(),
                     user.name().value(),
                     user.gender().value(),
@@ -43,6 +45,6 @@ public class GetAcceptedRegisterService {
             })
             .toList();
 
-        return new MembersDetailDto(memberDetailDtos);
+        return new RegistersAcceptedDto(registerAcceptedDtos);
     }
 }

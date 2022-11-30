@@ -1,6 +1,5 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.exceptions.RegisterIdAndUserIdNotMatch;
 import kr.megaptera.smash.exceptions.RegisterNotFound;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.repositories.RegisterRepository;

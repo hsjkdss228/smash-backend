@@ -2,25 +2,18 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
-import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
-import kr.megaptera.smash.models.GameDateTime;
 import kr.megaptera.smash.models.GameTargetMemberCount;
-import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.models.Post;
-import kr.megaptera.smash.models.PostDetail;
-import kr.megaptera.smash.models.PostHits;
 import kr.megaptera.smash.models.Register;
-import kr.megaptera.smash.models.RegisterStatus;
+import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.PostRepository;
 import kr.megaptera.smash.repositories.RegisterRepository;
+import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,123 +24,71 @@ import static org.mockito.Mockito.mock;
 class GetPostsServiceTest {
     private GetPostsService getPostsService;
 
+    private UserRepository userRepository;
     private PostRepository postRepository;
     private GameRepository gameRepository;
     private RegisterRepository registerRepository;
 
     @BeforeEach
     void setUp() {
+        userRepository = mock(UserRepository.class);
         postRepository = mock(PostRepository.class);
         gameRepository = mock(GameRepository.class);
         registerRepository = mock(RegisterRepository.class);
         getPostsService = new GetPostsService(
+            userRepository,
             postRepository,
             gameRepository,
-            registerRepository
-        );
+            registerRepository);
     }
+
+    // TODO: id를 값 객체로 변환하면 games.get(0).id() 이런 식으로 주는 것들을
+    //   값 객체로 주도록 수정해야 함
 
     @Test
     void posts() {
-        List<Post> posts = List.of(
-            new Post(
-                1L,
-                1L,
-                new PostHits(10L),
-                new PostDetail("게시글 내용 1"),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-            ),
-            new Post(
-                2L,
-                2L,
-                new PostHits(11L),
-                new PostDetail("게시글 내용 2"),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-            )
+        int generationCount = 2;
+        List<Post> posts = Post.fakes(generationCount);
+        List<Game> games = Game.fakes(
+            generationCount,
+            new GameTargetMemberCount(3)
         );
-        List<Game> games = List.of(
-            new Game(
-                1L,
-                1L,
-                new Exercise("운동 이름 1"),
-                new GameDateTime(
-                    LocalDate.of(2022, 10, 13),
-                    LocalTime.of(14, 0),
-                    LocalTime.of(17, 0)
-                ),
-                new Place("장소 이름 1"),
-                new GameTargetMemberCount(10)
-            ),
-            new Game(
-                2L,
-                2L,
-                new Exercise("운동 이름 2"),
-                new GameDateTime(
-                    LocalDate.of(2022, 10, 14),
-                    LocalTime.of(14, 0),
-                    LocalTime.of(17, 0)
-                ),
-                new Place("장소 이름 2"),
-                new GameTargetMemberCount(8)
-            )
+        List<Register> registersGame1 = List.of(
+            Register.fakeAccepted(1L, games.get(0).id()),
+            Register.fakeProcessing(2L, games.get(0).id()),
+            Register.fakeRejected(3L, games.get(0).id()),
+            Register.fakeCanceled(4L, games.get(0).id())
         );
-        List<List<Register>> registersOfGames = List.of(
-            List.of(
-                new Register(
-                    1L,
-                    1L,
-                    1L,
-                    new RegisterStatus(RegisterStatus.ACCEPTED)
-                ),
-                new Register(
-                    2L,
-                    2L,
-                    1L,
-                    new RegisterStatus(RegisterStatus.ACCEPTED)
-                )
-            ),
-            List.of(
-                new Register(
-                    3L,
-                    2L,
-                    2L,
-                    new RegisterStatus(RegisterStatus.ACCEPTED)
-                ),
-                new Register(
-                    4L,
-                    3L,
-                    2L,
-                    new RegisterStatus(RegisterStatus.ACCEPTED)
-                )
-            )
+        List<Register> registersGame2 = List.of(
+            Register.fakeAccepted(5L, games.get(1).id()),
+            Register.fakeAccepted(6L, games.get(1).id()),
+            Register.fakeAccepted(7L, games.get(1).id())
         );
+        Long currentUserId = 1L;
+        User user = User.fake(currentUserId);
 
-        Long accessedUserId = 1L;
-
+        given(userRepository.findById(currentUserId))
+            .willReturn(Optional.of(user));
         given(postRepository.findAll()).willReturn(posts);
-        given(gameRepository.findByPostId(1L)).willReturn(Optional.of(games.get(0)));
-        given(gameRepository.findByPostId(2L)).willReturn(Optional.of(games.get(1)));
-        given(registerRepository.findAllByGameId(1L)).willReturn(registersOfGames.get(0));
-        given(registerRepository.findAllByGameId(2L)).willReturn(registersOfGames.get(1));
-        given(registerRepository.findAllByGameIdAndUserId(1L, accessedUserId))
-            .willReturn(List.of(registersOfGames.get(0).get(0)));
-        given(registerRepository.findAllByGameIdAndUserId(2L, accessedUserId))
-            .willReturn(List.of());
+        given(gameRepository.findByPostId(posts.get(0).id()))
+            .willReturn(Optional.of(games.get(0)));
+        given(gameRepository.findByPostId(posts.get(1).id()))
+            .willReturn(Optional.of(games.get(1)));
+        given(registerRepository.findAllByGameId(games.get(0).id()))
+            .willReturn(registersGame1);
+        given(registerRepository.findAllByGameId(games.get(1).id()))
+            .willReturn(registersGame2);
 
-        PostsDto postsDto = getPostsService.findAll(accessedUserId);
+        PostsDto postsDto = getPostsService.findAll(currentUserId);
 
         assertThat(postsDto).isNotNull();
-
         List<PostListDto> postListDtos = postsDto.getPosts();
         assertThat(postListDtos.get(0).getId()).isEqualTo(1L);
-        assertThat(postListDtos.get(0).getGame().getType()).isEqualTo("운동 이름 1");
-        assertThat(postListDtos.get(0).getGame().getCurrentMemberCount()).isEqualTo(2);
+        assertThat(postListDtos.get(0).getGame().getType()).isEqualTo("운동 종류 1");
+        assertThat(postListDtos.get(0).getGame().getCurrentMemberCount()).isEqualTo(1);
         assertThat(postListDtos.get(0).getGame().getRegisterStatus()).isEqualTo("accepted");
-        assertThat(postListDtos.get(1).getHits()).isEqualTo(11L);
-        assertThat(postListDtos.get(1).getGame().getPlace()).isEqualTo("장소 이름 2");
-        assertThat(postListDtos.get(1).getGame().getCurrentMemberCount()).isEqualTo(2);
+        assertThat(postListDtos.get(1).getGame().getPlace()).isEqualTo("운동 장소 2");
+        assertThat(postListDtos.get(1).getGame().getCurrentMemberCount()).isEqualTo(3);
         assertThat(postListDtos.get(1).getGame().getRegisterStatus()).isEqualTo("none");
     }
 }

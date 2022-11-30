@@ -1,5 +1,8 @@
 package kr.megaptera.smash.models;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +20,9 @@ public class User {
 
     @Embedded
     private UserAccount account;
+
+    @Column(name = "password")
+    private String encodedPassword;
 
     @Embedded
     private UserName name;
@@ -44,21 +50,6 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public static List<User> fakes(long generationCount) {
-        List<User> users = new ArrayList<>();
-        for (long id = 1; id <= generationCount; id += 1) {
-            User user = new User(
-                id,
-                new UserAccount("UserIdentifier" + id),
-                new UserName("사용자 " + id),
-                new UserGender("성별"),
-                new UserPhoneNumber("010-0000-0000")
-            );
-            users.add(user);
-        }
-        return users;
-    }
-
     public Long id() {
         return id;
     }
@@ -79,13 +70,48 @@ public class User {
         return phoneNumber;
     }
 
-    public static User fake(String name, String identifier) {
+    public void changePassword(String password,
+                               PasswordEncoder passwordEncoder) {
+        encodedPassword = passwordEncoder.encode(password);
+    }
+
+    public boolean authenticate(String password,
+                                PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(password, encodedPassword);
+    }
+
+    public static User fake(Long userId) {
+        return new User(
+            userId,
+            new UserAccount("username1"),
+            new UserName("사용자명"),
+            new UserGender("여성"),
+            new UserPhoneNumber("010-8888-8888")
+        );
+    }
+
+    public static User fake(String name, String account) {
         return new User(
             1L,
-            new UserAccount(identifier),
+            new UserAccount(account),
             new UserName(name),
             new UserGender("여성"),
             new UserPhoneNumber("010-8888-8888")
         );
+    }
+
+    public static List<User> fakes(long generationCount) {
+        List<User> users = new ArrayList<>();
+        for (long id = 1; id <= generationCount; id += 1) {
+            User user = new User(
+                id,
+                new UserAccount("account" + id),
+                new UserName("사용자 " + id),
+                new UserGender("성별"),
+                new UserPhoneNumber("010-0000-0000")
+            );
+            users.add(user);
+        }
+        return users;
     }
 }
