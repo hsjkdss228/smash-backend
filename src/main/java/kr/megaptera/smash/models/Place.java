@@ -23,8 +23,12 @@ public class Place {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Place place = (Place) o;
         return Objects.equals(name, place.name);
     }
@@ -36,8 +40,6 @@ public class Place {
 
     @Override
     public String toString() {
-        return "Place{" +
-            "name='" + name + '\'' +
-            '}';
+        return name;
     }
 }

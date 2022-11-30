@@ -2,7 +2,7 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
 import kr.megaptera.smash.dtos.PostAndGameRequestDto;
-import kr.megaptera.smash.exceptions.CreatePostFailed;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.GameDateTime;
@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 class CreatePostServiceTest {
@@ -39,10 +38,8 @@ class CreatePostServiceTest {
 
     private PostAndGameRequestDto postAndGameRequestDto;
     private User user;
-    private Post post;
     private Post savedPost;
     private Long createdPostId;
-    private Game game;
     private Game savedGame;
     private Long createdGameId;
 
@@ -70,40 +67,21 @@ class CreatePostServiceTest {
 
         user = User.fake("치코리타", "chikorita12");
         createdPostId = 5L;
-        post = new Post(
-            user.id(),
-            new PostHits(0L),
-            new PostDetail(postAndGameRequestDto.getPostDetail())
-        );
         savedPost = new Post(
             createdPostId,
             user.id(),
             new PostHits(0L),
             new PostDetail(postAndGameRequestDto.getPostDetail())
         );
-
         createdGameId = 12L;
-        game = new Game(
-            post.id(),
-            new Exercise(postAndGameRequestDto.getGameExercise()),
-            new GameDateTime(
-                LocalDate.of(2022, 12, 22),
-                LocalTime.of(9, 0),
-                LocalTime.of(12, 50)
-            ),
-            new Place(postAndGameRequestDto.getGamePlace()),
-            new GameTargetMemberCount(
-                postAndGameRequestDto.getGameTargetMemberCount()
-            )
-        );
         savedGame = new Game(
             createdGameId,
-            post.id(),
+            savedPost.id(),
             new Exercise(postAndGameRequestDto.getGameExercise()),
             new GameDateTime(
                 LocalDate.of(2022, 12, 22),
-                LocalTime.of(9, 0),
-                LocalTime.of(12, 50)
+                LocalTime.of(11, 30),
+                LocalTime.of(16, 0)
             ),
             new Place(postAndGameRequestDto.getGamePlace()),
             new GameTargetMemberCount(
@@ -147,39 +125,11 @@ class CreatePostServiceTest {
     }
 
     @Test
-    void createGameDateTime() {
-        String gameDate = "2022-4-3T00:00:00.000Z";
-        String gameStartTimeAmPm = "am";
-        String gameStartHour = "07";
-        String gameStartMinute = "30";
-        String gameEndTimeAmPm = "pm";
-        String gameEndHour = "11";
-        String gameEndMinute = "00";
-
-        GameDateTime gameDateTime = createPostService.createGameDateTime(
-            gameDate,
-            gameStartTimeAmPm,
-            gameStartHour,
-            gameStartMinute,
-            gameEndTimeAmPm,
-            gameEndHour,
-            gameEndMinute
-        );
-
-        assertThat(gameDateTime.date())
-            .isEqualTo(LocalDate.of(2022, 4, 3));
-        assertThat(gameDateTime.startTime())
-            .isEqualTo(LocalTime.of(7, 30));
-        assertThat(gameDateTime.endTime())
-            .isEqualTo(LocalTime.of(23, 0));
-    }
-
-    @Test
     void createPostWithUserNotFound() {
         given(userRepository.findById(user.id()))
-            .willThrow(CreatePostFailed.class);
+            .willThrow(UserNotFound.class);
 
-        assertThrows(CreatePostFailed.class, () -> {
+        assertThrows(UserNotFound.class, () -> {
             createPostService.createPost(
                 user.id(),
                 postAndGameRequestDto.getGameExercise(),
@@ -197,7 +147,5 @@ class CreatePostServiceTest {
         });
 
         verify(userRepository).findById(user.id());
-        verify(postRepository, never()).save(any(Post.class));
-        verify(gameRepository, never()).save(any(Game.class));
     }
 }

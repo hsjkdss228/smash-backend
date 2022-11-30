@@ -22,23 +22,24 @@ public class GetPostService {
         this.userRepository = userRepository;
     }
 
-    public PostDetailDto findTargetPost(Long accessedUserId,
+    public PostDetailDto findTargetPost(Long currentUserId,
                                         Long targetPostId) {
         Post post = postRepository.findById(targetPostId)
             .orElseThrow(PostNotFound::new);
 
-        Long authorId = post.userId();
+        User currentUser = userRepository.findById(currentUserId)
+            .orElseThrow(() -> new UserNotFound(currentUserId));
 
-        User user = userRepository.findById(authorId)
-            .orElseThrow(UserNotFound::new);
+        User userInPost = userRepository.findById(post.userId())
+            .orElseThrow(() -> new UserNotFound(post.userId()));
 
-        Boolean isAuthor = authorId.equals(accessedUserId);
+        Boolean isAuthor = post.isAuthor(currentUser);
 
         return new PostDetailDto(
             post.id(),
             post.hits().value(),
-            user.name().value(),
-            user.phoneNumber().value(),
+            userInPost.name().value(),
+            userInPost.phoneNumber().value(),
             post.detail().value(),
             isAuthor
         );

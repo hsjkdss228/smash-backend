@@ -19,9 +19,9 @@ public class GameController {
 
     @GetMapping("posts/{postId}")
     public GameDetailDto game(
-        @RequestAttribute("userId") Long accessedUserId,
+        @RequestAttribute("userId") Long currentUserId,
         @PathVariable("postId") Long targetPostId
     ) {
-        return getGameService.findTargetGame(accessedUserId, targetPostId);
+        return getGameService.findTargetGame(currentUserId, targetPostId);
     }
 }

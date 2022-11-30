@@ -34,7 +34,7 @@ class PatchRegisterToRejectedServiceTest {
             1L,
             userId,
             1L,
-            new RegisterStatus(RegisterStatus.PROCESSING)
+            RegisterStatus.processing()
         ));
 
         given(registerRepository.findById(registerId))

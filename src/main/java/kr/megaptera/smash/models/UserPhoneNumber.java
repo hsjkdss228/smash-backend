@@ -23,8 +23,12 @@ public class UserPhoneNumber {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserPhoneNumber that = (UserPhoneNumber) o;
         return Objects.equals(value, that.value);
     }
@@ -36,8 +40,6 @@ public class UserPhoneNumber {
 
     @Override
     public String toString() {
-        return "UserPhoneNumber{" +
-            "value='" + value + '\'' +
-            '}';
+        return value;
     }
 }

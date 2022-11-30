@@ -23,8 +23,12 @@ public class UserName {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserName userName = (UserName) o;
         return Objects.equals(value, userName.value);
     }
@@ -36,8 +40,6 @@ public class UserName {
 
     @Override
     public String toString() {
-        return "UserName{" +
-            "value='" + value + '\'' +
-            '}';
+        return value;
     }
 }

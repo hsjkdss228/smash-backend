@@ -1,14 +1,10 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.dtos.ApplicantDetailDto;
-import kr.megaptera.smash.dtos.ApplicantsDetailDto;
+import kr.megaptera.smash.dtos.RegisterProcessingDto;
+import kr.megaptera.smash.dtos.RegistersProcessingDto;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
-import kr.megaptera.smash.models.UserAccount;
-import kr.megaptera.smash.models.UserGender;
-import kr.megaptera.smash.models.UserName;
-import kr.megaptera.smash.models.UserPhoneNumber;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,47 +35,16 @@ class GetProcessingRegisterServiceTest {
             = new GetProcessingRegisterService(
             registerRepository, userRepository);
 
+        Long gameId = 1L;
         applicants = List.of(
-            new Register(
-                1L,
-                1L,
-                1L,
-                new RegisterStatus(RegisterStatus.PROCESSING)
-            ),
-            new Register(
-                2L,
-                2L,
-                1L,
-                new RegisterStatus(RegisterStatus.PROCESSING)
-            ),
-            new Register(
-                3L,
-                3L,
-                1L,
-                new RegisterStatus(RegisterStatus.ACCEPTED)
-            ),
-            new Register(
-                4L,
-                4L,
-                1L,
-                new RegisterStatus(RegisterStatus.CANCELED)
-            )
+            Register.fake(1L, gameId, RegisterStatus.processing()),
+            Register.fake(2L, gameId, RegisterStatus.processing()),
+            Register.fake(3L, gameId, RegisterStatus.accepted()),
+            Register.fake(4L, gameId, RegisterStatus.canceled())
         );
         users = List.of(
-            new User(
-                1L,
-                new UserAccount("hsjkdss228"),
-                new UserName("사용자 이름 1"),
-                new UserGender("남성"),
-                new UserPhoneNumber("010-1234-5678")
-            ),
-            new User(
-                2L,
-                new UserAccount("dhkddlsgn228"),
-                new UserName("사용자 이름 2"),
-                new UserGender("여성"),
-                new UserPhoneNumber("010-2345-6789")
-            )
+            User.fake("사용자 이름 1", "hsjkdss228"),
+            User.fake("사용자 이름 2", "dhkddlsgn228")
         );
     }
 
@@ -93,15 +58,15 @@ class GetProcessingRegisterServiceTest {
         given(userRepository.findById(applicants.get(1).userId()))
             .willReturn(Optional.of(users.get(1)));
 
-        ApplicantsDetailDto applicantsDetailDto
+        RegistersProcessingDto registersProcessingDto
             = getProcessingRegisterService.findApplicants(targetGameId);
 
-        assertThat(applicantsDetailDto).isNotNull();
-        List<ApplicantDetailDto> applicantDetailDtos
-            = applicantsDetailDto.getApplicants();
-        assertThat(applicantDetailDtos.size()).isEqualTo(2);
-        assertThat(applicantDetailDtos.get(0).getName()).isEqualTo("사용자 이름 1");
-        assertThat(applicantDetailDtos.get(1).getGender()).isEqualTo("여성");
+        assertThat(registersProcessingDto).isNotNull();
+        List<RegisterProcessingDto> registerProcessingDtos
+            = registersProcessingDto.getApplicants();
+        assertThat(registerProcessingDtos.size()).isEqualTo(2);
+        assertThat(registerProcessingDtos.get(0).getName()).isEqualTo("사용자 이름 1");
+        assertThat(registerProcessingDtos.get(1).getName()).isEqualTo("사용자 이름 2");
 
         verify(registerRepository).findAllByGameId(targetGameId);
         verify(userRepository).findById(applicants.get(0).userId());

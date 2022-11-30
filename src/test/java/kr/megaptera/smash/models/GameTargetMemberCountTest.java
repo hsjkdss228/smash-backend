@@ -12,4 +12,14 @@ class GameTargetMemberCountTest {
         assertThat(new GameTargetMemberCount(10)).isNotEqualTo(null);
         assertThat(new GameTargetMemberCount(10)).isNotEqualTo(10);
     }
+
+    @Test
+    void notReached() {
+        assertThat(new GameTargetMemberCount(10).reach(10)).isTrue();
+    }
+
+    @Test
+    void reached() {
+        assertThat(new GameTargetMemberCount(10).reach(8)).isFalse();
+    }
 }

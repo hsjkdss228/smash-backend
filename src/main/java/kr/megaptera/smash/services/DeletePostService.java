@@ -1,6 +1,8 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.exceptions.DeletePostFailed;
+import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.PostNotFound;
+import kr.megaptera.smash.exceptions.UserIsNotAuthor;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.repositories.GameRepository;
@@ -26,16 +28,14 @@ public class DeletePostService {
 
     public void deletePost(Long accessedUserId, Long targetPostId) {
         Post post = postRepository.findById(targetPostId)
-            .orElseThrow(() -> new DeletePostFailed(
-                "삭제하려는 게시물 번호에 해당하는 게시물을 찾을 수 없습니다."));
+            .orElseThrow(() -> new PostNotFound(targetPostId));
 
         if (!post.userId().equals(accessedUserId)) {
-            throw new DeletePostFailed("접속한 사용자가 게시글 작성자가 아닙니다.");
+            throw new UserIsNotAuthor();
         }
 
         Game game = gameRepository.findByPostId(post.id())
-            .orElseThrow(() -> new DeletePostFailed(
-                "삭제하려는 게시물에 연결된 경기 정보를 찾을 수 없습니다."));
+            .orElseThrow(GameNotFound::new);
 
         registerRepository.deleteAllByGameId(game.id());
 

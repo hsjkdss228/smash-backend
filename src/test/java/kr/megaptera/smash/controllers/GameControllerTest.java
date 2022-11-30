@@ -45,7 +45,7 @@ class GameControllerTest {
         token = jwtUtil.encode(userId);
 
         Game game = Game.fake("스케이트", "Mokdong Ice Rink");
-        List<Register> members = Register.fakeMembers(5, game.id());
+        List<Register> members = Register.fakesAccepted(5, game.id());
 
         Long registerId = -1L;
         String registerStatus = "none";

@@ -30,29 +30,29 @@ class LoginServiceTest {
 
     @Test
     void verifyUser() {
-        String identifier = "hsjkdss228";
+        String username = "hsjkdss228";
         String password = "Password!1";
-        User user = User.fake("찾아진 사용자", identifier);
-        user.account().changePassword(password, passwordEncoder);
-        given(userRepository.findByAccountIdentifier(identifier))
+        User user = User.fake("찾아진 사용자", username);
+        user.changePassword(password, passwordEncoder);
+        given(userRepository.findByAccountUsername(username))
             .willReturn(Optional.of(user));
 
-        Long userId = loginService.verifyUser(identifier, password);
+        Long userId = loginService.verifyUser(username, password);
 
         assertThat(userId).isEqualTo(userId);
 
-        verify(userRepository).findByAccountIdentifier(identifier);
+        verify(userRepository).findByAccountUsername(username);
     }
 
     @Test
     void verifyUserFail() {
-        String notExistingIdentifier = "abcdefgh123";
+        String notExistingUsername = "abcdefgh123";
         String password = "Password!1";
-        given(userRepository.findByAccountIdentifier(notExistingIdentifier))
+        given(userRepository.findByAccountUsername(notExistingUsername))
             .willThrow(LoginFailed.class);
 
         assertThrows(LoginFailed.class, () -> {
-            loginService.verifyUser(notExistingIdentifier, password);
+            loginService.verifyUser(notExistingUsername, password);
         });
     }
 }

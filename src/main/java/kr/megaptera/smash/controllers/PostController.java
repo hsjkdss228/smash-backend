@@ -5,9 +5,10 @@ import kr.megaptera.smash.dtos.CreatePostFailedErrorDto;
 import kr.megaptera.smash.dtos.PostAndGameRequestDto;
 import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostsDto;
-import kr.megaptera.smash.dtos.PostsFailedErrorDto;
 import kr.megaptera.smash.exceptions.CreatePostFailed;
-import kr.megaptera.smash.exceptions.PostsFailed;
+import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.UserIsNotAuthor;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.services.CreatePostService;
 import kr.megaptera.smash.services.DeletePostService;
 import kr.megaptera.smash.services.GetPostService;
@@ -28,26 +29,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("posts")
 public class PostController {
-    private static final Integer BLANK_GAME_EXERCISE = 100;
-    private static final Integer BLANK_GAME_DATE = 101;
-    private static final Integer BLANK_GAME_START_AM_PM = 102;
-    private static final Integer BLANK_GAME_START_HOUR = 103;
-    private static final Integer BLANK_GAME_START_MINUTE = 104;
-    private static final Integer BLANK_GAME_END_AM_PM = 105;
-    private static final Integer BLANK_GAME_END_HOUR = 106;
-    private static final Integer BLANK_GAME_END_MINUTE = 107;
-    private static final Integer BLANK_GAME_PLACE = 108;
-    private static final Integer NULL_GAME_TARGET_MEMBER_COUNT = 109;
-    private static final Integer BLANK_POST_DETAIL = 110;
-    private static final Integer USER_NOT_FOUND = 111;
-    private static final Integer DEFAULT_ERROR = 112;
-
     private final GetPostsService getPostsService;
     private final GetPostService getPostService;
     private final CreatePostService createPostService;
@@ -65,17 +50,17 @@ public class PostController {
 
     @GetMapping
     public PostsDto posts(
-        @RequestAttribute("userId") Long accessedUserId
+        @RequestAttribute("userId") Long currentUserId
     ) {
-        return getPostsService.findAll(accessedUserId);
+        return getPostsService.findAll(currentUserId);
     }
 
     @GetMapping("{postId}")
     public PostDetailDto post(
-        @RequestAttribute("userId") Long accessedUserId,
+        @RequestAttribute("userId") Long currentUserId,
         @PathVariable("postId") Long targetPostId
     ) {
-        return getPostService.findTargetPost(accessedUserId, targetPostId);
+        return getPostService.findTargetPost(currentUserId, targetPostId);
     }
 
     @PostMapping
@@ -120,43 +105,31 @@ public class PostController {
         deletePostService.deletePost(accessedUserId, targetPostId);
     }
 
-    @ExceptionHandler(PostsFailed.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public PostsFailedErrorDto postsFailed(PostsFailed exception) {
-        return new PostsFailedErrorDto(exception.getMessage());
+    @ExceptionHandler(UserNotFound.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String userNotFound() {
+        return "User Not Found";
+    }
+
+    @ExceptionHandler(GameNotFound.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String gameNotFound() {
+        return "Game Not Found";
     }
 
     @ExceptionHandler(CreatePostFailed.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CreatePostFailedErrorDto createPostFailed(CreatePostFailed exception) {
-        Map<Integer, String> errorCodeAndMessages
-            = exception.errorMessages()
+        List<String> errorMessages = exception.errorMessages()
             .stream()
-            .collect(Collectors.toMap(
-                this::mapToErrorCode,
-                errorMessage -> mapToErrorCode(errorMessage).equals(DEFAULT_ERROR)
-                    ? "알 수 없는 게시글 작성 오류입니다."
-                    : errorMessage
-            ));
+            .toList();
 
-        return new CreatePostFailedErrorDto(errorCodeAndMessages);
+        return new CreatePostFailedErrorDto(errorMessages);
     }
 
-    private Integer mapToErrorCode(String errorMessage) {
-        return switch (errorMessage) {
-            case "운동을 입력해주세요." -> BLANK_GAME_EXERCISE;
-            case "운동 날짜를 입력해주세요." -> BLANK_GAME_DATE;
-            case "시작시간 오전/오후 구분을 입력해주세요." -> BLANK_GAME_START_AM_PM;
-            case "시작 시간을 입력해주세요." -> BLANK_GAME_START_HOUR;
-            case "시작 분을 입력해주세요." -> BLANK_GAME_START_MINUTE;
-            case "종료시간 오전/오후 구분을 입력해주세요." -> BLANK_GAME_END_AM_PM;
-            case "종료 시간을 입력해주세요." -> BLANK_GAME_END_HOUR;
-            case "종료 분을 입력해주세요." -> BLANK_GAME_END_MINUTE;
-            case "운동 장소 이름을 입력해주세요." -> BLANK_GAME_PLACE;
-            case "사용자 수를 입력해주세요." -> NULL_GAME_TARGET_MEMBER_COUNT;
-            case "게시물 상세 내용을 입력해주세요." -> BLANK_POST_DETAIL;
-            case "접속한 사용자를 찾을 수 없습니다." -> USER_NOT_FOUND;
-            default -> DEFAULT_ERROR;
-        };
+    @ExceptionHandler(UserIsNotAuthor.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String userIsNotAuthor() {
+        return "User Is Not Author";
     }
 }

@@ -7,8 +7,10 @@ import kr.megaptera.smash.models.GameDateTime;
 import kr.megaptera.smash.models.GameTargetMemberCount;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.Place;
+import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.RegisterRepository;
+import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,24 +26,33 @@ import static org.mockito.Mockito.mock;
 class GetGameServiceTest {
     private GetGameService getGameService;
 
+    private UserRepository userRepository;
     private GameRepository gameRepository;
     private RegisterRepository registerRepository;
 
     @BeforeEach
     void setUp() {
+        userRepository = mock(UserRepository.class);
         gameRepository = mock(GameRepository.class);
         registerRepository = mock(RegisterRepository.class);
 
-        getGameService = new GetGameService(gameRepository, registerRepository);
+        getGameService = new GetGameService(
+            userRepository,
+            gameRepository,
+            registerRepository
+        );
     }
 
     @Test
     void findTargetGame() {
+        Long currentUserId = 10L;
+        User user = User.fake(currentUserId);
+
         Long gameId = 1L;
-        Long postId = 1L;
+        Long targetPostId = 1L;
         Game game = new Game(
             gameId,
-            postId,
+            targetPostId,
             new Exercise("야구"),
             new GameDateTime(
                 LocalDate.of(2022, 8, 22),
@@ -51,23 +62,22 @@ class GetGameServiceTest {
             new Place("목동야구장"),
             new GameTargetMemberCount(10)
         );
-        List<Register> members = Register.fakeMembers(8, 1L);
-        Long targetPostId = 1L;
-        Long accessedUserId = 10L;
 
+        List<Register> registersAccepted = Register.fakesAccepted(8, 1L);
+
+        given(userRepository.findById(user.id()))
+            .willReturn(Optional.of(user));
         given(gameRepository.findByPostId(targetPostId))
             .willReturn(Optional.of(game));
         given(registerRepository.findAllByGameId(game.id()))
-            .willReturn(members);
-        given(registerRepository.findAllByGameIdAndUserId(game.id(), accessedUserId))
-            .willReturn(List.of());
+            .willReturn(registersAccepted);
 
         GameDetailDto gameDetailDto
-            = getGameService.findTargetGame(accessedUserId, targetPostId);
+            = getGameService.findTargetGame(currentUserId, targetPostId);
 
         assertThat(gameDetailDto).isNotNull();
         assertThat(gameDetailDto.getCurrentMemberCount()).isEqualTo(8);
-        assertThat(gameDetailDto.getRegisterId()).isEqualTo(-1L);
+        assertThat(gameDetailDto.getRegisterId()).isEqualTo(null);
         assertThat(gameDetailDto.getRegisterStatus()).isEqualTo("none");
     }
 }

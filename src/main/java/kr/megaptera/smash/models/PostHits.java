@@ -23,8 +23,12 @@ public class PostHits {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PostHits postHits = (PostHits) o;
         return Objects.equals(value, postHits.value);
     }
@@ -36,8 +40,6 @@ public class PostHits {
 
     @Override
     public String toString() {
-        return "PostHits{" +
-            "value=" + value +
-            '}';
+        return value.toString();
     }
 }

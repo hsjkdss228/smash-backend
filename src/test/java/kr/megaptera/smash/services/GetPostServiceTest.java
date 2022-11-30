@@ -2,24 +2,18 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.models.Post;
-import kr.megaptera.smash.models.PostDetail;
-import kr.megaptera.smash.models.PostHits;
 import kr.megaptera.smash.models.User;
-import kr.megaptera.smash.models.UserAccount;
-import kr.megaptera.smash.models.UserGender;
-import kr.megaptera.smash.models.UserName;
-import kr.megaptera.smash.models.UserPhoneNumber;
 import kr.megaptera.smash.repositories.PostRepository;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 class GetPostServiceTest {
@@ -39,35 +33,56 @@ class GetPostServiceTest {
     void findTargetPostWhenIsAuthor() {
         Long postId = 1L;
         Long userId = 1L;
-        Post post = new Post(
-            postId,
-            userId,
-            new PostHits(1234L),
-            new PostDetail("평일 오전 볼링 내기 ㄱ?"),
-            LocalDateTime.now(),
-            LocalDateTime.now()
-        );
-        User user = new User(
-            userId,
-            new UserAccount("BowlingGirl32"),
-            new UserName("볼링맨"),
-            new UserGender("남성"),
-            new UserPhoneNumber("010-8888-8888")
-        );
-        Long targetPostId = 1L;
-        Long accessedUserId = 1L;
+        Post post = Post.fake(postId, userId);
+        User user = User.fake(userId);
 
-        given(postRepository.findById(targetPostId)).willReturn(Optional.of(post));
-        given(userRepository.findById(post.id())).willReturn(Optional.of(user));
+        Long targetPostId = 1L;
+        Long currentUserId = 1L;
+
+        given(postRepository.findById(targetPostId))
+            .willReturn(Optional.of(post));
+        given(userRepository.findById(currentUserId))
+            .willReturn(Optional.of(user));
+        given(userRepository.findById(post.userId()))
+            .willReturn(Optional.of(user));
 
         PostDetailDto postDetailDto
-            = getPostService.findTargetPost(accessedUserId, targetPostId);
+            = getPostService.findTargetPost(currentUserId, targetPostId);
 
         assertThat(postDetailDto).isNotNull();
-        assertThat(postDetailDto.getAuthorName()).isEqualTo("볼링맨");
-        assertThat(postDetailDto.getIsAuthor()).isEqualTo(true);
+        assertThat(postDetailDto.getAuthorName()).isEqualTo("사용자명");
+        assertThat(postDetailDto.getIsAuthor()).isTrue();
 
         verify(postRepository).findById(targetPostId);
+        verify(userRepository, times(2)).findById(currentUserId);
+    }
+
+    @Test
+    void findTargetPostWhenIsNotAuthor() {
+        Long postId = 1L;
+        Long userId = 1L;
+        Post post = Post.fake(postId, userId);
+        User postAuthor = User.fake(userId);
+
+        Long targetPostId = 1L;
+        Long currentUserId = 222L;
+        User user = User.fake(currentUserId);
+
+        given(postRepository.findById(targetPostId))
+            .willReturn(Optional.of(post));
+        given(userRepository.findById(currentUserId))
+            .willReturn(Optional.of(user));
+        given(userRepository.findById(post.userId()))
+            .willReturn(Optional.of(postAuthor));
+
+        PostDetailDto postDetailDto
+            = getPostService.findTargetPost(currentUserId, targetPostId);
+
+        assertThat(postDetailDto).isNotNull();
+        assertThat(postDetailDto.getIsAuthor()).isFalse();
+
+        verify(postRepository).findById(targetPostId);
+        verify(userRepository).findById(currentUserId);
         verify(userRepository).findById(post.id());
     }
 }

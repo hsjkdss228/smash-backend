@@ -4,18 +4,18 @@ import kr.megaptera.smash.dtos.GameInPostListDto;
 import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.exceptions.GameNotFound;
-import kr.megaptera.smash.exceptions.PostsFailed;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.Register;
-import kr.megaptera.smash.models.RegisterStatus;
+import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.PostRepository;
 import kr.megaptera.smash.repositories.RegisterRepository;
+import kr.megaptera.smash.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,90 +24,57 @@ public class GetPostsService {
     private final PostRepository postRepository;
     private final GameRepository gameRepository;
     private final RegisterRepository registerRepository;
+    private final UserRepository userRepository;
 
-    public GetPostsService(PostRepository postRepository,
+    public GetPostsService(UserRepository userRepository,
+                           PostRepository postRepository,
                            GameRepository gameRepository,
                            RegisterRepository registerRepository) {
+        this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.gameRepository = gameRepository;
         this.registerRepository = registerRepository;
     }
 
-    public PostsDto findAll(Long accessedUserId) throws PostsFailed {
-        try {
-            List<Post> posts = postRepository.findAll();
+    public PostsDto findAll(Long currentUserId) {
+        User currentUser = userRepository.findById(currentUserId)
+            .orElseThrow(() -> new UserNotFound(currentUserId));
 
-            List<Game> games = posts.stream()
-                .map(post -> gameRepository.findByPostId(post.id())
-                    .orElseThrow(GameNotFound::new))
-                .toList();
+        List<Post> Posts = postRepository.findAll();
 
-            List<Register> members = new ArrayList<>();
-            games.forEach(game -> {
-                List<Register> membersOfGame
-                    = registerRepository.findAllByGameId(game.id())
-                    .stream()
-                    .filter(member -> member.status().value()
-                        .equals(RegisterStatus.ACCEPTED))
-                    .toList();
-
-                members.addAll(membersOfGame);
-            });
-
-            return createPostDtos(
-                posts,
-                games,
-                members,
-                accessedUserId
-            );
-        } catch (GameNotFound exception) {
-            throw new PostsFailed(exception.getMessage());
-        }
-    }
-
-    private PostsDto createPostDtos(List<Post> posts,
-                                    List<Game> games,
-                                    List<Register> members,
-                                    Long accessedUserId
-    ) {
-        List<PostListDto> postListDtos = posts.stream()
+        List<PostListDto> postListDtos = Posts.stream()
             .map(post -> {
-                Boolean isAuthor = post.userId().equals(accessedUserId);
+                Game game = gameRepository.findByPostId(post.id())
+                    .orElseThrow(GameNotFound::new);
 
-                Game gameOfPost = games.stream()
-                    .filter(game -> game.postId().equals(post.id()))
-                    .findFirst().get();
+                List<Register> registers
+                    = registerRepository.findAllByGameId(game.id());
 
-                Integer currentMemberCount = members.stream()
-                    .filter(member -> member.gameId().equals(gameOfPost.id()))
-                    .toList()
-                    .size();
+                Boolean isAuthor = post.isAuthor(currentUser);
 
-                Register myRegister = registerRepository
-                    .findAllByGameIdAndUserId(gameOfPost.id(), accessedUserId)
-                    .stream()
-                    .filter(register -> register.status().value()
-                        .equals(RegisterStatus.ACCEPTED)
-                        || register.status().value()
-                        .equals(RegisterStatus.PROCESSING))
-                    .findFirst().orElse(null);
+                Integer currentMemberCount = game.countCurrentMembers(registers);
+
+                Register myRegister = game.findMyRegister(currentUser, registers);
 
                 Long registerId = myRegister == null
-                    ? -1
+                    ? null
                     : myRegister.id();
 
                 String registerStatus = myRegister == null
                     ? "none"
-                    : myRegister.status().value();
+                    : myRegister.status().toString();
 
                 GameInPostListDto gameInPostListDto
-                    = gameOfPost.toGameInPostListDto(
+                    = game.toGameInPostListDto(
                     currentMemberCount,
                     registerId,
                     registerStatus
                 );
 
-                return post.toPostListDto(isAuthor, gameInPostListDto);
+                return post.toPostListDto(
+                    isAuthor,
+                    gameInPostListDto
+                );
             })
             .toList();
 

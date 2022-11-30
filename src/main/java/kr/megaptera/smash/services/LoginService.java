@@ -19,11 +19,12 @@ public class LoginService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Long verifyUser(String identifier, String password) {
-        User user = userRepository.findByAccountIdentifier(identifier)
+    public Long verifyUser(String username, String password) {
+        System.out.println("username: " + username);
+        User user = userRepository.findByAccountUsername(username)
             .orElseThrow(() -> new LoginFailed("존재하지 않는 아이디입니다."));
 
-        if (!user.account().authenticate(password, passwordEncoder)) {
+        if (!user.authenticate(password, passwordEncoder)) {
             throw new LoginFailed("비밀번호가 일치하지 않습니다.");
         }
 

@@ -1,10 +1,9 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.dtos.ApplicantDetailDto;
-import kr.megaptera.smash.dtos.ApplicantsDetailDto;
+import kr.megaptera.smash.dtos.RegisterProcessingDto;
+import kr.megaptera.smash.dtos.RegistersProcessingDto;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Register;
-import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -25,16 +24,19 @@ public class GetProcessingRegisterService {
         this.userRepository = userRepository;
     }
 
-    public ApplicantsDetailDto findApplicants(Long targetGameId) {
+    public RegistersProcessingDto findApplicants(Long targetGameId) {
         List<Register> registers = registerRepository.findAllByGameId(targetGameId);
 
-        List<ApplicantDetailDto> applicantDetailDtos = registers.stream()
-            .filter(register -> register.status().value()
-                .equals(RegisterStatus.PROCESSING))
+        List<RegisterProcessingDto> registerProcessingDtos
+            = registers.stream()
+            .filter(Register::processing)
             .map(register -> {
-                User user = userRepository.findById(register.userId())
-                    .orElseThrow(UserNotFound::new);
-                return new ApplicantDetailDto(
+                Long userId = register.userId();
+
+                User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFound(userId));
+
+                return new RegisterProcessingDto(
                     register.id(),
                     user.name().value(),
                     user.gender().value(),
@@ -43,6 +45,6 @@ public class GetProcessingRegisterService {
             })
             .toList();
 
-        return new ApplicantsDetailDto(applicantDetailDtos);
+        return new RegistersProcessingDto(registerProcessingDtos);
     }
 }

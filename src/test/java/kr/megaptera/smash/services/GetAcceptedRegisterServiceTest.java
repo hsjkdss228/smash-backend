@@ -1,6 +1,6 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.dtos.MembersDetailDto;
+import kr.megaptera.smash.dtos.RegistersAcceptedDto;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.RegisterRepository;
@@ -32,7 +32,7 @@ class GetAcceptedRegisterServiceTest {
     @Test
     void findTargetMembers() {
         Long targetGameId = 1L;
-        List<Register> members = Register.fakeMembers(2, targetGameId);
+        List<Register> members = Register.fakesAccepted(2, targetGameId);
         List<User> users = User.fakes(2);
 
         given(registerRepository.findAllByGameId(targetGameId))
@@ -42,10 +42,10 @@ class GetAcceptedRegisterServiceTest {
         given(userRepository.findById(members.get(1).userId()))
             .willReturn(Optional.of(users.get(1)));
 
-        MembersDetailDto membersDetailDto
-            = getAcceptedRegisterService.findMembers(targetGameId);
+        RegistersAcceptedDto registersAcceptedDto
+            = getAcceptedRegisterService.findAcceptedRegisters(targetGameId);
 
-        assertThat(membersDetailDto).isNotNull();
-        assertThat(membersDetailDto.getMembers().size()).isEqualTo(2);
+        assertThat(registersAcceptedDto).isNotNull();
+        assertThat(registersAcceptedDto.getMembers().size()).isEqualTo(2);
     }
 }
