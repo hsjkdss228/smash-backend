@@ -1,11 +1,9 @@
 package kr.megaptera.smash.controllers;
 
-import kr.megaptera.smash.dtos.RegisterGameFailedErrorDto;
 import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.AlreadyJoinedGame;
 import kr.megaptera.smash.exceptions.GameIsFull;
 import kr.megaptera.smash.exceptions.GameNotFound;
-import kr.megaptera.smash.exceptions.RegisterGameFailed;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.services.PatchRegisterToAcceptedService;
 import kr.megaptera.smash.services.PatchRegisterToCanceledService;

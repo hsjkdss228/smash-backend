@@ -50,14 +50,14 @@ public class PostController {
 
     @GetMapping
     public PostsDto posts(
-        @RequestAttribute("userId") Long currentUserId
+        @RequestAttribute(value = "userId", required = false) Long currentUserId
     ) {
         return getPostsService.findAll(currentUserId);
     }
 
     @GetMapping("{postId}")
     public PostDetailDto post(
-        @RequestAttribute("userId") Long currentUserId,
+        @RequestAttribute(value = "userId", required = false) Long currentUserId,
         @PathVariable("postId") Long targetPostId
     ) {
         return getPostService.findTargetPost(currentUserId, targetPostId);
@@ -119,12 +119,8 @@ public class PostController {
 
     @ExceptionHandler(CreatePostFailed.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public CreatePostFailedErrorDto createPostFailed(CreatePostFailed exception) {
-        List<String> errorMessages = exception.errorMessages()
-            .stream()
-            .toList();
-
-        return new CreatePostFailedErrorDto(errorMessages);
+    public String createPostFailed(CreatePostFailed exception) {
+        return exception.errorMessages().get(0);
     }
 
     @ExceptionHandler(UserIsNotAuthor.class)

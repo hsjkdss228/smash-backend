@@ -35,7 +35,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @MockMvcEncoding
@@ -68,6 +70,11 @@ class PostControllerTest {
     @MockBean
     private UserRepository userRepository;
 
+    private List<Post> posts;
+    private List<Game> games;
+    private List<Register> registersGame1;
+    private List<Register> registersGame2;
+
     private PostAndGameRequestDto postAndGameRequestDto;
     private CreatePostAndGameResultDto createPostAndGameResultDto;
 
@@ -76,6 +83,24 @@ class PostControllerTest {
 
     @BeforeEach
     void setUp() {
+        int generationCount = 2;
+        posts = Post.fakes(generationCount);
+        games = Game.fakes(
+            generationCount,
+            new GameTargetMemberCount(3));
+        registersGame1 = List.of(
+            Register.fakeAccepted(1L, games.get(0).id()),
+            Register.fakeProcessing(2L, games.get(0).id()),
+            Register.fakeAccepted(3L, games.get(0).id()),
+            Register.fakeCanceled(4L, games.get(0).id())
+        );
+        registersGame2 = List.of(
+            Register.fakeRejected(5L, games.get(1).id()),
+            Register.fakeAccepted(6L, games.get(1).id()),
+            Register.fakeAccepted(7L, games.get(1).id()),
+            Register.fakeAccepted(8L, games.get(1).id())
+        );
+
         Integer gameTargetMemberCount = 10;
         postAndGameRequestDto = new PostAndGameRequestDto(
             "운동 이름",
@@ -92,24 +117,6 @@ class PostControllerTest {
 
     @Test
     void posts() throws Exception {
-        int generationCount = 2;
-        List<Post> posts = Post.fakes(generationCount);
-        List<Game> games = Game.fakes(
-            generationCount,
-            new GameTargetMemberCount(3));
-        List<Register> registersGame1 = List.of(
-            Register.fakeAccepted(1L, games.get(0).id()),
-            Register.fakeProcessing(2L, games.get(0).id()),
-            Register.fakeAccepted(3L, games.get(0).id()),
-            Register.fakeCanceled(4L, games.get(0).id())
-        );
-        List<Register> registersGame2 = List.of(
-            Register.fakeRejected(5L, games.get(1).id()),
-            Register.fakeAccepted(6L, games.get(1).id()),
-            Register.fakeAccepted(7L, games.get(1).id()),
-            Register.fakeAccepted(8L, games.get(1).id())
-        );
-
         Long currentUserId = 1L;
         User user = User.fake(currentUserId);
 
@@ -140,6 +147,39 @@ class PostControllerTest {
                 containsString("\"isAuthor\":true")
             ))
         ;
+    }
+
+    @Test
+    void postsWithNotLoggedin() throws Exception {
+        Long currentUserId = null;
+
+        given(postRepository.findAll()).willReturn(posts);
+        given(gameRepository.findByPostId(posts.get(0).id()))
+            .willReturn(Optional.of(games.get(0)));
+        given(gameRepository.findByPostId(posts.get(1).id()))
+            .willReturn(Optional.of(games.get(1)));
+        given(registerRepository.findAllByGameId(games.get(0).id()))
+            .willReturn(registersGame1);
+        given(registerRepository.findAllByGameId(games.get(1).id()))
+            .willReturn(registersGame2);
+
+        String token = jwtUtil.encode(currentUserId);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("\"isAuthor\":false")
+            ))
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("\"registerId\":null")
+            ))
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("\"registerStatus\":\"none\"")
+            ))
+        ;
+
+        verify(userRepository, never()).findById(any(Long.class));
     }
 
     @Test
