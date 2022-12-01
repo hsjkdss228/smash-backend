@@ -69,6 +69,18 @@ class GameTest {
     }
 
     @Test
+    void cannotFoundMyRegisterWhenUserIsNull() {
+        Game game = Game.fake("운동 이름", "장소 이름");
+        User user = null;
+        List<Register> registers = List.of(
+            Register.fake(3L, game.id(), RegisterStatus.accepted())
+        );
+
+        Register register = game.findMyRegister(user, registers);
+        assertThat(register).isNull();
+    }
+
+    @Test
     void join() {
         Game game = Game.fake("운동 이름", "장소 이름");
         User user = User.fake(4L);

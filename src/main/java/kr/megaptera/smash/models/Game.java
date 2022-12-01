@@ -159,6 +159,10 @@ public class Game {
     }
 
     public Register findMyRegister(User currentUser, List<Register> registers) {
+        if (currentUser == null) {
+            return null;
+        }
+
         return registers.stream()
             .filter(register -> register.match(currentUser))
             .filter(Register::active)

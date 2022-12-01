@@ -20,7 +20,6 @@ public class LoginService {
     }
 
     public Long verifyUser(String username, String password) {
-        System.out.println("username: " + username);
         User user = userRepository.findByAccountUsername(username)
             .orElseThrow(() -> new LoginFailed("존재하지 않는 아이디입니다."));
 

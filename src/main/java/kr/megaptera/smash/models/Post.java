@@ -94,8 +94,8 @@ public class Post {
         return detail;
     }
 
-    public Boolean isAuthor(User currentUser) {
-        return userId.equals(currentUser.id());
+    public Boolean isAuthor(User user) {
+        return user != null && userId.equals(user.id());
     }
 
     public static Post fake(Long postId) {

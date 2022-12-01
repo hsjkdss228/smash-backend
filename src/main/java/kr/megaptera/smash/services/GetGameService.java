@@ -32,7 +32,9 @@ public class GetGameService {
 
     public GameDetailDto findTargetGame(Long currentUserId,
                                         Long targetPostId) {
-        User currentUser = userRepository.findById(currentUserId)
+        User currentUser = currentUserId == null
+            ? null
+            : userRepository.findById(currentUserId)
             .orElseThrow(() -> new UserNotFound(currentUserId));
 
         Game game = gameRepository.findByPostId(targetPostId)

@@ -22,4 +22,12 @@ class PostTest {
         User user = User.fake(userId);
         assertThat(post.isAuthor(user)).isFalse();
     }
+
+    @Test
+    void isNotAuthorWithNull() {
+        Long postId = 1L;
+        Post post = Post.fake(postId);
+        User user = null;
+        assertThat(post.isAuthor(user)).isFalse();
+    }
 }

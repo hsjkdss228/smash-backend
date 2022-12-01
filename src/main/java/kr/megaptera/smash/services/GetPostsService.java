@@ -37,7 +37,9 @@ public class GetPostsService {
     }
 
     public PostsDto findAll(Long currentUserId) {
-        User currentUser = userRepository.findById(currentUserId)
+        User currentUser = currentUserId == null
+            ? null
+            : userRepository.findById(currentUserId)
             .orElseThrow(() -> new UserNotFound(currentUserId));
 
         List<Post> Posts = postRepository.findAll();

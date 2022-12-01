@@ -27,7 +27,9 @@ public class GetPostService {
         Post post = postRepository.findById(targetPostId)
             .orElseThrow(PostNotFound::new);
 
-        User currentUser = userRepository.findById(currentUserId)
+        User currentUser= currentUserId == null
+            ? null
+            : userRepository.findById(currentUserId)
             .orElseThrow(() -> new UserNotFound(currentUserId));
 
         User userInPost = userRepository.findById(post.userId())

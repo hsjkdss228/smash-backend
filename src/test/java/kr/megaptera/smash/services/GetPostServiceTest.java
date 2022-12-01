@@ -85,4 +85,29 @@ class GetPostServiceTest {
         verify(userRepository).findById(currentUserId);
         verify(userRepository).findById(post.id());
     }
+
+    @Test
+    void findTargetPostWithNotLoggedIn() {
+        Long postId = 1L;
+        Long userId = 1L;
+        Post post = Post.fake(postId, userId);
+        User postAuthor = User.fake(userId);
+
+        Long targetPostId = 1L;
+        Long currentUserId = null;
+
+        given(postRepository.findById(targetPostId))
+            .willReturn(Optional.of(post));
+        given(userRepository.findById(post.userId()))
+            .willReturn(Optional.of(postAuthor));
+
+        PostDetailDto postDetailDto
+            = getPostService.findTargetPost(currentUserId, targetPostId);
+
+        assertThat(postDetailDto).isNotNull();
+        assertThat(postDetailDto.getIsAuthor()).isFalse();
+
+        verify(postRepository).findById(targetPostId);
+        verify(userRepository).findById(post.id());
+    }
 }
