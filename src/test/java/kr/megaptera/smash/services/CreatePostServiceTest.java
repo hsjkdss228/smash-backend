@@ -11,9 +11,11 @@ import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.PostDetail;
 import kr.megaptera.smash.models.PostHits;
+import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.PostRepository;
+import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,7 @@ class CreatePostServiceTest {
     private PostRepository postRepository;
     private GameRepository gameRepository;
     private UserRepository userRepository;
+    private RegisterRepository registerRepository;
 
     private CreatePostService createPostService;
 
@@ -48,11 +51,13 @@ class CreatePostServiceTest {
         postRepository = mock(PostRepository.class);
         gameRepository = mock(GameRepository.class);
         userRepository = mock(UserRepository.class);
+        registerRepository = mock(RegisterRepository.class);
 
         createPostService = new CreatePostService(
             postRepository,
             gameRepository,
-            userRepository
+            userRepository,
+            registerRepository
         );
 
         Integer gameTargetMemberCount = 20;
@@ -122,6 +127,7 @@ class CreatePostServiceTest {
         verify(userRepository).findById(user.id());
         verify(postRepository).save(any(Post.class));
         verify(gameRepository).save(any(Game.class));
+        verify(registerRepository).save(any(Register.class));
     }
 
     @Test

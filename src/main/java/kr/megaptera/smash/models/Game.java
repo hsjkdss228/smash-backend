@@ -183,6 +183,12 @@ public class Game {
         return new Register(currentUser, this);
     }
 
+    public Register join(User postAuthor) {
+        Register register = new Register(postAuthor, this);
+        register.acceptRegister();
+        return register;
+    }
+
     private boolean alreadyJoined(User user) {
         return registers.stream()
             .filter(Register::active)

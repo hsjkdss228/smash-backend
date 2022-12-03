@@ -1,7 +1,6 @@
 package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
-import kr.megaptera.smash.dtos.CreatePostFailedErrorDto;
 import kr.megaptera.smash.dtos.PostAndGameRequestDto;
 import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostsDto;
