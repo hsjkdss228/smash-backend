@@ -1,5 +1,6 @@
 package kr.megaptera.smash.services;
 
+import kr.megaptera.smash.exceptions.GameIsFull;
 import kr.megaptera.smash.exceptions.GameNotFound;
 import kr.megaptera.smash.exceptions.RegisterNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
@@ -13,6 +14,8 @@ import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -37,14 +40,20 @@ public class PatchRegisterToAcceptedService {
             = registerRepository.findById(registerId)
             .orElseThrow(RegisterNotFound::new);
 
+        Game game = gameRepository.findById(register.gameId())
+            .orElseThrow(GameNotFound::new);
+
+        List<Register> registers = registerRepository.findAllByGameId(game.id());
+
+        if (game.isFull(registers)) {
+            throw new GameIsFull(game.id());
+        }
+
         register.acceptRegister();
 
         if (register.accepted()) {
             User user = userRepository.findById(register.userId())
                 .orElseThrow(() -> new UserNotFound(register.userId()));
-
-            Game game = gameRepository.findById(register.gameId())
-                .orElseThrow(GameNotFound::new);
 
             Notice notice = register.createAcceptNotice(user, game);
 

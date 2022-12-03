@@ -202,6 +202,15 @@ public class Game {
         return targetMemberCount.reach(count);
     }
 
+    public boolean isFull(List<Register> registers) {
+        this.registers = registers;
+
+        long count = registers.stream()
+            .filter(Register::accepted)
+            .count();
+        return targetMemberCount.reach(count);
+    }
+
     public static Game fake(Long gameId) {
         return new Game(
             gameId,
@@ -263,6 +272,23 @@ public class Game {
                             GameTargetMemberCount targetMemberCount) {
         return new Game(
             1L,
+            postId,
+            new Exercise("운동 이름"),
+            new GameDateTime(
+                LocalDate.of(2022, 12, 24),
+                LocalTime.of(10, 0),
+                LocalTime.of(16, 30)
+            ),
+            new Place("운동 장소"),
+            new GameTargetMemberCount(targetMemberCount.value())
+        );
+    }
+
+    public static Game fake(Long gameId,
+                            Long postId,
+                            GameTargetMemberCount targetMemberCount) {
+        return new Game(
+            gameId,
             postId,
             new Exercise("운동 이름"),
             new GameDateTime(
