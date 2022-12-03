@@ -99,6 +99,30 @@ public class Register {
         status = RegisterStatus.rejected();
     }
 
+    public Notice createRegisterNotice(User currentUser,
+                                       User postAuthor) {
+        return new Notice(
+            postAuthor.id(),
+            new NoticeContents(
+                "작성한 모집 게시글에 새로운 신청이 등록되었습니다.",
+                "등록한 신청자: " + currentUser.name().toString()
+            ),
+            NoticeStatus.unread()
+        );
+    }
+
+    public Notice createAcceptNotice(User user, Game game) {
+        return new Notice(
+            user.id(),
+            new NoticeContents(
+                "신청한 운동 모집 게시글에 참가가 확정되었습니다.",
+                "신청한 게임 종목: " + game.exercise() + "\n"
+                + "신청한 게임 시간: " + game.dateTime().joinDateAndTime()
+            ),
+            NoticeStatus.unread()
+        );
+    }
+
     // TODO: UserId, GameId 값 객체를 정의해 Long으로 부여하는 파라미터를 대체
 
     public static Register fake(Long userId, Long gameId) {
@@ -109,7 +133,9 @@ public class Register {
         );
     }
 
-    public static Register fake(Long userId, Long gameId, RegisterStatus status) {
+    public static Register fake(Long userId,
+                                Long gameId,
+                                RegisterStatus status) {
         return new Register(
             userId,
             gameId,
@@ -149,7 +175,8 @@ public class Register {
         );
     }
 
-    public static List<Register> fakesAccepted(long generationCount, long gameId) {
+    public static List<Register> fakesAccepted(long generationCount,
+                                               long gameId) {
         List<Register> registers = new ArrayList<>();
         for (long id = 1; id <= generationCount; id += 1) {
             Long userId = id;
@@ -164,7 +191,8 @@ public class Register {
         return registers;
     }
 
-    public static List<Register> fakesProcessing(long generationCount, long gameId) {
+    public static List<Register> fakesProcessing(long generationCount,
+                                                 long gameId) {
         List<Register> registers = new ArrayList<>();
         for (long id = 1; id <= generationCount; id += 1) {
             Long userId = id;

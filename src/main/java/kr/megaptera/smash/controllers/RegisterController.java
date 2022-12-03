@@ -4,6 +4,7 @@ import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.AlreadyJoinedGame;
 import kr.megaptera.smash.exceptions.GameIsFull;
 import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.PostNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.services.PatchRegisterToAcceptedService;
 import kr.megaptera.smash.services.PatchRegisterToCanceledService;
@@ -74,6 +75,12 @@ public class RegisterController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String gameNotFound() {
         return "Game Not Found";
+    }
+
+    @ExceptionHandler(PostNotFound.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String postNotFound() {
+        return "Post Not Found";
     }
 
     @ExceptionHandler(AlreadyJoinedGame.class)

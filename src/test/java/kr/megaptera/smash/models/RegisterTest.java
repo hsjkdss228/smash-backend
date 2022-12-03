@@ -2,6 +2,9 @@ package kr.megaptera.smash.models;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RegisterTest {
@@ -76,5 +79,47 @@ class RegisterTest {
             = Register.fake(userId, gameId, RegisterStatus.processing());
         register.rejectRegister();
         assertThat(register.status()).isEqualTo(RegisterStatus.rejected());
+    }
+
+    @Test
+    void createRegisterNotice() {
+        User user = User.fake("신청자 1", "username");
+        Long postAuthorId = 2L;
+        User postAuthor = User.fake(postAuthorId);
+
+        Long gameId = 1L;
+        Register register = Register.fake(user.id(), gameId);
+
+        Notice notice = register.createRegisterNotice(user, postAuthor);
+        assertThat(notice.userId()).isEqualTo(postAuthorId);
+        assertThat(notice.contents().title()).contains("신청이 등록되었습니다.");
+        assertThat(notice.contents().detail()).isEqualTo("등록한 신청자: 신청자 1");
+        assertThat(notice.status()).isEqualTo(NoticeStatus.unread());
+    }
+
+    @Test
+    void createAcceptNotice() {
+        Long userId = 1L;
+        User user = User.fake(userId);
+
+        Long gameId = 1L;
+        Game game = Game.fake(
+            "운동 이름",
+            new GameDateTime(
+                LocalDate.of(2022, 12, 25),
+                LocalTime.of(12, 30),
+                LocalTime.of(15, 0)
+            )
+        );
+        Register register = Register.fakeAccepted(game.id(), user.id());
+
+        Notice notice = register.createAcceptNotice(user, game);
+        assertThat(notice.userId()).isEqualTo(user.id());
+        assertThat(notice.contents().title()).contains("참가가 확정되었습니다.");
+        assertThat(notice.contents().detail())
+            .contains("운동 이름");
+        assertThat(notice.contents().detail())
+            .contains("2022년 12월 25일 오후 12:30 ~ 오후 03:00");
+        assertThat(notice.status()).isEqualTo(NoticeStatus.unread());
     }
 }

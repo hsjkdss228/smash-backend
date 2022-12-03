@@ -226,10 +226,38 @@ public class Game {
         );
     }
 
+    public static Game fake(String exerciseName,
+                            GameDateTime gameDateTime) {
+        return new Game(
+            1L,
+            1L,
+            new Exercise(exerciseName),
+            gameDateTime,
+            new Place("운동 장소"),
+            new GameTargetMemberCount(10)
+        );
+    }
+
     public static Game fake(GameTargetMemberCount targetMemberCount) {
         return new Game(
             1L,
             1L,
+            new Exercise("운동 이름"),
+            new GameDateTime(
+                LocalDate.of(2022, 12, 24),
+                LocalTime.of(10, 0),
+                LocalTime.of(16, 30)
+            ),
+            new Place("운동 장소"),
+            new GameTargetMemberCount(targetMemberCount.value())
+        );
+    }
+
+    public static Game fake(Long postId,
+                            GameTargetMemberCount targetMemberCount) {
+        return new Game(
+            1L,
+            postId,
             new Exercise("운동 이름"),
             new GameDateTime(
                 LocalDate.of(2022, 12, 24),
