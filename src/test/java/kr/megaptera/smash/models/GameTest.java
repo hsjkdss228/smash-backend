@@ -95,6 +95,16 @@ class GameTest {
     }
 
     @Test
+    void joinAsAuthor() {
+        Long userId = 1L;
+        Game game = Game.fake("운동 이름", "운동 장소");
+        User user = User.fake(userId);
+
+        Register register = game.join(user);
+        assertThat(register.status()).isEqualTo(RegisterStatus.accepted());
+    }
+
+    @Test
     void alreadyJoined() {
         Game game = Game.fake("운동 이름", "장소 이름");
         User user = User.fake(1L);

@@ -9,9 +9,11 @@ import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.PostDetail;
 import kr.megaptera.smash.models.PostHits;
+import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.PostRepository;
+import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +24,16 @@ public class CreatePostService {
     private final PostRepository postRepository;
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
+    private final RegisterRepository registerRepository;
 
     public CreatePostService(PostRepository postRepository,
                              GameRepository gameRepository,
-                             UserRepository userRepository
-    ) {
+                             UserRepository userRepository,
+                             RegisterRepository registerRepository) {
         this.postRepository = postRepository;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
+        this.registerRepository = registerRepository;
     }
 
     public CreatePostAndGameResultDto createPost(
@@ -54,6 +58,7 @@ public class CreatePostService {
             new PostHits(0L),
             new PostDetail(postDetail)
         );
+
         Post savedPost = postRepository.save(post);
 
         Game game = new Game(
@@ -73,7 +78,11 @@ public class CreatePostService {
             gameEndMinute
         );
 
-        gameRepository.save(game);
+        Game savedGame = gameRepository.save(game);
+
+        Register register = savedGame.join(user);
+
+        registerRepository.save(register);
 
         return new CreatePostAndGameResultDto(savedPost.id());
     }
