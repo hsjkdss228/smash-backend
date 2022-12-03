@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @MockMvcEncoding
@@ -162,6 +163,24 @@ class RegisterControllerTest {
                 .header("Authorization", "Bearer " + token)
                 .param("status", "accepted"))
             .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        verify(patchRegisterToAcceptedService).patchRegisterToAccepted(registerId);
+    }
+
+    @Test
+    void acceptRegisterFailWithGameIsFull() throws Exception {
+        Long registerId = 16L;
+        Long userId = 1L;
+
+        String token = jwtUtil.encode(userId);
+
+        doThrow(GameIsFull.class).doNothing()
+            .when(patchRegisterToAcceptedService).patchRegisterToAccepted(registerId);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/registers/16")
+                .header("Authorization", "Bearer " + token)
+                .param("status", "accepted"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
         verify(patchRegisterToAcceptedService).patchRegisterToAccepted(registerId);
     }
