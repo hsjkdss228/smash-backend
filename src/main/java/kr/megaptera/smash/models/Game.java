@@ -185,7 +185,7 @@ public class Game {
 
     public Register join(User postAuthor) {
         Register register = new Register(postAuthor, this);
-        register.acceptRegister();
+        register.accept();
         return register;
     }
 

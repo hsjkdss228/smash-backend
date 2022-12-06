@@ -15,4 +15,11 @@ class NoticeTest {
         assertThat(noticeRead.active()).isTrue();
         assertThat(noticeDeleted.active()).isFalse();
     }
+
+    @Test
+    void read() {
+        Notice notice = Notice.fake(NoticeStatus.unread());
+        notice.read();
+        assertThat(notice.status()).isEqualTo(NoticeStatus.read());
+    }
 }

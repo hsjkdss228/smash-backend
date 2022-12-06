@@ -19,23 +19,23 @@ import java.util.List;
 
 @Service
 @Transactional
-public class PatchRegisterToAcceptedService {
+public class AcceptRegisterService {
     private final RegisterRepository registerRepository;
     private final UserRepository userRepository;
     private final GameRepository gameRepository;
     private final NoticeRepository noticeRepository;
 
-    public PatchRegisterToAcceptedService(RegisterRepository registerRepository,
-                                          UserRepository userRepository,
-                                          GameRepository gameRepository,
-                                          NoticeRepository noticeRepository) {
+    public AcceptRegisterService(RegisterRepository registerRepository,
+                                 UserRepository userRepository,
+                                 GameRepository gameRepository,
+                                 NoticeRepository noticeRepository) {
         this.registerRepository = registerRepository;
         this.userRepository = userRepository;
         this.gameRepository = gameRepository;
         this.noticeRepository = noticeRepository;
     }
 
-    public void patchRegisterToAccepted(Long registerId) {
+    public void acceptRegister(Long registerId) {
         Register register
             = registerRepository.findById(registerId)
             .orElseThrow(RegisterNotFound::new);
@@ -49,7 +49,7 @@ public class PatchRegisterToAcceptedService {
             throw new GameIsFull(game.id());
         }
 
-        register.acceptRegister();
+        register.accept();
 
         if (register.accepted()) {
             User user = userRepository.findById(register.userId())

@@ -13,8 +13,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-class PatchRegisterToCanceledServiceTest {
-    private PatchRegisterToCanceledService patchRegisterToCanceledService;
+class CancelRegisterServiceTest {
+    private CancelRegisterService cancelRegisterService;
 
     private RegisterRepository registerRepository;
 
@@ -22,8 +22,8 @@ class PatchRegisterToCanceledServiceTest {
     void setUp() {
         registerRepository = mock(RegisterRepository.class);
 
-        patchRegisterToCanceledService
-            = new PatchRegisterToCanceledService(registerRepository);
+        cancelRegisterService
+            = new CancelRegisterService(registerRepository);
     }
 
     @Test
@@ -40,10 +40,10 @@ class PatchRegisterToCanceledServiceTest {
         given(registerRepository.findById(registerId))
             .willReturn(Optional.of(register));
 
-        patchRegisterToCanceledService.patchRegisterToCanceled(registerId, userId);
+        cancelRegisterService.cancelRegister(registerId, userId);
 
         verify(registerRepository).findById(registerId);
-        verify(register).cancelRegister();
+        verify(register).cancel();
     }
 
     @Test
@@ -60,9 +60,9 @@ class PatchRegisterToCanceledServiceTest {
         given(registerRepository.findById(registerId))
             .willReturn(Optional.of(register));
 
-        patchRegisterToCanceledService.patchRegisterToCanceled(registerId, userId);
+        cancelRegisterService.cancelRegister(registerId, userId);
 
         verify(registerRepository).findById(registerId);
-        verify(register).cancelRegister();
+        verify(register).cancel();
     }
 }

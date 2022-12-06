@@ -1,6 +1,6 @@
 package kr.megaptera.smash.models;
 
-import kr.megaptera.smash.dtos.NoticeListDto;
+import kr.megaptera.smash.dtos.NoticeDto;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Embedded;
@@ -54,6 +54,10 @@ public class Notice {
         this.createdAt = createdAt;
     }
 
+    public Long id() {
+        return id;
+    }
+
     public Long userId() {
         return userId;
     }
@@ -71,6 +75,10 @@ public class Notice {
             || status.equals(NoticeStatus.read());
     }
 
+    public void read() {
+        status = NoticeStatus.read();
+    }
+
     public static Notice fake(NoticeStatus status) {
         Long userId = 1L;
         return new Notice(
@@ -85,11 +93,13 @@ public class Notice {
         );
     }
 
-    public NoticeListDto toListDto() {
-        return new NoticeListDto(
+    public NoticeDto toDto() {
+        return new NoticeDto(
             id,
+            status.toString(),
             createdAt.toString(),
-            contents.title()
+            contents.title(),
+            contents.detail()
         );
     }
 }

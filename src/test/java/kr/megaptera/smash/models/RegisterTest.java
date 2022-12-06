@@ -52,32 +52,32 @@ class RegisterTest {
     }
 
     @Test
-    void cancelRegister() {
+    void cancel() {
         Long userId = 1L;
         Long gameId = 1L;
         Register register
             = Register.fake(userId, gameId, RegisterStatus.processing());
-        register.cancelRegister();
+        register.cancel();
         assertThat(register.status()).isEqualTo(RegisterStatus.canceled());
     }
 
     @Test
-    void acceptRegister() {
+    void accept() {
         Long userId = 1L;
         Long gameId = 1L;
         Register register
             = Register.fake(userId, gameId, RegisterStatus.processing());
-        register.acceptRegister();
+        register.accept();
         assertThat(register.status()).isEqualTo(RegisterStatus.accepted());
     }
 
     @Test
-    void rejectRegister() {
+    void reject() {
         Long userId = 1L;
         Long gameId = 1L;
         Register register
             = Register.fake(userId, gameId, RegisterStatus.processing());
-        register.rejectRegister();
+        register.reject();
         assertThat(register.status()).isEqualTo(RegisterStatus.rejected());
     }
 
