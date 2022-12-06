@@ -38,9 +38,9 @@ public class GetAcceptedRegisterService {
 
                 return new RegisterAcceptedDto(
                     register.id(),
-                    user.name().value(),
-                    user.gender().value(),
-                    user.phoneNumber().value()
+                    user.personalInformation().name(),
+                    user.personalInformation().gender(),
+                    user.personalInformation().phoneNumber()
                 );
             })
             .toList();

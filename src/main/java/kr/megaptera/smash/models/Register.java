@@ -105,7 +105,7 @@ public class Register {
             postAuthor.id(),
             new NoticeContents(
                 "작성한 모집 게시글에 새로운 신청이 등록되었습니다.",
-                "등록한 신청자: " + currentUser.name().toString()
+                "등록한 신청자: " + currentUser.personalInformation().name()
             ),
             NoticeStatus.unread()
         );
