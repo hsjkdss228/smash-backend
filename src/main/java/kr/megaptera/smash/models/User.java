@@ -1,5 +1,6 @@
 package kr.megaptera.smash.models;
 
+import kr.megaptera.smash.dtos.SignUpResultDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.Column;
@@ -25,29 +26,25 @@ public class User {
     private String encodedPassword;
 
     @Embedded
-    private UserName name;
-
-    @Embedded
-    private UserGender gender;
-
-    @Embedded
-    private UserPhoneNumber phoneNumber;
+    private UserPersonalInformation personalInformation;
 
     private User() {
 
     }
 
+    public User(UserAccount account,
+                UserPersonalInformation personalInformation) {
+        this.account = account;
+        this.personalInformation = personalInformation;
+    }
+
     public User(Long id,
                 UserAccount account,
-                UserName name,
-                UserGender gender,
-                UserPhoneNumber phoneNumber
+                UserPersonalInformation personalInformation
     ) {
         this.id = id;
         this.account = account;
-        this.name = name;
-        this.gender = gender;
-        this.phoneNumber = phoneNumber;
+        this.personalInformation = personalInformation;
     }
 
     public Long id() {
@@ -58,16 +55,8 @@ public class User {
         return account;
     }
 
-    public UserName name() {
-        return name;
-    }
-
-    public UserGender gender() {
-        return gender;
-    }
-
-    public UserPhoneNumber phoneNumber() {
-        return phoneNumber;
+    public UserPersonalInformation personalInformation() {
+        return personalInformation;
     }
 
     public void changePassword(String password,
@@ -80,13 +69,17 @@ public class User {
         return passwordEncoder.matches(password, encodedPassword);
     }
 
+    public SignUpResultDto toSignUpResultDto() {
+        return new SignUpResultDto(personalInformation.name());
+    }
+
     public static User fake(Long userId) {
         return new User(
             userId,
             new UserAccount("username1"),
-            new UserName("사용자명"),
-            new UserGender("여성"),
-            new UserPhoneNumber("010-8888-8888")
+            new UserPersonalInformation(
+                "사용자명", "여성", "01000000000"
+            )
         );
     }
 
@@ -94,9 +87,9 @@ public class User {
         return new User(
             1L,
             new UserAccount(account),
-            new UserName(name),
-            new UserGender("여성"),
-            new UserPhoneNumber("010-8888-8888")
+            new UserPersonalInformation(
+                name, "여성", "01000000000"
+            )
         );
     }
 
@@ -106,9 +99,9 @@ public class User {
             User user = new User(
                 id,
                 new UserAccount("account" + id),
-                new UserName("사용자 " + id),
-                new UserGender("성별"),
-                new UserPhoneNumber("010-0000-0000")
+                new UserPersonalInformation(
+                    "사용자" + id, "여성", "01000000000"
+                )
             );
             users.add(user);
         }

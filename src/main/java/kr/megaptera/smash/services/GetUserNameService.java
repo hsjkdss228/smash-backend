@@ -20,7 +20,7 @@ public class GetUserNameService {
         User user = userRepository.findById(currentUserId)
             .orElseThrow(() -> new UserNotFound(currentUserId));
 
-        String name = user.name().toString();
+        String name = user.personalInformation().name();
 
         return new UserNameDto(name);
     }

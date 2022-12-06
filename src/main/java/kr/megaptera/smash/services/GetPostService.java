@@ -40,8 +40,8 @@ public class GetPostService {
         return new PostDetailDto(
             post.id(),
             post.hits().value(),
-            userInPost.name().value(),
-            userInPost.phoneNumber().value(),
+            userInPost.personalInformation().name(),
+            userInPost.personalInformation().phoneNumber(),
             post.detail().value(),
             isAuthor
         );
