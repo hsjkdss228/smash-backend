@@ -87,15 +87,15 @@ public class Register {
         return status.equals(RegisterStatus.processing());
     }
 
-    public void cancelRegister() {
+    public void cancel() {
         status = RegisterStatus.canceled();
     }
 
-    public void acceptRegister() {
+    public void accept() {
         status = RegisterStatus.accepted();
     }
 
-    public void rejectRegister() {
+    public void reject() {
         status = RegisterStatus.rejected();
     }
 

@@ -1,6 +1,6 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.dtos.NoticeListDto;
+import kr.megaptera.smash.dtos.NoticeDto;
 import kr.megaptera.smash.dtos.NoticesDto;
 import kr.megaptera.smash.models.Notice;
 import kr.megaptera.smash.models.NoticeContents;
@@ -73,9 +73,9 @@ class GetNoticesServiceTest {
             = getNoticesService.findAllNoticesOfUser(userId);
 
         assertThat(noticesDto).isNotNull();
-        List<NoticeListDto> noticeListDtos = noticesDto.getNotices();
-        assertThat(noticeListDtos).hasSize(2);
+        List<NoticeDto> noticeDtos = noticesDto.getNotices();
+        assertThat(noticeDtos).hasSize(2);
         // TODO: 시간 변환 로직을 구현할 경우 시간 변환이 정상적으로 되었는지 테스트
-        assertThat(noticeListDtos.get(1).getTitle()).isEqualTo("알림 제목");
+        assertThat(noticeDtos.get(1).getTitle()).isEqualTo("알림 제목");
     }
 }

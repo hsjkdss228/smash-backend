@@ -3,13 +3,13 @@ package kr.megaptera.smash.dtos;
 import java.util.List;
 
 public class NoticesDto {
-    private final List<NoticeListDto> notices;
+    private final List<NoticeDto> notices;
 
-    public NoticesDto(List<NoticeListDto> notices) {
+    public NoticesDto(List<NoticeDto> notices) {
         this.notices = notices;
     }
 
-    public List<NoticeListDto> getNotices() {
+    public List<NoticeDto> getNotices() {
         return notices;
     }
 }

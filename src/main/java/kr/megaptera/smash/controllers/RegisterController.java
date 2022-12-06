@@ -6,9 +6,9 @@ import kr.megaptera.smash.exceptions.GameIsFull;
 import kr.megaptera.smash.exceptions.GameNotFound;
 import kr.megaptera.smash.exceptions.PostNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
-import kr.megaptera.smash.services.PatchRegisterToAcceptedService;
-import kr.megaptera.smash.services.PatchRegisterToCanceledService;
-import kr.megaptera.smash.services.PatchRegisterToRejectedService;
+import kr.megaptera.smash.services.AcceptRegisterService;
+import kr.megaptera.smash.services.CancelRegisterService;
+import kr.megaptera.smash.services.RejectRegisterService;
 import kr.megaptera.smash.services.JoinGameService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,18 +25,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("registers")
 public class RegisterController {
     private final JoinGameService joinGameService;
-    private final PatchRegisterToCanceledService patchRegisterToCanceledService;
-    private final PatchRegisterToAcceptedService patchRegisterToAcceptedService;
-    private final PatchRegisterToRejectedService patchRegisterToRejectedService;
+    private final CancelRegisterService cancelRegisterService;
+    private final AcceptRegisterService acceptRegisterService;
+    private final RejectRegisterService rejectRegisterService;
 
     public RegisterController(JoinGameService joinGameService,
-                              PatchRegisterToCanceledService patchRegisterToCanceledService,
-                              PatchRegisterToAcceptedService patchRegisterToAcceptedService,
-                              PatchRegisterToRejectedService patchRegisterToRejectedService) {
+                              CancelRegisterService cancelRegisterService,
+                              AcceptRegisterService acceptRegisterService,
+                              RejectRegisterService rejectRegisterService) {
         this.joinGameService = joinGameService;
-        this.patchRegisterToCanceledService = patchRegisterToCanceledService;
-        this.patchRegisterToAcceptedService = patchRegisterToAcceptedService;
-        this.patchRegisterToRejectedService = patchRegisterToRejectedService;
+        this.cancelRegisterService = cancelRegisterService;
+        this.acceptRegisterService = acceptRegisterService;
+        this.rejectRegisterService = rejectRegisterService;
     }
 
     @PostMapping("games/{gameId}")
@@ -56,12 +56,12 @@ public class RegisterController {
         @RequestParam(value = "status") String status
     ) {
         switch (status) {
-            case "canceled" -> patchRegisterToCanceledService.
-                patchRegisterToCanceled(registerId, accessedUserId);
-            case "accepted" -> patchRegisterToAcceptedService.
-                patchRegisterToAccepted(registerId);
-            case "rejected" -> patchRegisterToRejectedService.
-                patchRegisterToRejected(registerId);
+            case "canceled" -> cancelRegisterService.
+                cancelRegister(registerId, accessedUserId);
+            case "accepted" -> acceptRegisterService.
+                acceptRegister(registerId);
+            case "rejected" -> rejectRegisterService.
+                rejectRegister(registerId);
         }
     }
 

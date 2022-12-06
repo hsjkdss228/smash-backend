@@ -1,6 +1,6 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.dtos.NoticeListDto;
+import kr.megaptera.smash.dtos.NoticeDto;
 import kr.megaptera.smash.dtos.NoticesDto;
 import kr.megaptera.smash.models.Notice;
 import kr.megaptera.smash.repositories.NoticeRepository;
@@ -28,11 +28,11 @@ public class GetNoticesService {
         //   꺼내온 알림들을 DTO로 만드는 건 도대체 누구의 책임인가?
         //   알림판? 그럼 게시판-게시물의 관계인가?
         //   동작을 수행할 적절한 객체를 찾아 정의한 뒤에는 그 객체의 동작으로 옮기기
-        List<NoticeListDto> noticeListDtos = notices.stream()
+        List<NoticeDto> noticeDtos = notices.stream()
             .filter(Notice::active)
-            .map(Notice::toListDto)
+            .map(Notice::toDto)
             .toList();
 
-        return new NoticesDto(noticeListDtos);
+        return new NoticesDto(noticeDtos);
     }
 }

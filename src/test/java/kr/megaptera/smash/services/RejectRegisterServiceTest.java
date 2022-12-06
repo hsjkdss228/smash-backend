@@ -13,8 +13,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-class PatchRegisterToRejectedServiceTest {
-    private PatchRegisterToRejectedService patchRegisterToRejectedService;
+class RejectRegisterServiceTest {
+    private RejectRegisterService rejectRegisterService;
 
     private RegisterRepository registerRepository;
 
@@ -22,8 +22,8 @@ class PatchRegisterToRejectedServiceTest {
     void setUp() {
         registerRepository = mock(RegisterRepository.class);
 
-        patchRegisterToRejectedService
-            = new PatchRegisterToRejectedService(registerRepository);
+        rejectRegisterService
+            = new RejectRegisterService(registerRepository);
     }
 
     @Test
@@ -40,9 +40,9 @@ class PatchRegisterToRejectedServiceTest {
         given(registerRepository.findById(registerId))
             .willReturn(Optional.of(register));
 
-        patchRegisterToRejectedService.patchRegisterToRejected(registerId);
+        rejectRegisterService.rejectRegister(registerId);
 
         verify(registerRepository).findById(registerId);
-        verify(register).rejectRegister();
+        verify(register).reject();
     }
 }

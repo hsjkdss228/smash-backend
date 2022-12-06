@@ -6,12 +6,11 @@ import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.AlreadyJoinedGame;
 import kr.megaptera.smash.exceptions.GameIsFull;
 import kr.megaptera.smash.exceptions.GameNotFound;
-import kr.megaptera.smash.exceptions.RegisterGameFailed;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.services.JoinGameService;
-import kr.megaptera.smash.services.PatchRegisterToAcceptedService;
-import kr.megaptera.smash.services.PatchRegisterToCanceledService;
-import kr.megaptera.smash.services.PatchRegisterToRejectedService;
+import kr.megaptera.smash.services.AcceptRegisterService;
+import kr.megaptera.smash.services.CancelRegisterService;
+import kr.megaptera.smash.services.RejectRegisterService;
 import kr.megaptera.smash.utils.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +39,13 @@ class RegisterControllerTest {
     private JoinGameService joinGameService;
 
     @MockBean
-    private PatchRegisterToCanceledService patchRegisterToCanceledService;
+    private CancelRegisterService cancelRegisterService;
 
     @MockBean
-    private PatchRegisterToAcceptedService patchRegisterToAcceptedService;
+    private AcceptRegisterService acceptRegisterService;
 
     @MockBean
-    private PatchRegisterToRejectedService patchRegisterToRejectedService;
+    private RejectRegisterService rejectRegisterService;
 
     @SpyBean
     private JwtUtil jwtUtil;
@@ -149,7 +148,7 @@ class RegisterControllerTest {
                 .param("status", "canceled"))
             .andExpect(MockMvcResultMatchers.status().isNoContent());
 
-        verify(patchRegisterToCanceledService).patchRegisterToCanceled(registerId, userId);
+        verify(cancelRegisterService).cancelRegister(registerId, userId);
     }
 
     @Test
@@ -164,7 +163,7 @@ class RegisterControllerTest {
                 .param("status", "accepted"))
             .andExpect(MockMvcResultMatchers.status().isNoContent());
 
-        verify(patchRegisterToAcceptedService).patchRegisterToAccepted(registerId);
+        verify(acceptRegisterService).acceptRegister(registerId);
     }
 
     @Test
@@ -175,14 +174,14 @@ class RegisterControllerTest {
         String token = jwtUtil.encode(userId);
 
         doThrow(GameIsFull.class).doNothing()
-            .when(patchRegisterToAcceptedService).patchRegisterToAccepted(registerId);
+            .when(acceptRegisterService).acceptRegister(registerId);
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/registers/16")
                 .header("Authorization", "Bearer " + token)
                 .param("status", "accepted"))
             .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        verify(patchRegisterToAcceptedService).patchRegisterToAccepted(registerId);
+        verify(acceptRegisterService).acceptRegister(registerId);
     }
 
     @Test
@@ -197,6 +196,6 @@ class RegisterControllerTest {
                 .param("status", "rejected"))
             .andExpect(MockMvcResultMatchers.status().isNoContent());
 
-        verify(patchRegisterToRejectedService).patchRegisterToRejected(registerId);
+        verify(rejectRegisterService).rejectRegister(registerId);
     }
 }

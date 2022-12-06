@@ -9,18 +9,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class PatchRegisterToRejectedService {
+public class CancelRegisterService {
     private final RegisterRepository registerRepository;
 
-    public PatchRegisterToRejectedService(RegisterRepository registerRepository) {
+    public CancelRegisterService(RegisterRepository registerRepository) {
         this.registerRepository = registerRepository;
     }
 
-    public void patchRegisterToRejected(Long registerId) {
+    public void cancelRegister(Long registerId, Long accessedUserId) {
         Register register
             = registerRepository.findById(registerId)
             .orElseThrow(RegisterNotFound::new);
 
-        register.rejectRegister();
+        if (!register.userId().equals(accessedUserId)) {
+            throw new RegisterIdAndUserIdNotMatch();
+        }
+
+        register.cancel();
     }
 }

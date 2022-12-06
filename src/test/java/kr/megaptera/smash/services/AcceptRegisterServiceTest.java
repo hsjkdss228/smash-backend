@@ -23,8 +23,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-class PatchRegisterToAcceptedServiceTest {
-    private PatchRegisterToAcceptedService patchRegisterToAcceptedService;
+class AcceptRegisterServiceTest {
+    private AcceptRegisterService acceptRegisterService;
 
     private RegisterRepository registerRepository;
     private UserRepository userRepository;
@@ -38,7 +38,7 @@ class PatchRegisterToAcceptedServiceTest {
         gameRepository = mock(GameRepository.class);
         noticeRepository = mock(NoticeRepository.class);
 
-        patchRegisterToAcceptedService = new PatchRegisterToAcceptedService(
+        acceptRegisterService = new AcceptRegisterService(
             registerRepository,
             userRepository,
             gameRepository,
@@ -70,10 +70,10 @@ class PatchRegisterToAcceptedServiceTest {
         given(userRepository.findById(register.userId()))
             .willReturn(Optional.of(user));
 
-        patchRegisterToAcceptedService.patchRegisterToAccepted(registerId);
+        acceptRegisterService.acceptRegister(registerId);
 
         verify(registerRepository).findById(registerId);
-        verify(register).acceptRegister();
+        verify(register).accept();
         verify(register).createAcceptNotice(user, game);
         verify(noticeRepository).save(any(Notice.class));
     }
@@ -103,7 +103,7 @@ class PatchRegisterToAcceptedServiceTest {
             .willReturn(registers);
 
         assertThrows(GameIsFull.class, () -> {
-            patchRegisterToAcceptedService.patchRegisterToAccepted(registerId);
+            acceptRegisterService.acceptRegister(registerId);
         });
     }
 }
