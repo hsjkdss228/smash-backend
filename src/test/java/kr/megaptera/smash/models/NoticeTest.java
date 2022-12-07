@@ -17,9 +17,17 @@ class NoticeTest {
     }
 
     @Test
+    void unchecked() {
+        Notice noticeUnread = Notice.fake(NoticeStatus.unread());
+
+        assertThat(noticeUnread.unchecked()).isTrue();
+    }
+
+    @Test
     void read() {
         Notice notice = Notice.fake(NoticeStatus.unread());
         notice.read();
+
         assertThat(notice.status()).isEqualTo(NoticeStatus.read());
     }
 }
