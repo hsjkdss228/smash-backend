@@ -30,4 +30,17 @@ class NoticeTest {
 
         assertThat(notice.status()).isEqualTo(NoticeStatus.read());
     }
+
+    @Test
+    void deleted() {
+        Notice noticeUnread = Notice.fake(NoticeStatus.unread());
+        noticeUnread.deleted();
+
+        assertThat(noticeUnread.status()).isEqualTo(NoticeStatus.deleted());
+
+        Notice noticeRead = Notice.fake(NoticeStatus.read());
+        noticeRead.deleted();
+
+        assertThat(noticeRead.status()).isEqualTo(NoticeStatus.deleted());
+    }
 }
