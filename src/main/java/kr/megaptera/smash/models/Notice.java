@@ -83,10 +83,28 @@ public class Notice {
         status = NoticeStatus.read();
     }
 
+    public void deleted() {
+        status = NoticeStatus.deleted();
+    }
+
     public static Notice fake(NoticeStatus status) {
         Long userId = 1L;
         return new Notice(
             1L,
+            userId,
+            new NoticeContents(
+                "알림 제목",
+                "알림 상세 내용"
+            ),
+            status,
+            LocalDateTime.now()
+        );
+    }
+
+    public static Notice fake(Long noticeId, NoticeStatus status) {
+        Long userId = 1L;
+        return new Notice(
+            noticeId,
             userId,
             new NoticeContents(
                 "알림 제목",
