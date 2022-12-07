@@ -75,6 +75,10 @@ public class Notice {
             || status.equals(NoticeStatus.read());
     }
 
+    public boolean unchecked() {
+        return status.equals(NoticeStatus.unread());
+    }
+
     public void read() {
         status = NoticeStatus.read();
     }

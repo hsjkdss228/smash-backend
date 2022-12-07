@@ -3,7 +3,9 @@ package kr.megaptera.smash.controllers;
 import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.NoticeDto;
 import kr.megaptera.smash.dtos.NoticesDto;
+import kr.megaptera.smash.dtos.UnreadNoticeCountDto;
 import kr.megaptera.smash.services.GetNoticesService;
+import kr.megaptera.smash.services.GetUnreadNoticeCountService;
 import kr.megaptera.smash.services.ReadNoticeService;
 import kr.megaptera.smash.utils.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -36,13 +39,12 @@ class NoticeControllerTest {
     @SpyBean
     private JwtUtil jwtUtil;
 
-    private NoticesDto noticesDto;
-
     // TODO: 모델을 정의하고 fake와 toDto 메서드를 정의하고 난 뒤에는
     //    fake().toDto() 형태로 대체하기
 
-    @BeforeEach
-    void setUp() {
+    @Test
+    void notices() throws Exception {
+        Long userId = 1L;
         List<NoticeDto> noticeDtos = List.of(
             new NoticeDto(
                 1L,
@@ -59,12 +61,8 @@ class NoticeControllerTest {
                 "등록한 신청자: 신청자 이름"
             )
         );
-        noticesDto = new NoticesDto(noticeDtos);
-    }
+        NoticesDto noticesDto = new NoticesDto(noticeDtos);
 
-    @Test
-    void notices() throws Exception {
-        Long userId = 1L;
         given(getNoticesService.findAllNoticesOfUser(userId))
             .willReturn(noticesDto);
 
