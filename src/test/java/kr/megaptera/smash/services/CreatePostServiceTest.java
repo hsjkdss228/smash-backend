@@ -123,7 +123,7 @@ class CreatePostServiceTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlaceName(),
+            postAndGameRequestDto.getPlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail()
         );
@@ -154,7 +154,7 @@ class CreatePostServiceTest {
                 postAndGameRequestDto.getGameEndTimeAmPm(),
                 postAndGameRequestDto.getGameEndHour(),
                 postAndGameRequestDto.getGameEndMinute(),
-                postAndGameRequestDto.getGamePlaceName(),
+                postAndGameRequestDto.getPlaceName(),
                 postAndGameRequestDto.getGameTargetMemberCount(),
                 postAndGameRequestDto.getPostDetail()
             );

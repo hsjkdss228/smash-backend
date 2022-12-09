@@ -265,7 +265,7 @@ class PostControllerTest {
         String gameEndTimeAmPm,
         String gameEndHour,
         String gameEndMinute,
-        String gamePlaceName,
+        String placeName,
         Integer gameTargetMemberCount,
         String postDetail
     ) throws Exception {
@@ -279,7 +279,7 @@ class PostControllerTest {
             gameEndTimeAmPm,
             gameEndHour,
             gameEndMinute,
-            gamePlaceName,
+            placeName,
             gameTargetMemberCount,
             postDetail
         )).willReturn(createPostAndGameResultDto);
@@ -299,7 +299,7 @@ class PostControllerTest {
                     "\"gameEndTimeAmPm\":\"" + gameEndTimeAmPm + "\"," +
                     "\"gameEndHour\":\"" + gameEndHour + "\"," +
                     "\"gameEndMinute\":\"" + gameEndMinute + "\"," +
-                    "\"gamePlaceName\":\"" + gamePlaceName + "\"," +
+                    "\"placeName\":\"" + placeName + "\"," +
                     "\"gameTargetMemberCount\":" + gameTargetMemberCount + "," +
                     "\"postDetail\":\"" + postDetail + "\"" +
                     "}"))
@@ -320,7 +320,7 @@ class PostControllerTest {
         String gameEndTimeAmPm,
         String gameEndHour,
         String gameEndMinute,
-        String gamePlaceName,
+        String placeName,
         Integer gameTargetMemberCount,
         String postDetail,
         String errorMessage
@@ -335,7 +335,7 @@ class PostControllerTest {
             gameEndTimeAmPm,
             gameEndHour,
             gameEndMinute,
-            gamePlaceName,
+            placeName,
             gameTargetMemberCount,
             postDetail
         )).willThrow(new CreatePostFailed(errorMessage));
@@ -355,7 +355,7 @@ class PostControllerTest {
                     "\"gameEndTimeAmPm\":\"" + gameEndTimeAmPm + "\"," +
                     "\"gameEndHour\":\"" + gameEndHour + "\"," +
                     "\"gameEndMinute\":\"" + gameEndMinute + "\"," +
-                    "\"gamePlaceName\":\"" + gamePlaceName + "\"," +
+                    "\"placeName\":\"" + placeName + "\"," +
                     "\"gameTargetMemberCount\":" + gameTargetMemberCount + "," +
                     "\"postDetail\":\"" + postDetail + "\"" +
                     "}"))
@@ -380,7 +380,7 @@ class PostControllerTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlaceName(),
+            postAndGameRequestDto.getPlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail()
         );
@@ -401,7 +401,7 @@ class PostControllerTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlaceName(),
+            postAndGameRequestDto.getPlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),
             errorMessage
@@ -423,7 +423,7 @@ class PostControllerTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlaceName(),
+            postAndGameRequestDto.getPlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),
             errorMessage
@@ -445,7 +445,7 @@ class PostControllerTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlaceName(),
+            postAndGameRequestDto.getPlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),
             errorMessage
@@ -467,7 +467,7 @@ class PostControllerTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlaceName(),
+            postAndGameRequestDto.getPlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail(),
             errorMessage
@@ -511,7 +511,7 @@ class PostControllerTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlaceName(),
+            postAndGameRequestDto.getPlaceName(),
             nullGameTargetMemberCount,
             postAndGameRequestDto.getPostDetail(),
             errorMessage
@@ -533,7 +533,7 @@ class PostControllerTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlaceName(),
+            postAndGameRequestDto.getPlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             blankPostDetail,
             errorMessage
@@ -553,7 +553,7 @@ class PostControllerTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlaceName(),
+            postAndGameRequestDto.getPlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail()
         )).willThrow(UserNotFound.class);
@@ -581,8 +581,8 @@ class PostControllerTest {
                     + postAndGameRequestDto.getGameEndHour() + "\"," +
                     "\"gameEndMinute\":\""
                     + postAndGameRequestDto.getGameEndMinute() + "\"," +
-                    "\"gamePlaceName\":\""
-                    + postAndGameRequestDto.getGamePlaceName() + "\"," +
+                    "\"placeName\":\""
+                    + postAndGameRequestDto.getPlaceName() + "\"," +
                     "\"gameTargetMemberCount\":"
                     + postAndGameRequestDto.getGameTargetMemberCount() + "," +
                     "\"postDetail\":\""

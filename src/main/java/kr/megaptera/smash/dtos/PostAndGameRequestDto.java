@@ -49,7 +49,7 @@ public class PostAndGameRequestDto {
     @NotBlank(
         groups = NotBlankGroup.class,
         message = "운동 장소 이름을 입력해주세요.")
-    private String gamePlaceName;
+    private String placeName;
 
     @NotNull(
         groups = NotBlankGroup.class,
@@ -73,7 +73,7 @@ public class PostAndGameRequestDto {
                                  String gameEndTimeAmPm,
                                  String gameEndHour,
                                  String gameEndMinute,
-                                 String gamePlaceName,
+                                 String placeName,
                                  Integer gameTargetMemberCount,
                                  String postDetail
     ) {
@@ -85,7 +85,7 @@ public class PostAndGameRequestDto {
         this.gameEndTimeAmPm = gameEndTimeAmPm;
         this.gameEndHour = gameEndHour;
         this.gameEndMinute = gameEndMinute;
-        this.gamePlaceName = gamePlaceName;
+        this.placeName = placeName;
         this.gameTargetMemberCount = gameTargetMemberCount;
         this.postDetail = postDetail;
     }
@@ -122,8 +122,8 @@ public class PostAndGameRequestDto {
         return gameEndMinute;
     }
 
-    public String getGamePlaceName() {
-        return gamePlaceName;
+    public String getPlaceName() {
+        return placeName;
     }
 
     public Integer getGameTargetMemberCount() {

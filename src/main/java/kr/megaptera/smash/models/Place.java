@@ -7,10 +7,12 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "places")
 public class Place {
     @Id
     @GeneratedValue
@@ -77,7 +79,7 @@ public class Place {
             placeId,
             new PlaceInformation(
                 placeName,
-                "01012341234"
+                "010-1234-1234"
             ),
             new Exercise("운동 카테고리 이름"),
             new PlaceAddress(
@@ -87,7 +89,7 @@ public class Place {
         );
     }
 
-    public static List<Place> fakes(int generationCount) {
+    public static List<Place> fakes(long generationCount) {
         List<Place> places = new ArrayList<>();
         for (long i = 1; i <= generationCount; i += 1) {
             Long placeId = i;
@@ -95,7 +97,7 @@ public class Place {
                 placeId,
                 new PlaceInformation(
                     "운동 장소 이름 " + i,
-                    "0101234567" + i
+                    "010-1234-567" + i
                 ),
                 new Exercise("운동 카테고리 이름 " + i),
                 new PlaceAddress(
@@ -109,7 +111,7 @@ public class Place {
     }
 
     public PlaceDto toPlaceDto() {
-        String address = !address().roadAddress().equals("")
+        String address = !address().roadAddress().isBlank()
             ? address().roadAddress()
             : address().jibunAddress();
 
