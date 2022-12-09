@@ -6,6 +6,7 @@ import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.exceptions.CreatePostFailed;
 import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.PlaceNotFound;
 import kr.megaptera.smash.exceptions.UserIsNotAuthor;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.services.CreatePostService;
@@ -89,7 +90,7 @@ public class PostController {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getGamePlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail()
         );
@@ -114,6 +115,12 @@ public class PostController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String gameNotFound() {
         return "Game Not Found";
+    }
+
+    @ExceptionHandler(PlaceNotFound.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String placeNotFound(PlaceNotFound exception) {
+        return exception.getMessage();
     }
 
     @ExceptionHandler(CreatePostFailed.class)

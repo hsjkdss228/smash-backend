@@ -44,17 +44,18 @@ class GameControllerTest {
     void setUp() {
         token = jwtUtil.encode(userId);
 
-        Game game = Game.fake("스케이트", "Mokdong Ice Rink");
+        Long placeId = 1L;
+        Game game = Game.fake("스케이트", placeId);
         List<Register> members = Register.fakesAccepted(5, game.id());
 
-        Long registerId = -1L;
+        Long registerId = null;
         String registerStatus = "none";
 
         gameDetailDto = new GameDetailDto(
             game.id(),
+            game.placeId(),
             game.exercise().name(),
             game.dateTime().joinDateAndTime(),
-            game.place().name(),
             members.size(),
             game.targetMemberCount().value(),
             registerId,
@@ -71,10 +72,10 @@ class GameControllerTest {
                 .header("Authorization", "Bearer " + token))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"place\":\"Mokdong Ice Rink\"")
+                containsString("\"placeId\":1")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
-                containsString("\"registerId\":-1")
+                containsString("\"registerId\":null")
             ))
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"registerStatus\":\"none\"")

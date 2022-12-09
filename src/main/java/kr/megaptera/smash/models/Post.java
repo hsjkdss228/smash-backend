@@ -1,6 +1,7 @@
 package kr.megaptera.smash.models;
 
 import kr.megaptera.smash.dtos.GameInPostListDto;
+import kr.megaptera.smash.dtos.PlaceInPostListDto;
 import kr.megaptera.smash.dtos.PostListDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -149,12 +150,14 @@ public class Post {
     }
 
     public PostListDto toPostListDto(Boolean isAuthor,
-                                     GameInPostListDto gameInPostListDto) {
+                                     GameInPostListDto gameInPostListDto,
+                                     PlaceInPostListDto placeInPostListDto) {
         return new PostListDto(
             id,
             hits.value(),
             isAuthor,
-            gameInPostListDto
+            gameInPostListDto,
+            placeInPostListDto
         );
     }
 }

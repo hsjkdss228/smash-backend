@@ -7,8 +7,6 @@ public class GameInPostListDto {
 
     private final String date;
 
-    private final String place;
-
     private final Integer currentMemberCount;
 
     private final Integer targetMemberCount;
@@ -20,7 +18,6 @@ public class GameInPostListDto {
     public GameInPostListDto(Long id,
                              String type,
                              String date,
-                             String place,
                              Integer currentMemberCount,
                              Integer targetMemberCount,
                              Long registerId,
@@ -28,7 +25,6 @@ public class GameInPostListDto {
         this.id = id;
         this.type = type;
         this.date = date;
-        this.place = place;
         this.currentMemberCount = currentMemberCount;
         this.targetMemberCount = targetMemberCount;
         this.registerId = registerId;
@@ -45,10 +41,6 @@ public class GameInPostListDto {
 
     public String getDate() {
         return date;
-    }
-
-    public String getPlace() {
-        return place;
     }
 
     public Integer getCurrentMemberCount() {

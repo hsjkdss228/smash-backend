@@ -54,13 +54,8 @@ public class GetGameService {
             ? "none"
             : myRegister.status().toString();
 
-        return new GameDetailDto(
-            game.id(),
-            game.exercise().name(),
-            game.dateTime().joinDateAndTime(),
-            game.place().name(),
+        return game.toGameDetailDto(
             currentMemberCount,
-            game.targetMemberCount().value(),
             registerId,
             registerStatus
         );
