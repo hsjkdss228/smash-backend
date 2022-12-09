@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -93,14 +92,11 @@ class NoticeControllerTest {
     @Test
     void readNotices() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.patch("/notices")
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("{" +
-                "\"ids\":[" +
-                "{\"id\":1}," +
-                "{\"id\":2}" +
-                "]" +
-                "}")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                    "\"ids\":[1,2]" +
+                    "}")
                 .param("status", "read"))
             .andExpect(MockMvcResultMatchers.status().isNoContent());
 
@@ -113,12 +109,9 @@ class NoticeControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                    "\"ids\":[" +
-                    "{\"id\":1}," +
-                    "{\"id\":2}" +
-                    "]" +
+                    "\"ids\":[1,2]" +
                     "}")
-                .param("status", "delete"))
+                .param("status", "deleted"))
             .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         verify(deleteNoticesService).deleteTargetNotices(anyList());

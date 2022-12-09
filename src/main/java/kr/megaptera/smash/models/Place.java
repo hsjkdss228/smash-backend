@@ -1,45 +1,126 @@
 package kr.megaptera.smash.models;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import java.util.Objects;
+import kr.megaptera.smash.dtos.PlaceDto;
+import kr.megaptera.smash.dtos.PlaceInPostListDto;
 
-@Embeddable
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "places")
 public class Place {
-    @Column(name = "place_name")
-    private String name;
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Embedded
+    private PlaceInformation information;
+
+    @Embedded
+    private Exercise exercise;
+
+    @Embedded
+    private PlaceAddress address;
 
     private Place() {
 
     }
 
-    public Place(String name) {
-        this.name = name;
+    public Place(PlaceInformation information,
+                 Exercise exercise,
+                 PlaceAddress address
+    ) {
+        this.information = information;
+        this.exercise = exercise;
+        this.address = address;
     }
 
-    public String name() {
-        return name;
+    public Place(Long id,
+                 PlaceInformation information,
+                 Exercise exercise,
+                 PlaceAddress address
+    ) {
+        this.id = id;
+        this.information = information;
+        this.exercise = exercise;
+        this.address = address;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+    public Long id() {
+        return id;
+    }
+
+    public PlaceInformation information() {
+        return information;
+    }
+
+    public Exercise exercise() {
+        return exercise;
+    }
+
+    public PlaceAddress address() {
+        return address;
+    }
+
+    public PlaceInPostListDto toPlaceInPostListDto() {
+        return new PlaceInPostListDto(
+            information().name()
+        );
+    }
+
+    public static Place fake(String placeName) {
+        Long placeId = 1L;
+        return new Place(
+            placeId,
+            new PlaceInformation(
+                placeName,
+                "010-1234-1234"
+            ),
+            new Exercise("운동 카테고리 이름"),
+            new PlaceAddress(
+                "운동 장소 도로명주소",
+                "운동 장소 지번주소"
+            )
+        );
+    }
+
+    public static List<Place> fakes(long generationCount) {
+        List<Place> places = new ArrayList<>();
+        for (long i = 1; i <= generationCount; i += 1) {
+            Long placeId = i;
+            Place place = new Place(
+                placeId,
+                new PlaceInformation(
+                    "운동 장소 이름 " + i,
+                    "010-1234-567" + i
+                ),
+                new Exercise("운동 카테고리 이름 " + i),
+                new PlaceAddress(
+                    "운동 장소 도로명주소 " + i,
+                    "운동 장소 지번주소 " + i
+                )
+            );
+            places.add(place);
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Place place = (Place) o;
-        return Objects.equals(name, place.name);
+        return places;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
+    public PlaceDto toPlaceDto() {
+        String address = !address().roadAddress().isBlank()
+            ? address().roadAddress()
+            : address().jibunAddress();
 
-    @Override
-    public String toString() {
-        return name;
+        return new PlaceDto(
+            id,
+            information().name(),
+            exercise().name(),
+            address,
+            information().contactNumber()
+        );
     }
 }

@@ -53,16 +53,17 @@ class GetGameServiceTest {
 
         Long gameId = 1L;
         Long targetPostId = 1L;
+        Long placeId = 1L;
         Game game = new Game(
             gameId,
             targetPostId,
+            placeId,
             new Exercise("야구"),
             new GameDateTime(
                 LocalDate.of(2022, 8, 22),
                 LocalTime.of(19, 0),
                 LocalTime.of(22, 0)
             ),
-            new Place("목동야구장"),
             new GameTargetMemberCount(10)
         );
 
@@ -90,16 +91,17 @@ class GetGameServiceTest {
 
         Long gameId = 1L;
         Long targetPostId = 1L;
+        Long placeId = 1L;
         Game game = new Game(
             gameId,
             targetPostId,
+            placeId,
             new Exercise("야구"),
             new GameDateTime(
                 LocalDate.of(2022, 8, 22),
                 LocalTime.of(19, 0),
                 LocalTime.of(22, 0)
             ),
-            new Place("목동야구장"),
             new GameTargetMemberCount(10)
         );
 

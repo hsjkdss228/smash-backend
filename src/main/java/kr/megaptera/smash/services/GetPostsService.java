@@ -1,15 +1,19 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.GameInPostListDto;
+import kr.megaptera.smash.dtos.PlaceInPostListDto;
 import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.PlaceNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Game;
+import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
+import kr.megaptera.smash.repositories.PlaceRepository;
 import kr.megaptera.smash.repositories.PostRepository;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -23,16 +27,19 @@ import java.util.List;
 public class GetPostsService {
     private final PostRepository postRepository;
     private final GameRepository gameRepository;
+    private final PlaceRepository placeRepository;
     private final RegisterRepository registerRepository;
     private final UserRepository userRepository;
 
     public GetPostsService(UserRepository userRepository,
                            PostRepository postRepository,
                            GameRepository gameRepository,
+                           PlaceRepository placeRepository,
                            RegisterRepository registerRepository) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.gameRepository = gameRepository;
+        this.placeRepository = placeRepository;
         this.registerRepository = registerRepository;
     }
 
@@ -48,6 +55,9 @@ public class GetPostsService {
             .map(post -> {
                 Game game = gameRepository.findByPostId(post.id())
                     .orElseThrow(GameNotFound::new);
+
+                Place place = placeRepository.findById(game.placeId())
+                    .orElseThrow(() -> new PlaceNotFound(game.placeId()));
 
                 List<Register> registers
                     = registerRepository.findAllByGameId(game.id());
@@ -73,9 +83,13 @@ public class GetPostsService {
                     registerStatus
                 );
 
+                PlaceInPostListDto placeInPostListDto
+                    = place.toPlaceInPostListDto();
+
                 return post.toPostListDto(
                     isAuthor,
-                    gameInPostListDto
+                    gameInPostListDto,
+                    placeInPostListDto
                 );
             })
             .toList();

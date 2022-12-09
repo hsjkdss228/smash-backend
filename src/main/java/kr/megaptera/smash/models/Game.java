@@ -1,5 +1,6 @@
 package kr.megaptera.smash.models;
 
+import kr.megaptera.smash.dtos.GameDetailDto;
 import kr.megaptera.smash.dtos.GameInPostListDto;
 import kr.megaptera.smash.exceptions.AlreadyJoinedGame;
 import kr.megaptera.smash.exceptions.GameIsFull;
@@ -24,14 +25,13 @@ public class Game {
 
     private Long postId;
 
+    private Long placeId;
+
     @Embedded
     private Exercise exercise;
 
     @Embedded
     private GameDateTime dateTime;
-
-    @Embedded
-    private Place place;
 
     @Embedded
     private GameTargetMemberCount targetMemberCount;
@@ -44,41 +44,41 @@ public class Game {
     }
 
     public Game(Long postId,
+                Long placeId,
                 Exercise exercise,
-                Place place,
                 GameTargetMemberCount targetMemberCount
     ) {
         this.postId = postId;
+        this.placeId = placeId;
         this.exercise = exercise;
-        this.place = place;
         this.targetMemberCount = targetMemberCount;
     }
 
     public Game(Long postId,
+                Long placeId,
                 Exercise exercise,
                 GameDateTime dateTime,
-                Place place,
                 GameTargetMemberCount targetMemberCount
     ) {
         this.postId = postId;
+        this.placeId = placeId;
         this.exercise = exercise;
         this.dateTime = dateTime;
-        this.place = place;
         this.targetMemberCount = targetMemberCount;
     }
 
     public Game(Long id,
                 Long postId,
+                Long placeId,
                 Exercise exercise,
                 GameDateTime dateTime,
-                Place place,
                 GameTargetMemberCount targetMemberCount
     ) {
         this.id = id;
         this.postId = postId;
+        this.placeId = placeId;
         this.exercise = exercise;
         this.dateTime = dateTime;
-        this.place = place;
         this.targetMemberCount = targetMemberCount;
     }
 
@@ -90,16 +90,16 @@ public class Game {
         return postId;
     }
 
+    public Long placeId() {
+        return placeId;
+    }
+
     public Exercise exercise() {
         return exercise;
     }
 
     public GameDateTime dateTime() {
         return dateTime;
-    }
-
-    public Place place() {
-        return place;
     }
 
     public GameTargetMemberCount targetMemberCount() {
@@ -212,74 +212,87 @@ public class Game {
     }
 
     public static Game fake(Long gameId) {
+        Long postId = 1L;
+        Long placeId = 1L;
         return new Game(
             gameId,
-            1L,
+            postId,
+            placeId,
             new Exercise("운동 이름"),
             new GameDateTime(
                 LocalDate.of(2022, 12, 24),
                 LocalTime.of(10, 0),
                 LocalTime.of(16, 30)
             ),
-            new Place("운동 장소"),
             new GameTargetMemberCount(10)
         );
     }
 
-    public static Game fake(String exerciseName, String placeName) {
+    public static Game fake(String exerciseName,
+                            Long placeId) {
+        Long gameId = 1L;
+        Long postId = 1L;
         return new Game(
-            1L,
-            1L,
+            gameId,
+            postId,
+            placeId,
             new Exercise(exerciseName),
             new GameDateTime(
                 LocalDate.of(2022, 12, 24),
                 LocalTime.of(10, 0),
                 LocalTime.of(16, 30)
             ),
-            new Place(placeName),
             new GameTargetMemberCount(10)
         );
     }
 
     public static Game fake(String exerciseName,
                             GameDateTime gameDateTime) {
+        Long gameId = 1L;
+        Long postId = 1L;
+        Long placeId = 1L;
         return new Game(
-            1L,
-            1L,
+            gameId,
+            postId,
+            placeId,
             new Exercise(exerciseName),
             gameDateTime,
-            new Place("운동 장소"),
             new GameTargetMemberCount(10)
         );
     }
 
     public static Game fake(GameTargetMemberCount targetMemberCount) {
+        Long gameId = 1L;
+        Long postId = 1L;
+        Long placeId = 1L;
         return new Game(
-            1L,
-            1L,
+            gameId,
+            postId,
+            placeId,
             new Exercise("운동 이름"),
             new GameDateTime(
                 LocalDate.of(2022, 12, 24),
                 LocalTime.of(10, 0),
                 LocalTime.of(16, 30)
             ),
-            new Place("운동 장소"),
             new GameTargetMemberCount(targetMemberCount.value())
         );
     }
 
     public static Game fake(Long postId,
                             GameTargetMemberCount targetMemberCount) {
+        Long gameId = 1L;
+        Long placeId = 1L;
         return new Game(
-            1L,
+            gameId,
             postId,
+            placeId,
             new Exercise("운동 이름"),
             new GameDateTime(
                 LocalDate.of(2022, 12, 24),
                 LocalTime.of(10, 0),
                 LocalTime.of(16, 30)
             ),
-            new Place("운동 장소"),
             new GameTargetMemberCount(targetMemberCount.value())
         );
     }
@@ -287,16 +300,17 @@ public class Game {
     public static Game fake(Long gameId,
                             Long postId,
                             GameTargetMemberCount targetMemberCount) {
+        Long placeId = 1L;
         return new Game(
             gameId,
             postId,
+            placeId,
             new Exercise("운동 이름"),
             new GameDateTime(
                 LocalDate.of(2022, 12, 24),
                 LocalTime.of(10, 0),
                 LocalTime.of(16, 30)
             ),
-            new Place("운동 장소"),
             new GameTargetMemberCount(targetMemberCount.value())
         );
     }
@@ -307,16 +321,17 @@ public class Game {
         for (long i = 1; i <= generationCount; i += 1) {
             Long gameId = i;
             Long postId = i;
+            Long placeId = i;
             Game game = new Game(
                 gameId,
                 postId,
+                placeId,
                 new Exercise("운동 종류 " + i),
                 new GameDateTime(
                     LocalDate.of(2022, 12, 24),
                     LocalTime.of(10, 0),
                     LocalTime.of(16, 30)
                 ),
-                new Place("운동 장소 " + i),
                 gameTargetMemberCount
             );
             games.add(game);
@@ -331,7 +346,21 @@ public class Game {
             id,
             exercise.name(),
             dateTime.joinDateAndTime(),
-            place.name(),
+            currentMemberCount,
+            targetMemberCount.value(),
+            registerId,
+            registerStatus
+        );
+    }
+
+    public GameDetailDto toGameDetailDto(Integer currentMemberCount,
+                                         Long registerId,
+                                         String registerStatus) {
+        return new GameDetailDto(
+            id,
+            placeId,
+            exercise.name(),
+            dateTime.joinDateAndTime(),
             currentMemberCount,
             targetMemberCount.value(),
             registerId,

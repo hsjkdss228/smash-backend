@@ -9,14 +9,18 @@ public class PostListDto {
 
     private final GameInPostListDto game;
 
+    private final PlaceInPostListDto place;
+
     public PostListDto(Long id,
                        Long hits,
                        Boolean isAuthor,
-                       GameInPostListDto game) {
+                       GameInPostListDto game,
+                       PlaceInPostListDto place) {
         this.id = id;
         this.hits = hits;
         this.isAuthor = isAuthor;
         this.game = game;
+        this.place = place;
     }
 
     public Long getId() {
@@ -27,11 +31,15 @@ public class PostListDto {
         return hits;
     }
 
+    public Boolean getIsAuthor() {
+        return isAuthor;
+    }
+
     public GameInPostListDto getGame() {
         return game;
     }
 
-    public Boolean getIsAuthor() {
-        return isAuthor;
+    public PlaceInPostListDto getPlace() {
+        return place;
     }
 }

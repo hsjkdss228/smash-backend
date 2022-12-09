@@ -14,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class GameTest {
     @Test
     void countCurrentMembers() {
-        Game game = Game.fake("운동 이름", "장소 이름");
+        Long placeId = 1L;
+        Game game = Game.fake("운동 이름", placeId);
         List<Register> registers = List.of(
             Register.fake(1L, game.id(), RegisterStatus.accepted()),
             Register.fake(2L, game.id(), RegisterStatus.accepted()),
@@ -29,7 +30,8 @@ class GameTest {
 
     @Test
     void findMyRegisterWithProcessing() {
-        Game game = Game.fake("운동 이름", "장소 이름");
+        Long placeId = 1L;
+        Game game = Game.fake("운동 이름", placeId);
         User user = User.fake(5L);
         List<Register> registers = List.of(
             Register.fake(1L, game.id(), RegisterStatus.canceled()),
@@ -43,7 +45,8 @@ class GameTest {
 
     @Test
     void findMyRegisterWithAccepted() {
-        Game game = Game.fake("운동 이름", "장소 이름");
+        Long placeId = 1L;
+        Game game = Game.fake("운동 이름", placeId);
         User user = User.fake(1L);
         List<Register> registers = List.of(
             Register.fake(1L, game.id(), RegisterStatus.accepted()),
@@ -57,7 +60,8 @@ class GameTest {
 
     @Test
     void cannotFoundMyRegister() {
-        Game game = Game.fake("운동 이름", "장소 이름");
+        Long placeId = 1L;
+        Game game = Game.fake("운동 이름", placeId);
         User user = User.fake(2L);
         List<Register> registers = List.of(
             Register.fake(3L, game.id(), RegisterStatus.accepted()),
@@ -70,7 +74,8 @@ class GameTest {
 
     @Test
     void cannotFoundMyRegisterWhenUserIsNull() {
-        Game game = Game.fake("운동 이름", "장소 이름");
+        Long placeId = 1L;
+        Game game = Game.fake("운동 이름", placeId);
         User user = null;
         List<Register> registers = List.of(
             Register.fake(3L, game.id(), RegisterStatus.accepted())
@@ -82,7 +87,8 @@ class GameTest {
 
     @Test
     void join() {
-        Game game = Game.fake("운동 이름", "장소 이름");
+        Long placeId = 1L;
+        Game game = Game.fake("운동 이름", placeId);
         User user = User.fake(4L);
         List<Register> registers = List.of(
             Register.fake(1L, game.id(), RegisterStatus.accepted()),
@@ -97,7 +103,8 @@ class GameTest {
     @Test
     void joinAsAuthor() {
         Long userId = 1L;
-        Game game = Game.fake("운동 이름", "운동 장소");
+        Long placeId = 1L;
+        Game game = Game.fake("운동 이름", placeId);
         User user = User.fake(userId);
 
         Register register = game.join(user);
@@ -106,7 +113,8 @@ class GameTest {
 
     @Test
     void alreadyJoined() {
-        Game game = Game.fake("운동 이름", "장소 이름");
+        Long placeId = 1L;
+        Game game = Game.fake("운동 이름", placeId);
         User user = User.fake(1L);
         List<Register> registers = List.of(
             Register.fake(1L, game.id(), RegisterStatus.processing()),

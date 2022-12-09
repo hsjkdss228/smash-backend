@@ -1,6 +1,7 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
+import kr.megaptera.smash.exceptions.PlaceNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
@@ -12,6 +13,7 @@ import kr.megaptera.smash.models.PostHits;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
+import kr.megaptera.smash.repositories.PlaceRepository;
 import kr.megaptera.smash.repositories.PostRepository;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -22,15 +24,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CreatePostService {
     private final PostRepository postRepository;
+    private final PlaceRepository placeRepository;
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
     private final RegisterRepository registerRepository;
 
     public CreatePostService(PostRepository postRepository,
+                             PlaceRepository placeRepository,
                              GameRepository gameRepository,
                              UserRepository userRepository,
                              RegisterRepository registerRepository) {
         this.postRepository = postRepository;
+        this.placeRepository = placeRepository;
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.registerRepository = registerRepository;
@@ -46,7 +51,7 @@ public class CreatePostService {
         String gameEndTimeAmPm,
         String gameEndHour,
         String gameEndMinute,
-        String gamePlace,
+        String placeName,
         Integer gameTargetMemberCount,
         String postDetail
     ) {
@@ -61,10 +66,13 @@ public class CreatePostService {
 
         Post savedPost = postRepository.save(post);
 
+        Place place = placeRepository.findByInformationName(placeName)
+            .orElseThrow(() -> new PlaceNotFound(placeName));
+
         Game game = new Game(
             savedPost.id(),
+            place.id(),
             new Exercise(gameExercise),
-            new Place(gamePlace),
             new GameTargetMemberCount(gameTargetMemberCount)
         );
 

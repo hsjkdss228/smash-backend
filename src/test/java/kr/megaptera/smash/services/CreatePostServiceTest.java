@@ -14,6 +14,7 @@ import kr.megaptera.smash.models.PostHits;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
+import kr.megaptera.smash.repositories.PlaceRepository;
 import kr.megaptera.smash.repositories.PostRepository;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -33,12 +34,14 @@ import static org.mockito.Mockito.verify;
 
 class CreatePostServiceTest {
     private PostRepository postRepository;
+    private PlaceRepository placeRepository;
     private GameRepository gameRepository;
     private UserRepository userRepository;
     private RegisterRepository registerRepository;
 
     private CreatePostService createPostService;
 
+    private Place place;
     private PostAndGameRequestDto postAndGameRequestDto;
     private User user;
     private Post savedPost;
@@ -49,23 +52,26 @@ class CreatePostServiceTest {
     @BeforeEach
     void setUp() {
         postRepository = mock(PostRepository.class);
+        placeRepository = mock(PlaceRepository.class);
         gameRepository = mock(GameRepository.class);
         userRepository = mock(UserRepository.class);
         registerRepository = mock(RegisterRepository.class);
 
         createPostService = new CreatePostService(
             postRepository,
+            placeRepository,
             gameRepository,
             userRepository,
             registerRepository
         );
 
+        place = Place.fake("운동 장소 이름");
         Integer gameTargetMemberCount = 20;
         postAndGameRequestDto = new PostAndGameRequestDto(
             "운동 이름",
             "2022-12-22T00:00:00.000Z",
             "am", "11", "30", "pm", "04", "00",
-            "운동 장소",
+            place.information().name(),
             gameTargetMemberCount,
             "게시물 상세 내용"
         );
@@ -82,13 +88,13 @@ class CreatePostServiceTest {
         savedGame = new Game(
             createdGameId,
             savedPost.id(),
+            place.id(),
             new Exercise(postAndGameRequestDto.getGameExercise()),
             new GameDateTime(
                 LocalDate.of(2022, 12, 22),
                 LocalTime.of(11, 30),
                 LocalTime.of(16, 0)
             ),
-            new Place(postAndGameRequestDto.getGamePlace()),
             new GameTargetMemberCount(
                 postAndGameRequestDto.getGameTargetMemberCount()
             )
@@ -99,6 +105,8 @@ class CreatePostServiceTest {
     void createPost() {
         given(userRepository.findById(user.id()))
             .willReturn(Optional.of(user));
+        given(placeRepository.findByInformationName(place.information().name()))
+            .willReturn(Optional.of(place));
         given(postRepository.save(any(Post.class)))
             .willReturn(savedPost);
         given(gameRepository.save(any(Game.class)))
@@ -115,7 +123,7 @@ class CreatePostServiceTest {
             postAndGameRequestDto.getGameEndTimeAmPm(),
             postAndGameRequestDto.getGameEndHour(),
             postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getGamePlace(),
+            postAndGameRequestDto.getPlaceName(),
             postAndGameRequestDto.getGameTargetMemberCount(),
             postAndGameRequestDto.getPostDetail()
         );
@@ -146,7 +154,7 @@ class CreatePostServiceTest {
                 postAndGameRequestDto.getGameEndTimeAmPm(),
                 postAndGameRequestDto.getGameEndHour(),
                 postAndGameRequestDto.getGameEndMinute(),
-                postAndGameRequestDto.getGamePlace(),
+                postAndGameRequestDto.getPlaceName(),
                 postAndGameRequestDto.getGameTargetMemberCount(),
                 postAndGameRequestDto.getPostDetail()
             );

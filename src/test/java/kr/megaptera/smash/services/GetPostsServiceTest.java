@@ -4,10 +4,12 @@ import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.GameTargetMemberCount;
+import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.repositories.GameRepository;
+import kr.megaptera.smash.repositories.PlaceRepository;
 import kr.megaptera.smash.repositories.PostRepository;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import kr.megaptera.smash.repositories.UserRepository;
@@ -27,6 +29,7 @@ class GetPostsServiceTest {
     private UserRepository userRepository;
     private PostRepository postRepository;
     private GameRepository gameRepository;
+    private PlaceRepository placeRepository;
     private RegisterRepository registerRepository;
 
     @BeforeEach
@@ -34,11 +37,13 @@ class GetPostsServiceTest {
         userRepository = mock(UserRepository.class);
         postRepository = mock(PostRepository.class);
         gameRepository = mock(GameRepository.class);
+        placeRepository = mock(PlaceRepository.class);
         registerRepository = mock(RegisterRepository.class);
         getPostsService = new GetPostsService(
             userRepository,
             postRepository,
             gameRepository,
+            placeRepository,
             registerRepository);
     }
 
@@ -53,6 +58,7 @@ class GetPostsServiceTest {
             generationCount,
             new GameTargetMemberCount(3)
         );
+        List<Place> places = Place.fakes(generationCount);
         List<Register> registersGame1 = List.of(
             Register.fakeAccepted(1L, games.get(0).id()),
             Register.fakeProcessing(2L, games.get(0).id()),
@@ -74,6 +80,10 @@ class GetPostsServiceTest {
             .willReturn(Optional.of(games.get(0)));
         given(gameRepository.findByPostId(posts.get(1).id()))
             .willReturn(Optional.of(games.get(1)));
+        given(placeRepository.findById(games.get(0).placeId()))
+            .willReturn(Optional.of(places.get(0)));
+        given(placeRepository.findById(games.get(1).placeId()))
+            .willReturn(Optional.of(places.get(1)));
         given(registerRepository.findAllByGameId(games.get(0).id()))
             .willReturn(registersGame1);
         given(registerRepository.findAllByGameId(games.get(1).id()))
@@ -87,7 +97,7 @@ class GetPostsServiceTest {
         assertThat(postListDtos.get(0).getGame().getType()).isEqualTo("운동 종류 1");
         assertThat(postListDtos.get(0).getGame().getCurrentMemberCount()).isEqualTo(1);
         assertThat(postListDtos.get(0).getGame().getRegisterStatus()).isEqualTo("accepted");
-        assertThat(postListDtos.get(1).getGame().getPlace()).isEqualTo("운동 장소 2");
+        assertThat(postListDtos.get(1).getPlace().getName()).isEqualTo("운동 장소 이름 2");
         assertThat(postListDtos.get(1).getGame().getCurrentMemberCount()).isEqualTo(3);
         assertThat(postListDtos.get(1).getGame().getRegisterStatus()).isEqualTo("none");
     }
