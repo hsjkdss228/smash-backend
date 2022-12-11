@@ -9,7 +9,7 @@ import javax.validation.constraints.Pattern;
 public class SignUpRequestDto {
     @NotBlank(
         groups = NotBlankGroup.class,
-        message = "이름을 입력해주세요.")
+        message = "성함을 입력해주세요.")
     @Pattern(
         groups = PatternMatchGroup.class,
         regexp = "^[가-힣]{2,10}$",

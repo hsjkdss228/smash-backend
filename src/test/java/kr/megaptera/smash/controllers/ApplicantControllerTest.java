@@ -46,7 +46,10 @@ class ApplicantControllerTest {
                     applicant.id(),
                     matchedUser.personalInformation().name(),
                     matchedUser.personalInformation().gender(),
-                    matchedUser.personalInformation().phoneNumber()
+                    matchedUser.personalInformation().phoneNumber(),
+                    matchedUser.profileImage().url(),
+                    matchedUser.mannerScore().value()
+
                 );
             })
             .toList();

@@ -35,14 +35,21 @@ public class GetPostService {
         User userInPost = userRepository.findById(post.userId())
             .orElseThrow(() -> new UserNotFound(post.userId()));
 
+        post.addHits();
+
         Boolean isAuthor = post.isAuthor(currentUser);
+
+        // TODO: toDto를 Post의 method로 옮기고, Author의 method로도 옮기기
 
         return new PostDetailDto(
             post.id(),
             post.hits().value(),
             userInPost.personalInformation().name(),
             userInPost.personalInformation().phoneNumber(),
+            userInPost.profileImage().url(),
+            userInPost.mannerScore().value(),
             post.detail().value(),
+            post.imagesToUrls(),
             isAuthor
         );
     }

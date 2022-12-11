@@ -86,7 +86,7 @@ public class GetPostsService {
                 PlaceInPostListDto placeInPostListDto
                     = place.toPlaceInPostListDto();
 
-                return post.toPostListDto(
+                return post.toListDto(
                     isAuthor,
                     gameInPostListDto,
                     placeInPostListDto

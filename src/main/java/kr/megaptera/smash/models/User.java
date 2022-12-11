@@ -28,14 +28,25 @@ public class User {
     @Embedded
     private UserPersonalInformation personalInformation;
 
+    @Embedded
+    private UserProfileImage profileImage;
+
+    @Embedded
+    private UserMannerScore mannerScore;
+
     private User() {
 
     }
+
+    // TODO: 기본으로 생성하도록 한 기본 프로필 이미지 Url은
+    //   나중에 입력받는 Url을 이용할 수 있도록 수정
 
     public User(UserAccount account,
                 UserPersonalInformation personalInformation) {
         this.account = account;
         this.personalInformation = personalInformation;
+        this.profileImage = UserProfileImage.defaultImage();
+        this.mannerScore = UserMannerScore.defaultScore();
     }
 
     public User(Long id,
@@ -45,6 +56,8 @@ public class User {
         this.id = id;
         this.account = account;
         this.personalInformation = personalInformation;
+        this.profileImage = UserProfileImage.defaultImage();
+        this.mannerScore = UserMannerScore.defaultScore();
     }
 
     public Long id() {
@@ -57,6 +70,14 @@ public class User {
 
     public UserPersonalInformation personalInformation() {
         return personalInformation;
+    }
+
+    public UserProfileImage profileImage() {
+        return profileImage;
+    }
+
+    public UserMannerScore mannerScore() {
+        return mannerScore;
     }
 
     public void changePassword(String password,

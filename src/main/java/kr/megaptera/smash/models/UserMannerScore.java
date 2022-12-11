@@ -5,20 +5,24 @@ import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
-public class PostDetail {
-    @Column(name = "detail", length = 2048)
-    private String value;
+public class UserMannerScore {
+    @Column(name = "manner_score")
+    private Double value;
 
-    private PostDetail() {
+    private UserMannerScore() {
 
     }
 
-    public PostDetail(String value) {
+    public UserMannerScore(Double value) {
         this.value = value;
     }
 
-    public String value() {
+    public Double value() {
         return value;
+    }
+
+    public static UserMannerScore defaultScore() {
+        return new UserMannerScore(5D);
     }
 
     @Override
@@ -29,7 +33,7 @@ public class PostDetail {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        PostDetail that = (PostDetail) o;
+        UserMannerScore that = (UserMannerScore) o;
         return Objects.equals(value, that.value);
     }
 
@@ -40,6 +44,6 @@ public class PostDetail {
 
     @Override
     public String toString() {
-        return value;
+        return Double.toString(value);
     }
 }

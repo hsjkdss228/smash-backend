@@ -40,7 +40,9 @@ public class GetAcceptedRegisterService {
                     register.id(),
                     user.personalInformation().name(),
                     user.personalInformation().gender(),
-                    user.personalInformation().phoneNumber()
+                    user.personalInformation().phoneNumber(),
+                    user.profileImage().url(),
+                    user.mannerScore().value()
                 );
             })
             .toList();
