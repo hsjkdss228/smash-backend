@@ -5,6 +5,8 @@ public class PostListDto {
 
     private final Long hits;
 
+    private final String thumbnailImageUrl;
+
     private final Boolean isAuthor;
 
     private final GameInPostListDto game;
@@ -13,11 +15,14 @@ public class PostListDto {
 
     public PostListDto(Long id,
                        Long hits,
+                       String thumbnailImageUrl,
                        Boolean isAuthor,
                        GameInPostListDto game,
-                       PlaceInPostListDto place) {
+                       PlaceInPostListDto place
+    ) {
         this.id = id;
         this.hits = hits;
+        this.thumbnailImageUrl = thumbnailImageUrl;
         this.isAuthor = isAuthor;
         this.game = game;
         this.place = place;
@@ -29,6 +34,10 @@ public class PostListDto {
 
     public Long getHits() {
         return hits;
+    }
+
+    public String getThumbnailImageUrl() {
+        return thumbnailImageUrl;
     }
 
     public Boolean getIsAuthor() {

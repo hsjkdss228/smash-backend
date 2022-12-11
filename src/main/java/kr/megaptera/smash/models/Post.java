@@ -6,6 +6,7 @@ import kr.megaptera.smash.dtos.PostListDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,6 +34,9 @@ public class Post {
 
     @Embedded
     private PostDetail detail;
+
+    @ElementCollection
+    private List<PostImage> images = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -79,6 +83,23 @@ public class Post {
         this.updatedAt = updatedAt;
     }
 
+    public Post(Long id,
+                Long userId,
+                PostHits hits,
+                PostDetail detail,
+                List<PostImage> images,
+                LocalDateTime createdAt,
+                LocalDateTime updatedAt
+    ) {
+        this.id = id;
+        this.userId = userId;
+        this.hits = hits;
+        this.detail = detail;
+        this.images = images;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public Long id() {
         return id;
     }
@@ -95,8 +116,39 @@ public class Post {
         return detail;
     }
 
+    public List<PostImage> images() {
+        return images;
+    }
+
+    public Boolean hasNoImages() {
+        return images.isEmpty();
+    }
+
+    public String NoImagesUrl() {
+        return "https://user-images.githubusercontent.com/" +
+            "50052512/206902802-734cd16b-9625-4354-a7e4-6360a1970afb.png";
+    }
+
+    public String thumbnailImageUrl() {
+        return images.stream()
+            .filter(PostImage::isThumbnailImage)
+            .findFirst().get()
+            .url();
+    }
+
+    // TODO: ToDetailDto 로직이 생길 예정인데 거기에 재활용이 가능할 것인가?
+    public List<String> imagesToUrls() {
+        return images.stream()
+            .map(PostImage::url)
+            .toList();
+    }
+
     public Boolean isAuthor(User user) {
         return user != null && userId.equals(user.id());
+    }
+
+    public void addHits() {
+        hits = new PostHits(this.hits.value() + 1);
     }
 
     public static Post fake(Long postId) {
@@ -122,11 +174,27 @@ public class Post {
     }
 
     public static Post fake(String detail) {
+        Long postId = 1L;
+        Long userId = 1L;
         return new Post(
-            1L,
-            1L,
+            postId,
+            userId,
             new PostHits(1234L),
             new PostDetail(detail),
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        );
+    }
+
+    public static Post fakeWithImages(List<PostImage> images) {
+        Long postId = 1L;
+        Long userId = 1L;
+        return new Post(
+            postId,
+            userId,
+            new PostHits(1234L),
+            new PostDetail("게시글 내용"),
+            images,
             LocalDateTime.now(),
             LocalDateTime.now()
         );
@@ -149,12 +217,13 @@ public class Post {
         return posts;
     }
 
-    public PostListDto toPostListDto(Boolean isAuthor,
-                                     GameInPostListDto gameInPostListDto,
-                                     PlaceInPostListDto placeInPostListDto) {
+    public PostListDto toListDto(Boolean isAuthor,
+                                 GameInPostListDto gameInPostListDto,
+                                 PlaceInPostListDto placeInPostListDto) {
         return new PostListDto(
             id,
             hits.value(),
+            hasNoImages() ? NoImagesUrl() : thumbnailImageUrl(),
             isAuthor,
             gameInPostListDto,
             placeInPostListDto

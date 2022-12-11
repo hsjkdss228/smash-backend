@@ -9,14 +9,23 @@ public class RegisterProcessingDto {
 
     private final String phoneNumber;
 
+    private final String profileImageUrl;
+
+    private final Double mannerScore;
+
     public RegisterProcessingDto(Long id,
-                                 String name,
-                                 String gender,
-                                 String phoneNumber) {
+                               String name,
+                               String gender,
+                               String phoneNumber,
+                               String profileImageUrl,
+                               Double mannerScore
+    ) {
         this.id = id;
         this.name = name;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
+        this.profileImageUrl = profileImageUrl;
+        this.mannerScore = mannerScore;
     }
 
     public Long getId() {
@@ -33,5 +42,13 @@ public class RegisterProcessingDto {
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public Double getMannerScore() {
+        return mannerScore;
     }
 }
