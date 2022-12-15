@@ -21,6 +21,9 @@ public class Place {
     @Embedded
     private PlaceInformation information;
 
+    // TODO: 운동들을 ElementCollection으로 가지거나, 운동이 Entity라면
+    //   카테고리처럼 쓸 수 있게 할 수 있을 것 같다.
+    //   ex. 장소 한 곳에 풋살장, 농구장, 테니스장 등이 모두 있는 경우
     @Embedded
     private Exercise exercise;
 

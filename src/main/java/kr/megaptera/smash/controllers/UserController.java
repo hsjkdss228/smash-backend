@@ -5,7 +5,7 @@ import kr.megaptera.smash.dtos.SignUpResultDto;
 import kr.megaptera.smash.dtos.UserNameDto;
 import kr.megaptera.smash.exceptions.AlreadyRegisteredUsername;
 import kr.megaptera.smash.exceptions.SignUpFailed;
-import kr.megaptera.smash.exceptions.UnmatchedPasswordAndAConfirmPassword;
+import kr.megaptera.smash.exceptions.UnmatchedPasswordAndConfirmPassword;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.services.GetUserNameService;
 import kr.megaptera.smash.services.SignUpService;
@@ -89,10 +89,10 @@ public class UserController {
         return exception.getMessage();
     }
 
-    @ExceptionHandler(UnmatchedPasswordAndAConfirmPassword.class)
+    @ExceptionHandler(UnmatchedPasswordAndConfirmPassword.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String unmatchedPasswordAndConfirmPassword(
-        UnmatchedPasswordAndAConfirmPassword exception
+        UnmatchedPasswordAndConfirmPassword exception
     ) {
         return exception.getMessage();
     }

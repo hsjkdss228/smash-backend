@@ -2,7 +2,9 @@ package kr.megaptera.smash.models;
 
 import kr.megaptera.smash.dtos.GameInPostListDto;
 import kr.megaptera.smash.dtos.PlaceInPostListDto;
+import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostListDto;
+import kr.megaptera.smash.dtos.UserInPostDetailDto;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -136,7 +138,6 @@ public class Post {
             .url();
     }
 
-    // TODO: ToDetailDto 로직이 생길 예정인데 거기에 재활용이 가능할 것인가?
     public List<String> imagesToUrls() {
         return images.stream()
             .map(PostImage::url)
@@ -227,6 +228,18 @@ public class Post {
             isAuthor,
             gameInPostListDto,
             placeInPostListDto
+        );
+    }
+
+    public PostDetailDto toDetailDto(UserInPostDetailDto userInPostDetailDto,
+                                     Boolean isAuthor) {
+        return new PostDetailDto(
+            id,
+            hits.value(),
+            userInPostDetailDto,
+            detail.value(),
+            imagesToUrls(),
+            isAuthor
         );
     }
 }

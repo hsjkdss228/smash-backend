@@ -3,6 +3,7 @@ package kr.megaptera.smash.controllers;
 import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.NoticeDto;
 import kr.megaptera.smash.dtos.NoticesDto;
+import kr.megaptera.smash.models.Notice;
 import kr.megaptera.smash.services.DeleteNoticesService;
 import kr.megaptera.smash.services.GetNoticesService;
 import kr.megaptera.smash.services.ReadNoticeService;
@@ -45,28 +46,14 @@ class NoticeControllerTest {
     @SpyBean
     private JwtUtil jwtUtil;
 
-    // TODO: 모델을 정의하고 fake와 toDto 메서드를 정의하고 난 뒤에는
-    //    fake().toDto() 형태로 대체하기
-
     @Test
     void notices() throws Exception {
         Long userId = 1L;
-        List<NoticeDto> noticeDtos = List.of(
-            new NoticeDto(
-                1L,
-                "read",
-                "3시간 전",
-                "내가 신청한 운동 모집 게시글의 작성자가 신청을 수락했습니다.",
-                "신청한 게임 시간"
-            ),
-            new NoticeDto(
-                2L,
-                "unread",
-                "6시간 전",
-                "내가 작성한 운동 모집 게시글에 새로운 참가 신청이 있습니다.",
-                "등록한 신청자: 신청자 이름"
-            )
-        );
+        long generationCount = 2;
+        List<NoticeDto> noticeDtos = Notice.fakesUnread(generationCount)
+            .stream()
+            .map(Notice::toDto)
+            .toList();
         NoticesDto noticesDto = new NoticesDto(noticeDtos);
 
         given(getNoticesService.findAllNoticesOfUser(userId))

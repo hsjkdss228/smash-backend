@@ -1,6 +1,7 @@
 package kr.megaptera.smash.models;
 
 import kr.megaptera.smash.dtos.SignUpResultDto;
+import kr.megaptera.smash.dtos.UserInPostDetailDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.Column;
@@ -92,6 +93,17 @@ public class User {
 
     public SignUpResultDto toSignUpResultDto() {
         return new SignUpResultDto(personalInformation.name());
+    }
+
+    public UserInPostDetailDto toPostDetailDto() {
+        return new UserInPostDetailDto(
+            id,
+            personalInformation.name(),
+            personalInformation.gender(),
+            personalInformation.phoneNumber(),
+            profileImage.url(),
+            mannerScore.value()
+        );
     }
 
     public static User fake(Long userId) {

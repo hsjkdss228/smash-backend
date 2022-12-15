@@ -1,54 +1,21 @@
 package kr.megaptera.smash.dtos;
 
 public class RegisterProcessingDto {
-    private final Long id;
+    private final Long registerId;
 
-    private final String name;
+    private final UserInPostDetailDto userInformation;
 
-    private final String gender;
-
-    private final String phoneNumber;
-
-    private final String profileImageUrl;
-
-    private final Double mannerScore;
-
-    public RegisterProcessingDto(Long id,
-                               String name,
-                               String gender,
-                               String phoneNumber,
-                               String profileImageUrl,
-                               Double mannerScore
-    ) {
-        this.id = id;
-        this.name = name;
-        this.gender = gender;
-        this.phoneNumber = phoneNumber;
-        this.profileImageUrl = profileImageUrl;
-        this.mannerScore = mannerScore;
+    public RegisterProcessingDto(Long registerId,
+                                 UserInPostDetailDto userInformation) {
+        this.registerId = registerId;
+        this.userInformation = userInformation;
     }
 
-    public Long getId() {
-        return id;
+    public Long getRegisterId() {
+        return registerId;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-
-    public Double getMannerScore() {
-        return mannerScore;
+    public UserInPostDetailDto getUserInformation() {
+        return userInformation;
     }
 }

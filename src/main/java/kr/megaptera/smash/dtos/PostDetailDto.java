@@ -7,13 +7,7 @@ public class PostDetailDto {
 
     private final Long hits;
 
-    private final String authorName;
-
-    private final String authorPhoneNumber;
-
-    private final String authorProfileImageUrl;
-
-    private final Double authorMannerScore;
+    private final UserInPostDetailDto authorInformation;
 
     private final String detail;
 
@@ -23,20 +17,14 @@ public class PostDetailDto {
 
     public PostDetailDto(Long id,
                          Long hits,
-                         String authorName,
-                         String authorPhoneNumber,
-                         String authorProfileImageUrl,
-                         Double authorMannerScore,
+                         UserInPostDetailDto authorInformation,
                          String detail,
                          List<String> imageUrls,
                          Boolean isAuthor
     ) {
         this.id = id;
         this.hits = hits;
-        this.authorName = authorName;
-        this.authorPhoneNumber = authorPhoneNumber;
-        this.authorProfileImageUrl = authorProfileImageUrl;
-        this.authorMannerScore = authorMannerScore;
+        this.authorInformation = authorInformation;
         this.detail = detail;
         this.imageUrls = imageUrls;
         this.isAuthor = isAuthor;
@@ -50,20 +38,8 @@ public class PostDetailDto {
         return hits;
     }
 
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public String getAuthorPhoneNumber() {
-        return authorPhoneNumber;
-    }
-
-    public String getAuthorProfileImageUrl() {
-        return authorProfileImageUrl;
-    }
-
-    public Double getAuthorMannerScore() {
-        return authorMannerScore;
+    public UserInPostDetailDto getAuthorInformation() {
+        return authorInformation;
     }
 
     public String getDetail() {

@@ -44,12 +44,7 @@ class ApplicantControllerTest {
                     .findFirst().get();
                 return new RegisterProcessingDto(
                     applicant.id(),
-                    matchedUser.personalInformation().name(),
-                    matchedUser.personalInformation().gender(),
-                    matchedUser.personalInformation().phoneNumber(),
-                    matchedUser.profileImage().url(),
-                    matchedUser.mannerScore().value()
-
+                    matchedUser.toPostDetailDto()
                 );
             })
             .toList();

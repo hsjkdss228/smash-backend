@@ -2,7 +2,7 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.SignUpResultDto;
 import kr.megaptera.smash.exceptions.AlreadyRegisteredUsername;
-import kr.megaptera.smash.exceptions.UnmatchedPasswordAndAConfirmPassword;
+import kr.megaptera.smash.exceptions.UnmatchedPasswordAndConfirmPassword;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.models.UserAccount;
 import kr.megaptera.smash.models.UserPersonalInformation;
@@ -40,7 +40,7 @@ public class SignUpService {
         }
 
         if (!password.equals(confirmPassword)) {
-            throw new UnmatchedPasswordAndAConfirmPassword();
+            throw new UnmatchedPasswordAndConfirmPassword();
         }
 
         User createdUser = new User(

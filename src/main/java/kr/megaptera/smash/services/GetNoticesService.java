@@ -22,12 +22,6 @@ public class GetNoticesService {
         List<Notice> notices
             = noticeRepository.findAllByUserId(currentUserId);
 
-        // TODO: 삭제 상태의 알림들은 가져오지 않아야 한다.
-
-        // TODO: 이 동작조차도 객체의 동작 안에 숨어야 하는 것 같다.
-        //   꺼내온 알림들을 DTO로 만드는 건 도대체 누구의 책임인가?
-        //   알림판? 그럼 게시판-게시물의 관계인가?
-        //   동작을 수행할 적절한 객체를 찾아 정의한 뒤에는 그 객체의 동작으로 옮기기
         List<NoticeDto> noticeDtos = notices.stream()
             .filter(Notice::active)
             .map(Notice::toDto)

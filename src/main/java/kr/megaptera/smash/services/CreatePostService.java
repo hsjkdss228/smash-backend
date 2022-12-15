@@ -1,6 +1,10 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
+import kr.megaptera.smash.dtos.ExerciseForPostCreateRequestDto;
+import kr.megaptera.smash.dtos.GameForPostCreateRequestDto;
+import kr.megaptera.smash.dtos.PlaceForPostCreateRequestDto;
+import kr.megaptera.smash.dtos.PostForPostCreateRequestDto;
 import kr.megaptera.smash.exceptions.PlaceNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Exercise;
@@ -43,38 +47,52 @@ public class CreatePostService {
 
     public CreatePostAndGameResultDto createPost(
         Long currentUserId,
-        String gameExercise,
-        String gameDate,
-        String gameStartTimeAmPm,
-        String gameStartHour,
-        String gameStartMinute,
-        String gameEndTimeAmPm,
-        String gameEndHour,
-        String gameEndMinute,
-        String placeName,
-        Integer gameTargetMemberCount,
-        String postDetail
+        PostForPostCreateRequestDto postForPostCreateRequestDto,
+        GameForPostCreateRequestDto gameForPostCreateRequestDto,
+        ExerciseForPostCreateRequestDto exerciseForPostCreateRequestDto,
+        PlaceForPostCreateRequestDto placeForPostCreateRequestDto
     ) {
         User user = userRepository.findById(currentUserId)
             .orElseThrow(() -> new UserNotFound(currentUserId));
 
+        String detail = postForPostCreateRequestDto.getDetail();
+
         Post post = new Post(
             user.id(),
             new PostHits(0L),
-            new PostDetail(postDetail)
+            new PostDetail(detail)
         );
 
         Post savedPost = postRepository.save(post);
 
+        String placeName = placeForPostCreateRequestDto.getName();
+
         Place place = placeRepository.findByInformationName(placeName)
             .orElseThrow(() -> new PlaceNotFound(placeName));
+
+        String exerciseName = exerciseForPostCreateRequestDto.getName();
+
+        Integer gameTargetMemberCount
+            = gameForPostCreateRequestDto.getTargetMemberCount();
+
+        // TODO: 장소 입력 시 카테고리를 구분하지 않기 때문에
+        //   똑같은 이름의 장소가 지금은 존재할 수가 없다.
+        //   findByAnd 형테를 갖추기 위해서는 운동 카테고리도 입력받게 해야 한다.
 
         Game game = new Game(
             savedPost.id(),
             place.id(),
-            new Exercise(gameExercise),
+            new Exercise(exerciseName),
             new GameTargetMemberCount(gameTargetMemberCount)
         );
+
+        String gameDate = gameForPostCreateRequestDto.getDate();
+        String gameStartTimeAmPm = gameForPostCreateRequestDto.getStartTimeAmPm();
+        String gameStartHour = gameForPostCreateRequestDto.getStartHour();
+        String gameStartMinute = gameForPostCreateRequestDto.getStartMinute();
+        String gameEndTimeAmPm = gameForPostCreateRequestDto.getEndTimeAmPm();
+        String gameEndHour = gameForPostCreateRequestDto.getEndHour();
+        String gameEndMinute = gameForPostCreateRequestDto.getEndMinute();
 
         game.createGameDateTime(
             gameDate,

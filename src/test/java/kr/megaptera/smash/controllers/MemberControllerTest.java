@@ -46,11 +46,7 @@ class MemberControllerTest {
                     .findFirst().get();
                 return new RegisterAcceptedDto(
                     member.id(),
-                    matchedUser.personalInformation().name(),
-                    matchedUser.personalInformation().gender(),
-                    matchedUser.personalInformation().phoneNumber(),
-                    matchedUser.profileImage().url(),
-                    matchedUser.mannerScore().value()
+                    matchedUser.toPostDetailDto()
                 );
             })
             .toList();
