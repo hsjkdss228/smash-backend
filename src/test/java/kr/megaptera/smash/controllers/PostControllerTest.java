@@ -2,7 +2,11 @@ package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
-import kr.megaptera.smash.dtos.PostAndGameRequestDto;
+import kr.megaptera.smash.dtos.ExerciseForPostCreateRequestDto;
+import kr.megaptera.smash.dtos.GameForPostCreateRequestDto;
+import kr.megaptera.smash.dtos.PlaceForPostCreateRequestDto;
+import kr.megaptera.smash.dtos.PostCreateRequestDto;
+import kr.megaptera.smash.dtos.PostForPostCreateRequestDto;
 import kr.megaptera.smash.exceptions.CreatePostFailed;
 import kr.megaptera.smash.exceptions.GameNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
@@ -38,6 +42,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -81,7 +86,11 @@ class PostControllerTest {
     private List<Register> registersGame1;
     private List<Register> registersGame2;
 
-    private PostAndGameRequestDto postAndGameRequestDto;
+    private PostForPostCreateRequestDto postForPostCreateRequestDto;
+    private GameForPostCreateRequestDto gameForPostCreateRequestDto;
+    private ExerciseForPostCreateRequestDto exerciseForPostCreateRequestDto;
+    private PlaceForPostCreateRequestDto placeForPostCreateRequestDto;
+    private PostCreateRequestDto postCreateRequestDto;
     private CreatePostAndGameResultDto createPostAndGameResultDto;
 
     @SpyBean
@@ -109,13 +118,25 @@ class PostControllerTest {
         );
 
         Integer gameTargetMemberCount = 10;
-        postAndGameRequestDto = new PostAndGameRequestDto(
-            "운동 이름",
-            "2022-11-25T00:00:00.000Z",
-            "am", "09", "00", "pm", "12", "50",
-            "운동 장소",
-            gameTargetMemberCount,
+        postForPostCreateRequestDto = new PostForPostCreateRequestDto(
             "게시물 상세 내용"
+        );
+        gameForPostCreateRequestDto = new GameForPostCreateRequestDto(
+            "2022-12-22T00:00:00.000Z",
+            "am", "11", "30", "pm", "04", "00",
+            gameTargetMemberCount
+        );
+        exerciseForPostCreateRequestDto = new ExerciseForPostCreateRequestDto(
+            "운동 이름"
+        );
+        placeForPostCreateRequestDto = new PlaceForPostCreateRequestDto(
+            "운동 장소"
+        );
+        postCreateRequestDto = new PostCreateRequestDto(
+            postForPostCreateRequestDto,
+            gameForPostCreateRequestDto,
+            exerciseForPostCreateRequestDto,
+            placeForPostCreateRequestDto
         );
         Long createdPostId = 11L;
         createPostAndGameResultDto
@@ -204,8 +225,8 @@ class PostControllerTest {
             .willThrow(UserNotFound.class);
 //        given(getPostsService.findAll(invalidUserId))
 //            .willThrow(UserNotFound.class);
-        // SpyBean 어노테이션을 주면 given이 먹히지 않는 건가...?
-        // 그보다도 ExceptionHandler가 있는데 왜 예외를 받지 못하는지 모르겠다.
+//         SpyBean 어노테이션을 주면 given이 먹히지 않는 건가...?
+//         그보다도 ExceptionHandler가 있는데 왜 예외를 받지 못하는지 모르겠다.
 
         String token = jwtUtil.encode(invalidUserId);
 
@@ -255,33 +276,15 @@ class PostControllerTest {
         ;
     }
 
-    private void createPostNormal(
-        Long userId,
-        String gameExercise,
-        String gameDate,
-        String gameStartTimeAmPm,
-        String gameStartHour,
-        String gameStartMinute,
-        String gameEndTimeAmPm,
-        String gameEndHour,
-        String gameEndMinute,
-        String placeName,
-        Integer gameTargetMemberCount,
-        String postDetail
-    ) throws Exception {
+    @Test
+    void createPost() throws Exception {
+        Long userId = 1L;
         given(createPostService.createPost(
-            userId,
-            gameExercise,
-            gameDate,
-            gameStartTimeAmPm,
-            gameStartHour,
-            gameStartMinute,
-            gameEndTimeAmPm,
-            gameEndHour,
-            gameEndMinute,
-            placeName,
-            gameTargetMemberCount,
-            postDetail
+            eq(userId),
+            any(PostForPostCreateRequestDto.class),
+            any(GameForPostCreateRequestDto.class),
+            any(ExerciseForPostCreateRequestDto.class),
+            any(PlaceForPostCreateRequestDto.class)
         )).willReturn(createPostAndGameResultDto);
 
         String token = jwtUtil.encode(userId);
@@ -291,17 +294,25 @@ class PostControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                    "\"gameExercise\":\"" + gameExercise + "\"," +
-                    "\"gameDate\":\"" + gameDate + "\"," +
-                    "\"gameStartTimeAmPm\":\"" + gameStartTimeAmPm + "\"," +
-                    "\"gameStartHour\":\"" + gameStartHour + "\"," +
-                    "\"gameStartMinute\":\"" + gameStartMinute + "\"," +
-                    "\"gameEndTimeAmPm\":\"" + gameEndTimeAmPm + "\"," +
-                    "\"gameEndHour\":\"" + gameEndHour + "\"," +
-                    "\"gameEndMinute\":\"" + gameEndMinute + "\"," +
-                    "\"placeName\":\"" + placeName + "\"," +
-                    "\"gameTargetMemberCount\":" + gameTargetMemberCount + "," +
-                    "\"postDetail\":\"" + postDetail + "\"" +
+                    "\"post\":{" +
+                    "\"detail\":\"" + postForPostCreateRequestDto.getDetail() + "\"" +
+                    "}," +
+                    "\"game\":{" +
+                    "\"date\":\"" + gameForPostCreateRequestDto.getDate() + "\"," +
+                    "\"startTimeAmPm\":\"" + gameForPostCreateRequestDto.getStartTimeAmPm() + "\"," +
+                    "\"startHour\":\"" + gameForPostCreateRequestDto.getStartHour() + "\"," +
+                    "\"startMinute\":\"" + gameForPostCreateRequestDto.getStartMinute() + "\"," +
+                    "\"endTimeAmPm\":\"" + gameForPostCreateRequestDto.getEndTimeAmPm() + "\"," +
+                    "\"endHour\":\"" + gameForPostCreateRequestDto.getEndHour() + "\"," +
+                    "\"endMinute\":\"" + gameForPostCreateRequestDto.getEndMinute() + "\"," +
+                    "\"targetMemberCount\": " + gameForPostCreateRequestDto.getTargetMemberCount() +
+                    "}," +
+                    "\"exercise\":{" +
+                    "\"name\":\"" + exerciseForPostCreateRequestDto.getName() + "\"" +
+                    "}," +
+                    "\"place\":{" +
+                    "\"name\":\"" + placeForPostCreateRequestDto.getName() + "\"" +
+                    "}" +
                     "}"))
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andExpect(MockMvcResultMatchers.content().string(
@@ -310,34 +321,22 @@ class PostControllerTest {
         ;
     }
 
-    private void createPostWithCreatePostFailed(
-        Long userId,
-        String gameExercise,
-        String gameDate,
-        String gameStartTimeAmPm,
-        String gameStartHour,
-        String gameStartMinute,
-        String gameEndTimeAmPm,
-        String gameEndHour,
-        String gameEndMinute,
-        String placeName,
-        Integer gameTargetMemberCount,
-        String postDetail,
-        String errorMessage
-    ) throws Exception {
+    @Test
+    void createPostWithBlankGameExercise() throws Exception {
+        Long userId = 1L;
+        String blankGameExercise = "";
+        String errorMessage = "운동을 입력해주세요.";
+
+        ExerciseForPostCreateRequestDto wrongExerciseForPostCreateRequestDto
+            = new ExerciseForPostCreateRequestDto(
+            ""
+        );
         given(createPostService.createPost(
             userId,
-            gameExercise,
-            gameDate,
-            gameStartTimeAmPm,
-            gameStartHour,
-            gameStartMinute,
-            gameEndTimeAmPm,
-            gameEndHour,
-            gameEndMinute,
-            placeName,
-            gameTargetMemberCount,
-            postDetail
+            postForPostCreateRequestDto,
+            gameForPostCreateRequestDto,
+            wrongExerciseForPostCreateRequestDto,
+            placeForPostCreateRequestDto
         )).willThrow(new CreatePostFailed(errorMessage));
 
         String token = jwtUtil.encode(userId);
@@ -347,17 +346,25 @@ class PostControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                    "\"gameExercise\":\"" + gameExercise + "\"," +
-                    "\"gameDate\":\"" + gameDate + "\"," +
-                    "\"gameStartTimeAmPm\":\"" + gameStartTimeAmPm + "\"," +
-                    "\"gameStartHour\":\"" + gameStartHour + "\"," +
-                    "\"gameStartMinute\":\"" + gameStartMinute + "\"," +
-                    "\"gameEndTimeAmPm\":\"" + gameEndTimeAmPm + "\"," +
-                    "\"gameEndHour\":\"" + gameEndHour + "\"," +
-                    "\"gameEndMinute\":\"" + gameEndMinute + "\"," +
-                    "\"placeName\":\"" + placeName + "\"," +
-                    "\"gameTargetMemberCount\":" + gameTargetMemberCount + "," +
-                    "\"postDetail\":\"" + postDetail + "\"" +
+                    "\"post\":{" +
+                    "\"detail\":\"" + postForPostCreateRequestDto.getDetail() + "\"" +
+                    "}," +
+                    "\"game\":{" +
+                    "\"date\":\"" + gameForPostCreateRequestDto.getDate() + "\"," +
+                    "\"startTimeAmPm\":\"" + gameForPostCreateRequestDto.getStartTimeAmPm() + "\"," +
+                    "\"startHour\":\"" + gameForPostCreateRequestDto.getStartHour() + "\"," +
+                    "\"startMinute\":\"" + gameForPostCreateRequestDto.getStartMinute() + "\"," +
+                    "\"endTimeAmPm\":\"" + gameForPostCreateRequestDto.getEndTimeAmPm() + "\"," +
+                    "\"endHour\":\"" + gameForPostCreateRequestDto.getEndHour() + "\"," +
+                    "\"endMinute\":\"" + gameForPostCreateRequestDto.getEndMinute() + "\"," +
+                    "\"targetMemberCount\": " + gameForPostCreateRequestDto.getTargetMemberCount() +
+                    "}," +
+                    "\"exercise\":{" +
+                    "\"name\":\"" + wrongExerciseForPostCreateRequestDto.getName() + "\"" +
+                    "}," +
+                    "\"place\":{" +
+                    "\"name\":\"" + placeForPostCreateRequestDto.getName() + "\"" +
+                    "}" +
                     "}"))
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             .andExpect(MockMvcResultMatchers.content().string(
@@ -367,195 +374,68 @@ class PostControllerTest {
     }
 
     @Test
-    void createPost() throws Exception {
-        Long userId = 1L;
-
-        createPostNormal(
-            userId,
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail()
-        );
-    }
-
-    @Test
-    void createPostWithBlankGameExercise() throws Exception {
-        Long userId = 1L;
-        String blankGameExercise = "";
-        String errorMessage = "운동을 입력해주세요.";
-        createPostWithCreatePostFailed(
-            userId,
-            blankGameExercise,
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail(),
-            errorMessage
-        );
-    }
-
-    @Test
-    void createPostWithBlankGameDate() throws Exception {
-        Long userId = 1L;
-        String blankGameDate = "";
-        String errorMessage = "운동 날짜를 입력해주세요.";
-        createPostWithCreatePostFailed(
-            userId,
-            postAndGameRequestDto.getGameExercise(),
-            blankGameDate,
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail(),
-            errorMessage
-        );
-    }
-
-    @Test
-    void createPostWithBlankGameStartTimeAmPm() throws Exception {
-        Long userId = 1L;
-        String blankGameStartTimeAmPm = "";
-        String errorMessage = "시작시간 오전/오후 구분을 입력해주세요.";
-        createPostWithCreatePostFailed(
-            userId,
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            blankGameStartTimeAmPm,
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail(),
-            errorMessage
-        );
-    }
-
-    @Test
-    void createPostWithBlankGameStartHour() throws Exception {
-        Long userId = 1L;
-        String blankGameStartHour = "";
-        String errorMessage = "시작 시간을 입력해주세요.";
-        createPostWithCreatePostFailed(
-            userId,
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            blankGameStartHour,
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail(),
-            errorMessage
-        );
-    }
-
-    @Test
-    void createPostWithBlankGamePlace() throws Exception {
-        Long userId = 1L;
-        String blankGamePlace = "";
-        String errorMessage = "운동 장소 이름을 입력해주세요.";
-        createPostWithCreatePostFailed(
-            userId,
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            blankGamePlace,
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail(),
-            errorMessage
-        );
-    }
-
-    @Test
     void createPostWithNullGameTargetMemberCount() throws Exception {
         Long userId = 1L;
         Integer nullGameTargetMemberCount = null;
         String errorMessage = "사용자 수를 입력해주세요.";
-        createPostWithCreatePostFailed(
-            userId,
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            nullGameTargetMemberCount,
-            postAndGameRequestDto.getPostDetail(),
-            errorMessage
-        );
-    }
 
-    @Test
-    void createPostWithBlankPostDetail() throws Exception {
-        Long userId = 1L;
-        String blankPostDetail = "";
-        String errorMessage = "게시물 상세 내용을 입력해주세요.";
-        createPostWithCreatePostFailed(
-            userId,
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            blankPostDetail,
-            errorMessage
+        GameForPostCreateRequestDto wrongGameForPostCreateRequestDto
+            = new GameForPostCreateRequestDto(
+            "2022-12-22T00:00:00.000Z",
+            "am", "11", "30", "pm", "04", "00",
+            null
         );
+        given(createPostService.createPost(
+            userId,
+            postForPostCreateRequestDto,
+            wrongGameForPostCreateRequestDto,
+            exerciseForPostCreateRequestDto,
+            placeForPostCreateRequestDto
+        )).willThrow(new CreatePostFailed(errorMessage));
+
+        String token = jwtUtil.encode(userId);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                    "\"post\":{" +
+                    "\"detail\":\"" + postForPostCreateRequestDto.getDetail() + "\"" +
+                    "}," +
+                    "\"game\":{" +
+                    "\"date\":\"" + wrongGameForPostCreateRequestDto.getDate() + "\"," +
+                    "\"startTimeAmPm\":\"" + wrongGameForPostCreateRequestDto.getStartTimeAmPm() + "\"," +
+                    "\"startHour\":\"" + wrongGameForPostCreateRequestDto.getStartHour() + "\"," +
+                    "\"startMinute\":\"" + wrongGameForPostCreateRequestDto.getStartMinute() + "\"," +
+                    "\"endTimeAmPm\":\"" + wrongGameForPostCreateRequestDto.getEndTimeAmPm() + "\"," +
+                    "\"endHour\":\"" + wrongGameForPostCreateRequestDto.getEndHour() + "\"," +
+                    "\"endMinute\":\"" + wrongGameForPostCreateRequestDto.getEndMinute() + "\"," +
+                    "\"targetMemberCount\": " + wrongGameForPostCreateRequestDto.getTargetMemberCount() +
+                    "}," +
+                    "\"exercise\":{" +
+                    "\"name\":\"" + exerciseForPostCreateRequestDto.getName() + "\"" +
+                    "}," +
+                    "\"place\":{" +
+                    "\"name\":\"" + placeForPostCreateRequestDto.getName() + "\"" +
+                    "}" +
+                    "}"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString(errorMessage)
+            ))
+        ;
     }
 
     @Test
     void createPostWithUserNotFound() throws Exception {
         Long userId = 1L;
         given(createPostService.createPost(
-            userId,
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail()
+            eq(userId),
+            any(PostForPostCreateRequestDto.class),
+            any(GameForPostCreateRequestDto.class),
+            any(ExerciseForPostCreateRequestDto.class),
+            any(PlaceForPostCreateRequestDto.class)
         )).willThrow(UserNotFound.class);
 
         String token = jwtUtil.encode(userId);
@@ -565,28 +445,25 @@ class PostControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{" +
-                    "\"gameExercise\":\""
-                    + postAndGameRequestDto.getGameExercise() + "\"," +
-                    "\"gameDate\":\""
-                    + postAndGameRequestDto.getGameDate() + "\"," +
-                    "\"gameStartTimeAmPm\":\""
-                    + postAndGameRequestDto.getGameStartTimeAmPm() + "\"," +
-                    "\"gameStartHour\":\""
-                    + postAndGameRequestDto.getGameStartHour() + "\"," +
-                    "\"gameStartMinute\":\""
-                    + postAndGameRequestDto.getGameStartMinute() + "\"," +
-                    "\"gameEndTimeAmPm\":\""
-                    + postAndGameRequestDto.getGameEndTimeAmPm() + "\"," +
-                    "\"gameEndHour\":\""
-                    + postAndGameRequestDto.getGameEndHour() + "\"," +
-                    "\"gameEndMinute\":\""
-                    + postAndGameRequestDto.getGameEndMinute() + "\"," +
-                    "\"placeName\":\""
-                    + postAndGameRequestDto.getPlaceName() + "\"," +
-                    "\"gameTargetMemberCount\":"
-                    + postAndGameRequestDto.getGameTargetMemberCount() + "," +
-                    "\"postDetail\":\""
-                    + postAndGameRequestDto.getPostDetail() + "\"" +
+                    "\"post\":{" +
+                    "\"detail\":\"" + postForPostCreateRequestDto.getDetail() + "\"" +
+                    "}," +
+                    "\"game\":{" +
+                    "\"date\":\"" + gameForPostCreateRequestDto.getDate() + "\"," +
+                    "\"startTimeAmPm\":\"" + gameForPostCreateRequestDto.getStartTimeAmPm() + "\"," +
+                    "\"startHour\":\"" + gameForPostCreateRequestDto.getStartHour() + "\"," +
+                    "\"startMinute\":\"" + gameForPostCreateRequestDto.getStartMinute() + "\"," +
+                    "\"endTimeAmPm\":\"" + gameForPostCreateRequestDto.getEndTimeAmPm() + "\"," +
+                    "\"endHour\":\"" + gameForPostCreateRequestDto.getEndHour() + "\"," +
+                    "\"endMinute\":\"" + gameForPostCreateRequestDto.getEndMinute() + "\"," +
+                    "\"targetMemberCount\": " + gameForPostCreateRequestDto.getTargetMemberCount() +
+                    "}," +
+                    "\"exercise\":{" +
+                    "\"name\":\"" + exerciseForPostCreateRequestDto.getName() + "\"" +
+                    "}," +
+                    "\"place\":{" +
+                    "\"name\":\"" + placeForPostCreateRequestDto.getName() + "\"" +
+                    "}" +
                     "}"))
             .andExpect(MockMvcResultMatchers.status().isNotFound())
         ;

@@ -65,8 +65,10 @@ class GetProcessingRegisterServiceTest {
         List<RegisterProcessingDto> registerProcessingDtos
             = registersProcessingDto.getApplicants();
         assertThat(registerProcessingDtos.size()).isEqualTo(2);
-        assertThat(registerProcessingDtos.get(0).getName()).isEqualTo("사용자 이름 1");
-        assertThat(registerProcessingDtos.get(1).getName()).isEqualTo("사용자 이름 2");
+        assertThat(registerProcessingDtos.get(0)
+            .getUserInformation().getName()).isEqualTo("사용자 이름 1");
+        assertThat(registerProcessingDtos.get(1)
+            .getUserInformation().getName()).isEqualTo("사용자 이름 2");
 
         verify(registerRepository).findAllByGameId(targetGameId);
         verify(userRepository).findById(applicants.get(0).userId());

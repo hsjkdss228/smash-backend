@@ -1,7 +1,11 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
-import kr.megaptera.smash.dtos.PostAndGameRequestDto;
+import kr.megaptera.smash.dtos.ExerciseForPostCreateRequestDto;
+import kr.megaptera.smash.dtos.GameForPostCreateRequestDto;
+import kr.megaptera.smash.dtos.PlaceForPostCreateRequestDto;
+import kr.megaptera.smash.dtos.PostCreateRequestDto;
+import kr.megaptera.smash.dtos.PostForPostCreateRequestDto;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
@@ -41,13 +45,16 @@ class CreatePostServiceTest {
 
     private CreatePostService createPostService;
 
-    private Place place;
-    private PostAndGameRequestDto postAndGameRequestDto;
-    private User user;
+    private PostForPostCreateRequestDto postForPostCreateRequestDto;
+    private GameForPostCreateRequestDto gameForPostCreateRequestDto;
+    private ExerciseForPostCreateRequestDto exerciseForPostCreateRequestDto;
+    private PlaceForPostCreateRequestDto placeForPostCreateRequestDto;
+
     private Post savedPost;
-    private Long createdPostId;
+    private Long savedPostId;
+    private User user;
     private Game savedGame;
-    private Long createdGameId;
+    private Place place;
 
     @BeforeEach
     void setUp() {
@@ -67,36 +74,42 @@ class CreatePostServiceTest {
 
         place = Place.fake("운동 장소 이름");
         Integer gameTargetMemberCount = 20;
-        postAndGameRequestDto = new PostAndGameRequestDto(
-            "운동 이름",
+        postForPostCreateRequestDto = new PostForPostCreateRequestDto(
+            "게시물 상세 내용"
+        );
+        gameForPostCreateRequestDto = new GameForPostCreateRequestDto(
             "2022-12-22T00:00:00.000Z",
             "am", "11", "30", "pm", "04", "00",
-            place.information().name(),
-            gameTargetMemberCount,
-            "게시물 상세 내용"
+            gameTargetMemberCount
+        );
+        exerciseForPostCreateRequestDto = new ExerciseForPostCreateRequestDto(
+            "운동 이름"
+        );
+        placeForPostCreateRequestDto = new PlaceForPostCreateRequestDto(
+            place.information().name()
         );
 
         user = User.fake("치코리타", "chikorita12");
-        createdPostId = 5L;
+        savedPostId = 5L;
         savedPost = new Post(
-            createdPostId,
+            savedPostId,
             user.id(),
             new PostHits(0L),
-            new PostDetail(postAndGameRequestDto.getPostDetail())
+            new PostDetail(postForPostCreateRequestDto.getDetail())
         );
-        createdGameId = 12L;
+        Long createdGameId = 12L;
         savedGame = new Game(
             createdGameId,
             savedPost.id(),
             place.id(),
-            new Exercise(postAndGameRequestDto.getGameExercise()),
+            new Exercise(exerciseForPostCreateRequestDto.getName()),
             new GameDateTime(
                 LocalDate.of(2022, 12, 22),
                 LocalTime.of(11, 30),
                 LocalTime.of(16, 0)
             ),
             new GameTargetMemberCount(
-                postAndGameRequestDto.getGameTargetMemberCount()
+                gameForPostCreateRequestDto.getTargetMemberCount()
             )
         );
     }
@@ -115,22 +128,15 @@ class CreatePostServiceTest {
         CreatePostAndGameResultDto createPostAndGameResultDto
             = createPostService.createPost(
             user.id(),
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail()
+            postForPostCreateRequestDto,
+            gameForPostCreateRequestDto,
+            exerciseForPostCreateRequestDto,
+            placeForPostCreateRequestDto
         );
 
         assertThat(createPostAndGameResultDto).isNotNull();
         assertThat(createPostAndGameResultDto.getPostId())
-            .isEqualTo(createdPostId);
+            .isEqualTo(savedPostId);
 
         verify(userRepository).findById(user.id());
         verify(postRepository).save(any(Post.class));
@@ -146,17 +152,10 @@ class CreatePostServiceTest {
         assertThrows(UserNotFound.class, () -> {
             createPostService.createPost(
                 user.id(),
-                postAndGameRequestDto.getGameExercise(),
-                postAndGameRequestDto.getGameDate(),
-                postAndGameRequestDto.getGameStartTimeAmPm(),
-                postAndGameRequestDto.getGameStartHour(),
-                postAndGameRequestDto.getGameStartMinute(),
-                postAndGameRequestDto.getGameEndTimeAmPm(),
-                postAndGameRequestDto.getGameEndHour(),
-                postAndGameRequestDto.getGameEndMinute(),
-                postAndGameRequestDto.getPlaceName(),
-                postAndGameRequestDto.getGameTargetMemberCount(),
-                postAndGameRequestDto.getPostDetail()
+                postForPostCreateRequestDto,
+                gameForPostCreateRequestDto,
+                exerciseForPostCreateRequestDto,
+                placeForPostCreateRequestDto
             );
         });
 

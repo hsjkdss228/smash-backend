@@ -38,11 +38,7 @@ public class GetAcceptedRegisterService {
 
                 return new RegisterAcceptedDto(
                     register.id(),
-                    user.personalInformation().name(),
-                    user.personalInformation().gender(),
-                    user.personalInformation().phoneNumber(),
-                    user.profileImage().url(),
-                    user.mannerScore().value()
+                    user.toPostDetailDto()
                 );
             })
             .toList();

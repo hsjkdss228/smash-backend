@@ -38,11 +38,7 @@ public class GetProcessingRegisterService {
 
                 return new RegisterProcessingDto(
                     register.id(),
-                    user.personalInformation().name(),
-                    user.personalInformation().gender(),
-                    user.personalInformation().phoneNumber(),
-                    user.profileImage().url(),
-                    user.mannerScore().value()
+                    user.toPostDetailDto()
                 );
             })
             .toList();

@@ -50,7 +50,7 @@ class GetPostServiceTest {
             = getPostService.findTargetPost(currentUserId, targetPostId);
 
         assertThat(postDetailDto).isNotNull();
-        assertThat(postDetailDto.getAuthorName()).isEqualTo("사용자명");
+        assertThat(postDetailDto.getAuthorInformation().getName()).isEqualTo("사용자명");
         assertThat(postDetailDto.getIsAuthor()).isTrue();
 
         verify(postRepository).findById(targetPostId);

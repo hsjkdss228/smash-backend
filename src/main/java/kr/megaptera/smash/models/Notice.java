@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "notices")
@@ -113,6 +115,25 @@ public class Notice {
             status,
             LocalDateTime.now()
         );
+    }
+
+    public static List<Notice> fakesUnread(long generationCount) {
+        Long userId = 1L;
+        List<Notice> notices = new ArrayList<>();
+        for (long id = 1; id <= generationCount; id += 1) {
+            Notice notice = new Notice(
+                id,
+                userId,
+                new NoticeContents(
+                    "알림 제목",
+                    "알림 상세 내용"
+                ),
+                NoticeStatus.unread(),
+                LocalDateTime.now()
+            );
+            notices.add(notice);
+        }
+        return notices;
     }
 
     public NoticeDto toDto() {

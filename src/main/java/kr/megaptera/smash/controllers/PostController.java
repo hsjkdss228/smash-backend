@@ -1,7 +1,7 @@
 package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.dtos.CreatePostAndGameResultDto;
-import kr.megaptera.smash.dtos.PostAndGameRequestDto;
+import kr.megaptera.smash.dtos.PostCreateRequestDto;
 import kr.megaptera.smash.dtos.PostDetailDto;
 import kr.megaptera.smash.dtos.PostsDto;
 import kr.megaptera.smash.exceptions.CreatePostFailed;
@@ -66,11 +66,23 @@ public class PostController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CreatePostAndGameResultDto createPost(
-        @RequestAttribute("userId") Long accessedUserId,
-        @Validated(value = {ValidationSequence.class})
-        @RequestBody PostAndGameRequestDto postAndGameRequestDto,
+        @RequestAttribute("userId") Long currentUserId,
+        @Validated(value = ValidationSequence.class)
+        @RequestBody PostCreateRequestDto postCreateRequestDto,
         BindingResult bindingResult
     ) {
+        System.out.println(postCreateRequestDto.getPost().getDetail());
+        System.out.println(postCreateRequestDto.getPlace().getName());
+        System.out.println(postCreateRequestDto.getExercise().getName());
+        System.out.println(postCreateRequestDto.getGame().getDate());
+        System.out.println(postCreateRequestDto.getGame().getEndHour());
+        System.out.println(postCreateRequestDto.getGame().getEndMinute());
+        System.out.println(postCreateRequestDto.getGame().getEndTimeAmPm());
+        System.out.println(postCreateRequestDto.getGame().getStartHour());
+        System.out.println(postCreateRequestDto.getGame().getStartMinute());
+        System.out.println(postCreateRequestDto.getGame().getStartTimeAmPm());
+        System.out.println(postCreateRequestDto.getGame().getTargetMemberCount());
+
         if (bindingResult.hasErrors()) {
             List<String> errorMessages = bindingResult.getAllErrors()
                 .stream()
@@ -81,28 +93,21 @@ public class PostController {
         }
 
         return createPostService.createPost(
-            accessedUserId,
-            postAndGameRequestDto.getGameExercise(),
-            postAndGameRequestDto.getGameDate(),
-            postAndGameRequestDto.getGameStartTimeAmPm(),
-            postAndGameRequestDto.getGameStartHour(),
-            postAndGameRequestDto.getGameStartMinute(),
-            postAndGameRequestDto.getGameEndTimeAmPm(),
-            postAndGameRequestDto.getGameEndHour(),
-            postAndGameRequestDto.getGameEndMinute(),
-            postAndGameRequestDto.getPlaceName(),
-            postAndGameRequestDto.getGameTargetMemberCount(),
-            postAndGameRequestDto.getPostDetail()
+            currentUserId,
+            postCreateRequestDto.getPost(),
+            postCreateRequestDto.getGame(),
+            postCreateRequestDto.getExercise(),
+            postCreateRequestDto.getPlace()
         );
     }
 
     @DeleteMapping("{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(
-        @RequestAttribute("userId") Long accessedUserId,
+        @RequestAttribute("userId") Long currentUserId,
         @PathVariable("postId") Long targetPostId
     ) {
-        deletePostService.deletePost(accessedUserId, targetPostId);
+        deletePostService.deletePost(currentUserId, targetPostId);
     }
 
     @ExceptionHandler(UserNotFound.class)
@@ -119,8 +124,8 @@ public class PostController {
 
     @ExceptionHandler(PlaceNotFound.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String placeNotFound(PlaceNotFound exception) {
-        return exception.getMessage();
+    public String placeNotFound() {
+        return "Place Not Found";
     }
 
     @ExceptionHandler(CreatePostFailed.class)
