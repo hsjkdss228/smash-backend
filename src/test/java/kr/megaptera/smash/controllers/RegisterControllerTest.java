@@ -6,6 +6,8 @@ import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.AlreadyJoinedGame;
 import kr.megaptera.smash.exceptions.GameIsFull;
 import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.IsNotRegisterOfCurrentUser;
+import kr.megaptera.smash.exceptions.RegisterNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.services.JoinGameService;
 import kr.megaptera.smash.services.AcceptRegisterService;
@@ -197,5 +199,41 @@ class RegisterControllerTest {
             .andExpect(MockMvcResultMatchers.status().isNoContent());
 
         verify(rejectRegisterService).rejectRegister(registerId);
+    }
+
+    @Test
+    void registerNotFoundWithCanceled() throws Exception {
+        Long registerId = 1L;
+        Long userId = 1L;
+
+        String token = jwtUtil.encode(userId);
+
+        doThrow(RegisterNotFound.class).doNothing()
+            .when(cancelRegisterService).cancelRegister(registerId, userId);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/registers/1")
+                .header("Authorization", "Bearer " + token)
+                .param("status", "canceled"))
+            .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        verify(cancelRegisterService).cancelRegister(registerId, userId);
+    }
+
+    @Test
+    void isNotRegisterOfCurrentUserWithCanceled() throws Exception {
+        Long registerId = 1L;
+        Long anotherUserId = 222L;
+
+        String token = jwtUtil.encode(anotherUserId);
+
+        doThrow(IsNotRegisterOfCurrentUser.class).doNothing()
+            .when(cancelRegisterService).cancelRegister(registerId, anotherUserId);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/registers/1")
+                .header("Authorization", "Bearer " + token)
+                .param("status", "canceled"))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        verify(cancelRegisterService).cancelRegister(registerId, anotherUserId);
     }
 }

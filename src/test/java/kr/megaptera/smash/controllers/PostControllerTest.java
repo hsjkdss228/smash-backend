@@ -329,7 +329,7 @@ class PostControllerTest {
 
         ExerciseForPostCreateRequestDto wrongExerciseForPostCreateRequestDto
             = new ExerciseForPostCreateRequestDto(
-            ""
+            blankGameExercise
         );
         given(createPostService.createPost(
             userId,
@@ -383,7 +383,7 @@ class PostControllerTest {
             = new GameForPostCreateRequestDto(
             "2022-12-22T00:00:00.000Z",
             "am", "11", "30", "pm", "04", "00",
-            null
+            nullGameTargetMemberCount
         );
         given(createPostService.createPost(
             userId,

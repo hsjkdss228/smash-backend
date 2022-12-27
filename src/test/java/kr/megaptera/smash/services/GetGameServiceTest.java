@@ -1,6 +1,8 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.GameDetailDto;
+import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.GameDateTime;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -121,5 +124,35 @@ class GetGameServiceTest {
         assertThat(gameDetailDto.getRegisterStatus()).isEqualTo("none");
 
         verify(userRepository, never()).findById(any(Long.class));
+    }
+
+    @Test
+    void findTargetGameWithUserNotFound() {
+        Long wrongUserId = 996L;
+        Long targetPostId = 1L;
+
+        given(userRepository.findById(wrongUserId))
+            .willThrow(UserNotFound.class);
+
+        assertThrows(UserNotFound.class, () -> {
+            getGameService.findTargetGame(wrongUserId, targetPostId);
+        });
+
+        verify(userRepository).findById(wrongUserId);
+    }
+
+    @Test
+    void findTargetGameWithGameNotFound() {
+        Long currentUserId = null;
+        Long targetPostId = 2432L;
+
+        given(gameRepository.findByPostId(targetPostId))
+            .willThrow(GameNotFound.class);
+
+        assertThrows(GameNotFound.class, () -> {
+            getGameService.findTargetGame(currentUserId, targetPostId);
+        });
+
+        verify(gameRepository).findByPostId(targetPostId);
     }
 }

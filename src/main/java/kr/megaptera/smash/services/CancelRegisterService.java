@@ -1,6 +1,6 @@
 package kr.megaptera.smash.services;
 
-import kr.megaptera.smash.exceptions.RegisterIdAndUserIdNotMatch;
+import kr.megaptera.smash.exceptions.IsNotRegisterOfCurrentUser;
 import kr.megaptera.smash.exceptions.RegisterNotFound;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.repositories.RegisterRepository;
@@ -21,8 +21,8 @@ public class CancelRegisterService {
             = registerRepository.findById(registerId)
             .orElseThrow(RegisterNotFound::new);
 
-        if (!register.userId().equals(accessedUserId)) {
-            throw new RegisterIdAndUserIdNotMatch();
+        if (!register.match(accessedUserId)) {
+            throw new IsNotRegisterOfCurrentUser();
         }
 
         register.cancel();

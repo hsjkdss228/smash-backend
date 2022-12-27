@@ -2,6 +2,8 @@ package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.GameDetailDto;
+import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.services.GetGameService;
@@ -79,6 +81,37 @@ class GameControllerTest {
             ))
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"registerStatus\":\"none\"")
+            ))
+        ;
+    }
+
+    @Test
+    void gameWithUserNotFound() throws Exception {
+        Long wrongUserId = 994L;
+        String wrongToken = jwtUtil.encode(wrongUserId);
+
+        given(getGameService.findTargetGame(wrongUserId, targetPostId))
+            .willThrow(UserNotFound.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/games/posts/1")
+                .header("Authorization", "Bearer " + wrongToken))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("User Not Found")
+            ))
+        ;
+    }
+
+    @Test
+    void gameWithGameNotFound() throws Exception {
+        given(getGameService.findTargetGame(userId, targetPostId))
+            .willThrow(GameNotFound.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/games/posts/1")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andExpect(MockMvcResultMatchers.content().string(
+                containsString("Game Not Found")
             ))
         ;
     }

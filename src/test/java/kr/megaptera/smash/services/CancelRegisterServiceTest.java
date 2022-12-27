@@ -1,5 +1,7 @@
 package kr.megaptera.smash.services;
 
+import kr.megaptera.smash.exceptions.IsNotRegisterOfCurrentUser;
+import kr.megaptera.smash.exceptions.RegisterNotFound;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.repositories.RegisterRepository;
@@ -8,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -64,5 +67,39 @@ class CancelRegisterServiceTest {
 
         verify(registerRepository).findById(registerId);
         verify(register).cancel();
+    }
+
+    @Test
+    void cancelRegisterWithRegisterNotFound() {
+        Long wrongRegisterId = 2222L;
+        Long userId = 1L;
+
+        given(registerRepository.findById(wrongRegisterId))
+            .willThrow(RegisterNotFound.class);
+
+        assertThrows(RegisterNotFound.class, () -> {
+            cancelRegisterService.cancelRegister(wrongRegisterId, userId);
+        });
+
+        verify(registerRepository).findById(wrongRegisterId);
+    }
+
+    @Test
+    void isNotRegisterOfCurrentUser() {
+        Long userId = 1L;
+        Long gameId = 1L;
+        Register register = spy(Register.fakeProcessing(userId, gameId));
+
+        Long registerId = register.id();
+        given(registerRepository.findById(registerId))
+            .willReturn(Optional.of(register));
+
+        Long anotherUserId = 9876L;
+        assertThrows(IsNotRegisterOfCurrentUser.class, () -> {
+            cancelRegisterService.cancelRegister(registerId, anotherUserId);
+        });
+
+        verify(registerRepository).findById(registerId);
+        verify(register).match(anotherUserId);
     }
 }

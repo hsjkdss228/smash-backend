@@ -71,18 +71,6 @@ public class PostController {
         @RequestBody PostCreateRequestDto postCreateRequestDto,
         BindingResult bindingResult
     ) {
-        System.out.println(postCreateRequestDto.getPost().getDetail());
-        System.out.println(postCreateRequestDto.getPlace().getName());
-        System.out.println(postCreateRequestDto.getExercise().getName());
-        System.out.println(postCreateRequestDto.getGame().getDate());
-        System.out.println(postCreateRequestDto.getGame().getEndHour());
-        System.out.println(postCreateRequestDto.getGame().getEndMinute());
-        System.out.println(postCreateRequestDto.getGame().getEndTimeAmPm());
-        System.out.println(postCreateRequestDto.getGame().getStartHour());
-        System.out.println(postCreateRequestDto.getGame().getStartMinute());
-        System.out.println(postCreateRequestDto.getGame().getStartTimeAmPm());
-        System.out.println(postCreateRequestDto.getGame().getTargetMemberCount());
-
         if (bindingResult.hasErrors()) {
             List<String> errorMessages = bindingResult.getAllErrors()
                 .stream()

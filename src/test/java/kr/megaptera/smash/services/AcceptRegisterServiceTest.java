@@ -1,6 +1,9 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.exceptions.GameIsFull;
+import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.RegisterNotFound;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.GameTargetMemberCount;
 import kr.megaptera.smash.models.Notice;
@@ -47,7 +50,6 @@ class AcceptRegisterServiceTest {
 
     @Test
     void acceptRegister() {
-        Long registerId = 12L;
         Long userId = 1L;
         Long gameId = 1L;
         Long postId = 1L;
@@ -60,6 +62,8 @@ class AcceptRegisterServiceTest {
             Register.fakeAccepted(2L, gameId),
             Register.fakeAccepted(3L, gameId)
         );
+
+        Long registerId = register.id();
 
         given(registerRepository.findById(registerId))
             .willReturn(Optional.of(register));
@@ -79,13 +83,45 @@ class AcceptRegisterServiceTest {
     }
 
     @Test
+    void acceptRegisterFailWithRegisterNotFound() {
+        Long wrongRegisterId = 3222L;
+        given(registerRepository.findById(wrongRegisterId))
+            .willThrow(RegisterNotFound.class);
+
+        assertThrows(RegisterNotFound.class, () -> {
+            acceptRegisterService.acceptRegister(wrongRegisterId);
+        });
+
+        verify(registerRepository).findById(wrongRegisterId);
+    }
+
+    @Test
+    void acceptRegisterFailWithGameNotFound() {
+        Long userId = 1L;
+        Long gameId = 1L;
+
+        Register register = Register.fakeProcessing(userId, gameId);
+        Long registerId = register.id();
+
+        given(registerRepository.findById(registerId))
+            .willReturn(Optional.of(register));
+        given(gameRepository.findById(register.gameId()))
+            .willThrow(GameNotFound.class);
+
+        assertThrows(GameNotFound.class, () -> {
+            acceptRegisterService.acceptRegister(registerId);
+        });
+
+        verify(registerRepository).findById(registerId);
+        verify(gameRepository).findById(register.gameId());
+    }
+
+    @Test
     void acceptRegisterFailWithGameIsFull() {
-        Long registerId = 6L;
         Long userId = 1L;
         Long gameId = 1L;
         Long postId = 1L;
 
-        User user = User.fake(userId);
         Game game = Game.fake(gameId, postId, new GameTargetMemberCount(3));
         Register register = spy(Register.fakeProcessing(userId, gameId));
         List<Register> registers = List.of(
@@ -94,6 +130,8 @@ class AcceptRegisterServiceTest {
             Register.fakeAccepted(3L, gameId),
             Register.fakeAccepted(4L, gameId)
         );
+
+        Long registerId = register.id();
 
         given(registerRepository.findById(registerId))
             .willReturn(Optional.of(register));
@@ -105,5 +143,38 @@ class AcceptRegisterServiceTest {
         assertThrows(GameIsFull.class, () -> {
             acceptRegisterService.acceptRegister(registerId);
         });
+    }
+
+    @Test
+    void acceptRegisterFailWithUserNotFound() {
+        Long userId = 1L;
+        Long gameId = 1L;
+        Long postId = 1L;
+
+        Game game = Game.fake(gameId, postId, new GameTargetMemberCount(3));
+        Register register = spy(Register.fakeProcessing(userId, gameId));
+        List<Register> registers = List.of(
+            Register.fakeProcessing(userId, gameId),
+            Register.fakeAccepted(2L, gameId),
+            Register.fakeAccepted(3L, gameId)
+        );
+
+        Long registerId = register.id();
+
+        given(registerRepository.findById(registerId))
+            .willReturn(Optional.of(register));
+        given(gameRepository.findById(register.gameId()))
+            .willReturn(Optional.of(game));
+        given(registerRepository.findAllByGameId(game.id()))
+            .willReturn(registers);
+        given(userRepository.findById(register.userId()))
+            .willThrow(UserNotFound.class);
+
+        assertThrows(UserNotFound.class, () -> {
+            acceptRegisterService.acceptRegister(registerId);
+        });
+
+        verify(registerRepository).findById(registerId);
+        verify(register).accept();
     }
 }

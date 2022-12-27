@@ -2,6 +2,7 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.RegisterProcessingDto;
 import kr.megaptera.smash.dtos.RegistersProcessingDto;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.models.User;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -59,7 +61,7 @@ class GetProcessingRegisterServiceTest {
             .willReturn(Optional.of(users.get(1)));
 
         RegistersProcessingDto registersProcessingDto
-            = getProcessingRegisterService.findApplicants(targetGameId);
+            = getProcessingRegisterService.findProcessingRegisters(targetGameId);
 
         assertThat(registersProcessingDto).isNotNull();
         List<RegisterProcessingDto> registerProcessingDtos
@@ -69,6 +71,28 @@ class GetProcessingRegisterServiceTest {
             .getUserInformation().getName()).isEqualTo("사용자 이름 1");
         assertThat(registerProcessingDtos.get(1)
             .getUserInformation().getName()).isEqualTo("사용자 이름 2");
+
+        verify(registerRepository).findAllByGameId(targetGameId);
+        verify(userRepository).findById(applicants.get(0).userId());
+        verify(userRepository).findById(applicants.get(1).userId());
+    }
+
+    @Test
+    void findMembersWithUserNotFound() {
+        Long targetGameId = 1L;
+        List<Register> applicants = Register.fakesProcessing(2, targetGameId);
+        User user = User.fake("사용자 이름", "username12");
+
+        given(registerRepository.findAllByGameId(targetGameId))
+            .willReturn(applicants);
+        given(userRepository.findById(applicants.get(0).userId()))
+            .willReturn(Optional.of(user));
+        given(userRepository.findById(applicants.get(1).userId()))
+            .willThrow(UserNotFound.class);
+
+        assertThrows(UserNotFound.class, () -> {
+            getProcessingRegisterService.findProcessingRegisters(targetGameId);
+        });
 
         verify(registerRepository).findAllByGameId(targetGameId);
         verify(userRepository).findById(applicants.get(0).userId());

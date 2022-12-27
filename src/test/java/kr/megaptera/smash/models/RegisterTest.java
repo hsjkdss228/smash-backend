@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RegisterTest {
     @Test
-    void match() {
+    void matchWithUser() {
         Long userId = 1L;
         Long gameId = 1L;
 
@@ -18,6 +18,18 @@ class RegisterTest {
             .isTrue();
         Long wrongUserId = 9999L;
         assertThat(Register.fake(wrongUserId, gameId).match(user))
+            .isFalse();
+    }
+
+    @Test
+    void matchWithUserId() {
+        Long userId = 1L;
+        Long gameId = 1L;
+
+        assertThat(Register.fake(userId, gameId).match(userId))
+            .isTrue();
+        Long wrongUserId = 9999L;
+        assertThat(Register.fake(userId, gameId).match(wrongUserId))
             .isFalse();
     }
 
