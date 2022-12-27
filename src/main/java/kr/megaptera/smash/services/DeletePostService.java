@@ -30,7 +30,7 @@ public class DeletePostService {
         Post post = postRepository.findById(targetPostId)
             .orElseThrow(() -> new PostNotFound(targetPostId));
 
-        if (!post.userId().equals(accessedUserId)) {
+        if (!post.isAuthor(accessedUserId)) {
             throw new UserIsNotAuthor();
         }
 

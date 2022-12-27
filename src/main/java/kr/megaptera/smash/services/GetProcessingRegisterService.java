@@ -24,7 +24,7 @@ public class GetProcessingRegisterService {
         this.userRepository = userRepository;
     }
 
-    public RegistersProcessingDto findApplicants(Long targetGameId) {
+    public RegistersProcessingDto findProcessingRegisters(Long targetGameId) {
         List<Register> registers = registerRepository.findAllByGameId(targetGameId);
 
         List<RegisterProcessingDto> registerProcessingDtos

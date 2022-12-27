@@ -8,12 +8,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class PostTest {
     @Test
-    void isAuthor() {
+    void isAuthorWithUser() {
         Long postId = 1L;
         Long userId = 1L;
         Post post = Post.fake(postId);
         User user = User.fake(userId);
         assertThat(post.isAuthor(user)).isTrue();
+    }
+
+    @Test
+    void isAuthorWithUserId() {
+        Long postId = 1L;
+        Long userId = 1L;
+        Post post = Post.fake(postId);
+        assertThat(post.isAuthor(userId)).isTrue();
     }
 
     @Test

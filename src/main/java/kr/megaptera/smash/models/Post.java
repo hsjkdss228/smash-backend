@@ -148,6 +148,10 @@ public class Post {
         return user != null && userId.equals(user.id());
     }
 
+    public Boolean isAuthor(Long userId) {
+        return this.userId.equals(userId);
+    }
+
     public void addHits() {
         hits = new PostHits(this.hits.value() + 1);
     }

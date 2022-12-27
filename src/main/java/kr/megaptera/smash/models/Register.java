@@ -74,6 +74,10 @@ public class Register {
         return user != null && userId.equals(user.id());
     }
 
+    public boolean match(Long userId) {
+        return this.userId.equals(userId);
+    }
+
     public boolean active() {
         return status.equals(RegisterStatus.processing())
             || status.equals(RegisterStatus.accepted());

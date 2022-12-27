@@ -3,6 +3,7 @@ package kr.megaptera.smash.controllers;
 import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.RegisterAcceptedDto;
 import kr.megaptera.smash.dtos.RegistersAcceptedDto;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.services.GetAcceptedRegisterService;
@@ -64,5 +65,14 @@ class MemberControllerTest {
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"phoneNumber\":\"010-0000-0000\"")
             ));
+    }
+
+    @Test
+    void membersWithUserNotFound() throws Exception {
+        given(getAcceptedRegisterService.findAcceptedRegisters(gameId))
+            .willThrow(UserNotFound.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/games/1/members"))
+            .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }

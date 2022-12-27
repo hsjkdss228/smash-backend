@@ -117,8 +117,9 @@ public class User {
     }
 
     public static User fake(String name, String account) {
+        Long userId = 1L;
         return new User(
-            1L,
+            userId,
             new UserAccount(account),
             new UserPersonalInformation(
                 name, "여성", "01000000000"
@@ -128,12 +129,12 @@ public class User {
 
     public static List<User> fakes(long generationCount) {
         List<User> users = new ArrayList<>();
-        for (long id = 1; id <= generationCount; id += 1) {
+        for (long userId = 1; userId <= generationCount; userId += 1) {
             User user = new User(
-                id,
-                new UserAccount("account" + id),
+                userId,
+                new UserAccount("account" + userId),
                 new UserPersonalInformation(
-                    "사용자" + id, "여성", "01000000000"
+                    "사용자" + userId, "여성", "01000000000"
                 )
             );
             users.add(user);

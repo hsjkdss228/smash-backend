@@ -2,6 +2,7 @@ package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.dtos.RegisterProcessingDto;
 import kr.megaptera.smash.dtos.RegistersProcessingDto;
+import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.User;
 import kr.megaptera.smash.services.GetProcessingRegisterService;
@@ -53,7 +54,7 @@ class ApplicantControllerTest {
 
     @Test
     void applicants() throws Exception {
-        given(getProcessingRegisterService.findApplicants(gameId))
+        given(getProcessingRegisterService.findProcessingRegisters(gameId))
             .willReturn(registersProcessingDto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/games/1/applicants"))
@@ -61,5 +62,14 @@ class ApplicantControllerTest {
             .andExpect(MockMvcResultMatchers.content().string(
                 containsString("\"phoneNumber\":\"010-0000-0000\"")
             ));
+    }
+
+    @Test
+    void applicantsWithUserNotFound() throws Exception {
+        given(getProcessingRegisterService.findProcessingRegisters(gameId))
+            .willThrow(UserNotFound.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/games/1/applicants"))
+            .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }

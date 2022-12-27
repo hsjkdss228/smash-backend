@@ -4,7 +4,9 @@ import kr.megaptera.smash.dtos.RegisterGameResultDto;
 import kr.megaptera.smash.exceptions.AlreadyJoinedGame;
 import kr.megaptera.smash.exceptions.GameIsFull;
 import kr.megaptera.smash.exceptions.GameNotFound;
+import kr.megaptera.smash.exceptions.IsNotRegisterOfCurrentUser;
 import kr.megaptera.smash.exceptions.PostNotFound;
+import kr.megaptera.smash.exceptions.RegisterNotFound;
 import kr.megaptera.smash.exceptions.UserNotFound;
 import kr.megaptera.smash.services.AcceptRegisterService;
 import kr.megaptera.smash.services.CancelRegisterService;
@@ -77,12 +79,6 @@ public class RegisterController {
         return "Game Not Found";
     }
 
-    @ExceptionHandler(PostNotFound.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String postNotFound() {
-        return "Post Not Found";
-    }
-
     @ExceptionHandler(AlreadyJoinedGame.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String alreadyJoinedGame() {
@@ -93,5 +89,23 @@ public class RegisterController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String gameIsFull() {
         return "Game Is Full";
+    }
+
+    @ExceptionHandler(PostNotFound.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String postNotFound() {
+        return "Post Not Found";
+    }
+
+    @ExceptionHandler(RegisterNotFound.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String registerNotFound() {
+        return "Register Not Found";
+    }
+
+    @ExceptionHandler(IsNotRegisterOfCurrentUser.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String isNotRegisterOfCurrentUser() {
+        return "Is Not Register Of Current User";
     }
 }

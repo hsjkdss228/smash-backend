@@ -2,6 +2,7 @@ package kr.megaptera.smash.controllers;
 
 import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.PlaceDto;
+import kr.megaptera.smash.exceptions.PlaceNotFound;
 import kr.megaptera.smash.models.Place;
 import kr.megaptera.smash.services.GetPlaceService;
 import org.junit.jupiter.api.Test;
@@ -37,5 +38,15 @@ class PlaceControllerTest {
                 containsString("운동 장소 이름")
             ))
         ;
+    }
+
+    @Test
+    void placeNotFound() throws Exception {
+        Long wrongPlaceId = 2277L;
+        given(getPlaceService.getTargetPlace(wrongPlaceId))
+            .willThrow(PlaceNotFound.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/places/2277"))
+            .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }

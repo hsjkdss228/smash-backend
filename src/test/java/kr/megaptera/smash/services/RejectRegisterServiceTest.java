@@ -1,5 +1,6 @@
 package kr.megaptera.smash.services;
 
+import kr.megaptera.smash.exceptions.RegisterNotFound;
 import kr.megaptera.smash.models.Register;
 import kr.megaptera.smash.models.RegisterStatus;
 import kr.megaptera.smash.repositories.RegisterRepository;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -27,7 +29,7 @@ class RejectRegisterServiceTest {
     }
 
     @Test
-    void makeGameApplicantToMember() {
+    void rejectRegister() {
         Long registerId = 12L;
         Long userId = 1L;
         Register register = spy(new Register(
@@ -44,5 +46,19 @@ class RejectRegisterServiceTest {
 
         verify(registerRepository).findById(registerId);
         verify(register).reject();
+    }
+
+    @Test
+    void rejectRegisterFailedWithRegisterNotFound() {
+        Long wrongRegisterId = 999L;
+
+        given(registerRepository.findById(wrongRegisterId))
+            .willThrow(RegisterNotFound.class);
+
+        assertThrows(RegisterNotFound.class, () -> {
+            rejectRegisterService.rejectRegister(wrongRegisterId);
+        });
+
+        verify(registerRepository).findById(wrongRegisterId);
     }
 }
