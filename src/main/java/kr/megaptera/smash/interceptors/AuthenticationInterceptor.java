@@ -27,6 +27,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         String accessToken = authorization.substring("Bearer ".length());
 
+        if (accessToken.equals("null")) {
+            return true;
+        }
+
         try {
             Long userId = jwtUtil.decode(accessToken);
 
