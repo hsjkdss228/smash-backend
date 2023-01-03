@@ -4,6 +4,7 @@ import kr.megaptera.smash.dtos.NoticeDto;
 import kr.megaptera.smash.dtos.NoticesDto;
 import kr.megaptera.smash.models.Notice;
 import kr.megaptera.smash.repositories.NoticeRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,8 @@ public class GetNoticesService {
 
     public NoticesDto findAllNoticesOfUser(Long currentUserId) {
         List<Notice> notices
-            = noticeRepository.findAllByUserId(currentUserId);
+            = noticeRepository.findAllByUserId(
+                currentUserId, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         List<NoticeDto> noticeDtos = notices.stream()
             .filter(Notice::active)

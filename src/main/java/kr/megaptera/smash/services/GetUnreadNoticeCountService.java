@@ -3,6 +3,7 @@ package kr.megaptera.smash.services;
 import kr.megaptera.smash.dtos.UnreadNoticeCountDto;
 import kr.megaptera.smash.models.Notice;
 import kr.megaptera.smash.repositories.NoticeRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

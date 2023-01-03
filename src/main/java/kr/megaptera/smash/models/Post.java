@@ -37,14 +37,14 @@ public class Post {
     @Embedded
     private PostDetail detail;
 
-    @ElementCollection
-    private List<PostImage> images = new ArrayList<>();
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @ElementCollection
+    private List<PostImage> images = new ArrayList<>();
 
     private Post() {
 
