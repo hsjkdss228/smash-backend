@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
+// TODO: enum 타입으로 리팩터링
+
 @Embeddable
 public class RegisterStatus {
     private static final RegisterStatus PROCESSING

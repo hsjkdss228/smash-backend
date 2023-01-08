@@ -130,7 +130,9 @@ class PostControllerTest {
             "운동 이름"
         );
         placeForPostCreateRequestDto = new PlaceForPostCreateRequestDto(
-            "운동 장소"
+            "운동 장소",
+            "운동 장소 주소",
+            false
         );
         postCreateRequestDto = new PostCreateRequestDto(
             postForPostCreateRequestDto,
@@ -223,10 +225,6 @@ class PostControllerTest {
         Long invalidUserId = 10L;
         given(userRepository.findById(invalidUserId))
             .willThrow(UserNotFound.class);
-//        given(getPostsService.findAll(invalidUserId))
-//            .willThrow(UserNotFound.class);
-//         SpyBean 어노테이션을 주면 given이 먹히지 않는 건가...?
-//         그보다도 ExceptionHandler가 있는데 왜 예외를 받지 못하는지 모르겠다.
 
         String token = jwtUtil.encode(invalidUserId);
 

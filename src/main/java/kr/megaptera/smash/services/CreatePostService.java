@@ -11,6 +11,7 @@ import kr.megaptera.smash.models.Exercise;
 import kr.megaptera.smash.models.Game;
 import kr.megaptera.smash.models.GameTargetMemberCount;
 import kr.megaptera.smash.models.Place;
+import kr.megaptera.smash.models.PlaceInformation;
 import kr.megaptera.smash.models.Post;
 import kr.megaptera.smash.models.PostDetail;
 import kr.megaptera.smash.models.PostHits;
@@ -65,10 +66,25 @@ public class CreatePostService {
 
         Post savedPost = postRepository.save(post);
 
-        String placeName = placeForPostCreateRequestDto.getName();
+        // TODO: 등록되지 않은 주소를 받을 때 도로명주소인지, 지번주소인지 구분해서 받기
 
-        Place place = placeRepository.findByInformationName(placeName)
-            .orElseThrow(() -> new PlaceNotFound(placeName));
+        Place place = Place.of(
+            placeForPostCreateRequestDto.getName(),
+            exerciseForPostCreateRequestDto.getName(),
+            placeForPostCreateRequestDto.getAddress(),
+            placeForPostCreateRequestDto.getIsRegisteredPlace()
+        );
+        Boolean isRegisteredPlace
+            = placeForPostCreateRequestDto.getIsRegisteredPlace();
+
+        if (!isRegisteredPlace) {
+            place = placeRepository.save(place);
+        }
+        if (isRegisteredPlace) {
+            String placeName = placeForPostCreateRequestDto.getName();
+            place = placeRepository.findByInformationName(placeName)
+                .orElseThrow(() -> new PlaceNotFound(placeName));
+        }
 
         String exerciseName = exerciseForPostCreateRequestDto.getName();
 

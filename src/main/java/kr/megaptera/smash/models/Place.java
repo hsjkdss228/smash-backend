@@ -2,9 +2,12 @@ package kr.megaptera.smash.models;
 
 import kr.megaptera.smash.dtos.PlaceDto;
 import kr.megaptera.smash.dtos.PlaceInPostListDto;
+import kr.megaptera.smash.dtos.PlaceSearchResultDto;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -30,28 +33,60 @@ public class Place {
     @Embedded
     private PlaceAddress address;
 
+    @Enumerated(EnumType.STRING)
+    private PlaceRegistrationStatus registrationStatus;
+
     private Place() {
 
     }
 
     public Place(PlaceInformation information,
                  Exercise exercise,
-                 PlaceAddress address
+                 PlaceAddress address,
+                 PlaceRegistrationStatus registrationStatus
     ) {
         this.information = information;
         this.exercise = exercise;
         this.address = address;
+        this.registrationStatus = registrationStatus;
     }
 
     public Place(Long id,
                  PlaceInformation information,
                  Exercise exercise,
-                 PlaceAddress address
+                 PlaceAddress address,
+                 PlaceRegistrationStatus registrationStatus
     ) {
         this.id = id;
         this.information = information;
         this.exercise = exercise;
         this.address = address;
+        this.registrationStatus = registrationStatus;
+    }
+
+    // TODO: 일단은 도로명 주소로만 받지만,
+    //    도로명 주소로 받을지 지번 주소로 받을지 구분해주는 로직 추가
+
+    public static Place of(
+        String placeName,
+        String exerciseName,
+        String address,
+        Boolean isRegisteredPlace
+    ) {
+        return new Place(
+            new PlaceInformation(
+                placeName,
+                ""
+            ),
+            new Exercise(exerciseName),
+            new PlaceAddress(
+                address,
+                ""
+            ),
+            isRegisteredPlace
+                ? PlaceRegistrationStatus.REGISTERED
+                : PlaceRegistrationStatus.UNREGISTERED
+        );
     }
 
     public Long id() {
@@ -70,11 +105,21 @@ public class Place {
         return address;
     }
 
+    public PlaceRegistrationStatus registrationStatus() {
+        return registrationStatus;
+    }
+
+    public boolean registered() {
+        return registrationStatus.equals(PlaceRegistrationStatus.REGISTERED);
+    }
+
     public PlaceInPostListDto toPlaceInPostListDto() {
         return new PlaceInPostListDto(
-            information().name()
+            information.name()
         );
     }
+
+    // TODO: 장소 등록 상태는 필요에 따라 구분되는 fake를 만들어야 할 수 있을 듯
 
     public static Place fake(String placeName) {
         Long placeId = 1L;
@@ -88,7 +133,26 @@ public class Place {
             new PlaceAddress(
                 "운동 장소 도로명주소",
                 "운동 장소 지번주소"
-            )
+            ),
+            PlaceRegistrationStatus.REGISTERED
+        );
+    }
+
+    public static Place fake(String placeName,
+                             PlaceRegistrationStatus placeRegisterStatus) {
+        Long placeId = 1L;
+        return new Place(
+            placeId,
+            new PlaceInformation(
+                placeName,
+                "010-1234-1234"
+            ),
+            new Exercise("운동 카테고리 이름"),
+            new PlaceAddress(
+                "운동 장소 도로명주소",
+                "운동 장소 지번주소"
+            ),
+            placeRegisterStatus
         );
     }
 
@@ -106,24 +170,29 @@ public class Place {
                 new PlaceAddress(
                     "운동 장소 도로명주소 " + i,
                     "운동 장소 지번주소 " + i
-                )
+                ),
+                PlaceRegistrationStatus.REGISTERED
             );
             places.add(place);
         }
         return places;
     }
 
-    public PlaceDto toPlaceDto() {
-        String address = !address().roadAddress().isBlank()
-            ? address().roadAddress()
-            : address().jibunAddress();
-
+    public PlaceDto toDto() {
         return new PlaceDto(
             id,
-            information().name(),
-            exercise().name(),
-            address,
-            information().contactNumber()
+            information.name(),
+            exercise.name(),
+            address.existing(),
+            information.contactNumber()
+        );
+    }
+
+    public PlaceSearchResultDto toSearchResultDto() {
+        return new PlaceSearchResultDto(
+            id,
+            information.name(),
+            address.existing()
         );
     }
 }

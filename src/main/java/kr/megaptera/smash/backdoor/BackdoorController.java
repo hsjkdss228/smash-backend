@@ -97,14 +97,15 @@ public class BackdoorController {
                              String contactNumber,
                              String exerciseName,
                              String roadAddress,
-                             String jibunAddress) {
+                             String jibunAddress,
+                             String registrationStatus) {
         jdbcTemplate.update(
             "INSERT INTO places(" +
                 "id, name, contact_number, exercise_name, " +
-                "road_address, jibun_address) " +
-                "VALUES(?, ?, ?, ?, ?, ?)",
+                "road_address, jibun_address, registration_status) " +
+                "VALUES(?, ?, ?, ?, ?, ?, ?)",
             id, name, contactNumber, exerciseName,
-            roadAddress, jibunAddress
+            roadAddress, jibunAddress, registrationStatus
         );
     }
 
@@ -171,10 +172,10 @@ public class BackdoorController {
             LocalDate.of(2022, 11, 14), LocalTime.of(12, 0), LocalTime.of(17, 0), 30);
         insertPlace(
             place1Id, "상암월드컵경기장", "010-1234-5678", "축구",
-            "서울 마포구 월드컵로 240", "서울 마포구 성산동 515");
+            "서울 마포구 월드컵로 240", "서울 마포구 성산동 515", "REGISTERED");
         insertPlace(
             place2Id, "잠실야구장", "010-8765-4321", "야구",
-            "서울 송파구 올림픽로 25", "서울 송파구 잠실동 10-1");
+            "서울 송파구 올림픽로 25", "서울 송파구 잠실동 10-1", "REGISTERED");
     }
 
     @GetMapping("setup-posts-author")
@@ -341,7 +342,7 @@ public class BackdoorController {
             LocalDate.of(2022, 11, 13), LocalTime.of(15, 0), LocalTime.of(18, 0), 4);
         insertPlace(
             placeId, "상암월드컵경기장", "02-8765-4321", "축구",
-            "서울 마포구 월드컵로 240", "서울 마포구 성산동 515");
+            "서울 마포구 월드컵로 240", "서울 마포구 성산동 515", "REGISTERED");
     }
 
     @GetMapping("setup-post-not-logged-in-and-not-full")
@@ -862,6 +863,33 @@ public class BackdoorController {
             "정상적으로 운동 참가 신청을 거절하는 경우 테스트 케이스 데이터를 세팅했습니다.";
     }
 
+    @GetMapping("setup-places-to-write-post")
+    public String setupPlacesToWritePost() {
+        clearDatabases();
+
+        Long userId = 1L;
+        Long place1Id = 1L;
+        Long place2Id = 2L;
+        Long place3Id = 3L;
+
+        insertUser(
+            userId, "user1234", "Password!1",
+            "사용자 1", "여성", "010-1234-5678", 10.0,
+            "https://i1.sndcdn.com/avatars-mHalH2yXGeayCWfR-fsdm0w-t240x240.jpg");
+        insertPlace(
+            place1Id, "대전 월드컵경기장", "042-000-0000", "축구",
+            "대전 유성구 월드컵대로 32", "", "REGISTERED");
+        insertPlace(
+            place2Id, "대전 한밭종합운동장", "042-000-0001", "축구",
+            "대전 중구 대종로 373", "", "REGISTERED");
+        insertPlace(
+            place3Id, "대전 한남대학교 종합운동장", "042-000-0002", "축구",
+            "대전 대덕구 한남로 70", "", "REGISTERED");
+
+        return "운동 모집 게시글 작성: " +
+            "장소 입력 (등록된 장소를 입력하는 경우) 테스트 케이스 데이터를 세팅했습니다.";
+    }
+
     @GetMapping("setup-writing-post-case")
     public String setupWritingPostCase() {
         clearDatabases();
@@ -875,7 +903,7 @@ public class BackdoorController {
             "https://i1.sndcdn.com/avatars-mHalH2yXGeayCWfR-fsdm0w-t240x240.jpg");
         insertPlace(
             placeId, "김천종합운동장", "054-000-0000", "축구",
-            "", "경북 김천시 삼락동 488-1");
+            "", "경북 김천시 삼락동 488-1", "REGISTERED");
 
         return "운동 모집 게시글 작성: " +
             "정상적으로 게시글을 등록하는 경우 테스트 케이스 데이터를 세팅했습니다.";
@@ -918,7 +946,7 @@ public class BackdoorController {
             LocalDate.of(2022, 11, 13), LocalTime.of(15, 0), LocalTime.of(18, 0), 3);
         insertPlace(
             placeId, "김천종합운동장", "054-000-0000", "축구",
-            "", "경북 김천시 삼락동 488-1");
+            "", "경북 김천시 삼락동 488-1", "REGISTERED");
 
         insertRegister(authorRegisterId, authorId, gameId, "accepted");
         insertRegister(user1RegisterId, user1Id, gameId, "accepted");
@@ -961,7 +989,7 @@ public class BackdoorController {
             LocalDate.of(2022, 11, 13), LocalTime.of(15, 0), LocalTime.of(18, 0), 3);
         insertPlace(
             placeId, "김천종합운동장", "054-000-0000", "축구",
-            "", "경북 김천시 삼락동 488-1");
+            "", "경북 김천시 삼락동 488-1", "REGISTERED");
 
         insertRegister(registerId, userId, gameId, "accepted");
 

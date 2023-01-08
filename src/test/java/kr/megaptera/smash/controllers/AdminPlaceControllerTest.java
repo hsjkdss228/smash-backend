@@ -31,7 +31,7 @@ class AdminPlaceControllerTest {
     void places() throws Exception {
         long generationCount = 3;
         List<PlaceDto> placeDtos = Place.fakes(generationCount)
-            .stream().map(Place::toPlaceDto)
+            .stream().map(Place::toDto)
             .toList();
         PlacesDto placesDto = new PlacesDto(placeDtos);
 

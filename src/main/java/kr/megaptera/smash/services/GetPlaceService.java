@@ -20,6 +20,6 @@ public class GetPlaceService {
         Place place = placeRepository.findById(placeId)
             .orElseThrow(() -> new PlaceNotFound(placeId));
 
-        return place.toPlaceDto();
+        return place.toDto();
     }
 }
