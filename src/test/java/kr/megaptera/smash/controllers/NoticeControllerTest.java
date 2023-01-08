@@ -3,7 +3,7 @@ package kr.megaptera.smash.controllers;
 import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.NoticeDto;
 import kr.megaptera.smash.dtos.NoticesDto;
-import kr.megaptera.smash.models.Notice;
+import kr.megaptera.smash.models.notice.Notice;
 import kr.megaptera.smash.services.DeleteNoticesService;
 import kr.megaptera.smash.services.GetNoticesService;
 import kr.megaptera.smash.services.ReadNoticeService;

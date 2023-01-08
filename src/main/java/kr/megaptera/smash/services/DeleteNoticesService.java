@@ -1,7 +1,7 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.exceptions.NoticeNotFound;
-import kr.megaptera.smash.models.Notice;
+import kr.megaptera.smash.models.notice.Notice;
 import kr.megaptera.smash.repositories.NoticeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

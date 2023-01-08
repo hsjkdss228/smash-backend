@@ -2,12 +2,12 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.PostListDto;
 import kr.megaptera.smash.dtos.PostsDto;
-import kr.megaptera.smash.models.Game;
-import kr.megaptera.smash.models.GameTargetMemberCount;
-import kr.megaptera.smash.models.Place;
-import kr.megaptera.smash.models.Post;
-import kr.megaptera.smash.models.Register;
-import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.models.game.Game;
+import kr.megaptera.smash.models.game.GameTargetMemberCount;
+import kr.megaptera.smash.models.place.Place;
+import kr.megaptera.smash.models.post.Post;
+import kr.megaptera.smash.models.register.Register;
+import kr.megaptera.smash.models.user.User;
 import kr.megaptera.smash.repositories.GameRepository;
 import kr.megaptera.smash.repositories.PlaceRepository;
 import kr.megaptera.smash.repositories.PostRepository;

@@ -1,6 +1,6 @@
 package kr.megaptera.smash.repositories;
 
-import kr.megaptera.smash.models.Place;
+import kr.megaptera.smash.models.place.Place;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

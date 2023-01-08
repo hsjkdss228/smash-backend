@@ -1,7 +1,7 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.exceptions.LoginFailed;
-import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.models.user.User;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
