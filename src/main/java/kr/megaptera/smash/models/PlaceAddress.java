@@ -30,6 +30,12 @@ public class PlaceAddress {
         return jibunAddress;
     }
 
+    public String existing() {
+        return !roadAddress.isBlank()
+            ? roadAddress
+            : jibunAddress;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -22,7 +22,7 @@ public class GetPlacesService {
         List<Place> places = placeRepository.findAll();
 
         List<PlaceDto> placeDtos = places.stream()
-            .map(Place::toPlaceDto)
+            .map(Place::toDto)
             .toList();
 
         return new PlacesDto(placeDtos);
