@@ -1,8 +1,8 @@
 package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.PostDetailDto;
-import kr.megaptera.smash.models.Post;
-import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.models.post.Post;
+import kr.megaptera.smash.models.user.User;
 import kr.megaptera.smash.repositories.PostRepository;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

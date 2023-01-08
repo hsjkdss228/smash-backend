@@ -1,6 +1,6 @@
 package kr.megaptera.smash.repositories;
 
-import kr.megaptera.smash.models.Notice;
+import kr.megaptera.smash.models.notice.Notice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 

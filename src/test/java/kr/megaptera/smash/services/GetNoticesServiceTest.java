@@ -2,9 +2,9 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.NoticeDto;
 import kr.megaptera.smash.dtos.NoticesDto;
-import kr.megaptera.smash.models.Notice;
-import kr.megaptera.smash.models.NoticeContents;
-import kr.megaptera.smash.models.NoticeStatus;
+import kr.megaptera.smash.models.notice.Notice;
+import kr.megaptera.smash.models.notice.NoticeContents;
+import kr.megaptera.smash.models.notice.NoticeStatus;
 import kr.megaptera.smash.repositories.NoticeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

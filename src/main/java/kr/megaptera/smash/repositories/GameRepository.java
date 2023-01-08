@@ -1,6 +1,6 @@
 package kr.megaptera.smash.repositories;
 
-import kr.megaptera.smash.models.Game;
+import kr.megaptera.smash.models.game.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

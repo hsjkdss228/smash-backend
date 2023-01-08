@@ -2,8 +2,8 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.PlaceSearchResultDto;
 import kr.megaptera.smash.dtos.PlaceSearchResultsDto;
-import kr.megaptera.smash.models.Place;
-import kr.megaptera.smash.models.PlaceRegistrationStatus;
+import kr.megaptera.smash.models.place.Place;
+import kr.megaptera.smash.models.place.PlaceRegistrationStatus;
 import kr.megaptera.smash.repositories.PlaceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

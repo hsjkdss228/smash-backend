@@ -1,6 +1,6 @@
 package kr.megaptera.smash.repositories;
 
-import kr.megaptera.smash.models.Register;
+import kr.megaptera.smash.models.register.Register;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

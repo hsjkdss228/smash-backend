@@ -2,8 +2,8 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.exceptions.IsNotRegisterOfCurrentUser;
 import kr.megaptera.smash.exceptions.RegisterNotFound;
-import kr.megaptera.smash.models.Register;
-import kr.megaptera.smash.models.RegisterStatus;
+import kr.megaptera.smash.models.register.Register;
+import kr.megaptera.smash.models.register.RegisterStatus;
 import kr.megaptera.smash.repositories.RegisterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

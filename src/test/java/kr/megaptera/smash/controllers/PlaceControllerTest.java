@@ -5,7 +5,7 @@ import kr.megaptera.smash.dtos.PlaceDto;
 import kr.megaptera.smash.dtos.PlaceSearchResultDto;
 import kr.megaptera.smash.dtos.PlaceSearchResultsDto;
 import kr.megaptera.smash.exceptions.PlaceNotFound;
-import kr.megaptera.smash.models.Place;
+import kr.megaptera.smash.models.place.Place;
 import kr.megaptera.smash.services.GetPlaceService;
 import kr.megaptera.smash.services.SearchPlacesService;
 import org.junit.jupiter.api.Test;

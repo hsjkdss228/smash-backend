@@ -2,7 +2,7 @@ package kr.megaptera.smash.services;
 
 import kr.megaptera.smash.dtos.UserNameDto;
 import kr.megaptera.smash.exceptions.UserNotFound;
-import kr.megaptera.smash.models.User;
+import kr.megaptera.smash.models.user.User;
 import kr.megaptera.smash.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

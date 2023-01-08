@@ -3,7 +3,7 @@ package kr.megaptera.smash.controllers;
 import kr.megaptera.smash.config.MockMvcEncoding;
 import kr.megaptera.smash.dtos.PlaceDto;
 import kr.megaptera.smash.dtos.PlacesDto;
-import kr.megaptera.smash.models.Place;
+import kr.megaptera.smash.models.place.Place;
 import kr.megaptera.smash.services.GetPlacesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
